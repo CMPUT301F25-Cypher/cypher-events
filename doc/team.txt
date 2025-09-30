@@ -1,29 +1,29 @@
-Student 1 of 6
+Member 1 of 6
 Full Name: Manas Joshi
 CCID: mjoshi3
 GitHub: BetterThanYou73
 
-Student 2 of 6
+Member 2 of 6
 Full Name: Tharushi Hewaarachchi
 CCID: hewaarac
-GitHub: TharuH
+GitHub: 
 
-Student 3 of 6
+Member 3 of 6
 Full Name: Kabir Gupta
 CCID: kabir3
-GitHub: amkabir
+GitHub:
 
-Student 4 of 6
+Member 4 of 6
 Full Name: Vrinda Arora
 CCID: vrinda2
-GitHub: Vrinda31
+GitHub: 
 
-Student 5 of 6
+Member 5 of 6
 Full Name: Kanav Dutta
 CCID: kdutta1
-GitHub: KanavDutta
+GitHub:
 
-Student 6 of 6
+Member 6 of 6
 Full Name: Pratyush Mugrai
 CCID: mugrai
-GitHub: Mugrai-pratyush
+GitHub: 
