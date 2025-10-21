@@ -1,4 +1,4 @@
-# Part 2: CRC Cards
+# CRC Cards
 
 This document lists CRC (Class–Responsibilities–Collaborators) cards for the **Cypher Event Lottery System**.
 
