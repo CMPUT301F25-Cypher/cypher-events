@@ -5,41 +5,38 @@ This folder contains user interface mockups for all user roles in the **Cypher E
 ---
 
 ## Story Board
-You can view the Storyboard for the interface below:
+You can view the storyboard for the interface below:
 
-📄 [View Storyboard (PDF)](./storyboards/Storyboards.pdf)
+[![Storyboard Preview](./storyboards/Storyboards.png)](./storyboards/Storyboards.pdf)
 
-<embed src="./storyboards/Storyboards.pdf" width="100%" height="600px" type="application/pdf">
+📄 **[Open Storyboard (PDF)](./storyboards/Storyboards.pdf)**
 
 ---
 
 ## Organizer Mockups
 You can view the Organizer interface design below:
 
-📄 [View Organizer UI Mockup (PDF)](./UI_mockups/Organizer_UI_Mockup.pdf)
+[![Organizer Mockup Preview](./UI_mockups/Organizer_UI_Mockup.png)](./UI_mockups/Organizer_UI_Mockup.pdf)
 
-<embed src="./UI_mockups/Organizer_UI_Mockup.pdf" width="100%" height="600px" type="application/pdf">
+📄 **[Open Organizer UI Mockup (PDF)](./UI_mockups/Organizer_UI_Mockup.pdf)**
 
 ---
 
 ## Entrant Mockups
 You can view the Entrant interface design below:
 
-📄 [View Entrant UI Mockup (PDF)](./UI_mockups/Entrant_UI_Mockup.pdf)
+[![Entrant Mockup Preview](./UI_mockups/Entrant_UI_Mockup.png)](./UI_mockups/Entrant_UI_Mockup.pdf)
 
-<embed src="./ui_mockups/Entrant_UI_Mockup.pdf" width="100%" height="600px" type="application/pdf">
+📄 **[Open Entrant UI Mockup (PDF)](./UI_mockups/Entrant_UI_Mockup.pdf)**
 
 ---
 
 ## Admin Mockups
 You can view the Admin interface design below:
 
-📄 [View Admin UI Mockup (PDF)](./UI_mockups/Admin_UI_Mockup.pdf)
+[![Admin Mockup Preview](./UI_mockups/Admin_UI_Mockup.png)](./UI_mockups/Admin_UI_Mockup.pdf)
 
-<embed src="./ui_mockups/Admin_UI_Mockup.pdf" width="100%" height="600px" type="application/pdf">
+📄 **[Open Admin UI Mockup (PDF)](./UI_mockups/Admin_UI_Mockup.pdf)**
 
 ---
 
-## Notes
-- All mockups are created using Figma and exported as PDFs.
-- Each file reflects the UI flow and screen transitions of its respective user type.
