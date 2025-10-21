@@ -5,7 +5,7 @@ This folder contains user interface mockups for all user roles in the **Cypher E
 ---
 
 ## Story Board
-You can view the storyboard for the interface below:
+You can view the storyboard graph for the interface below:
 
 [![Storyboard Preview](./storyboards/Storyboards.png)](./storyboards/Storyboards.pdf)
 
