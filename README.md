@@ -44,7 +44,7 @@ All documentation files are located in the [`/docs`](./docs/) directory.
 |---------------|----------------|
 | [Product Backlog](./docs/product_backlog.md) | User stories and task prioritization |
 | [CRC Cards](./docs/crc_cards.md) | Class–Responsibility–Collaborator design cards (MVC structured) |
-| [UI Mockups](./docs/ui_mockups.md) | Wireframes and visual layouts |
+| [UI Mockups](./docs/ui_mockups.md) | Storyboard and UI Mockups |
 
 ---
 

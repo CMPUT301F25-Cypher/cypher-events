@@ -25,7 +25,7 @@ You can view the Organizer interface design below:
 ## Entrant Mockups
 You can view the Entrant interface design below:
 
-📄 [View Entrant UI Mockup (PDF)](./ui_mockups/Entrant_UI_Mockup.pdf)
+📄 [View Entrant UI Mockup (PDF)](./UI_mockups/Entrant_UI_Mockup.pdf)
 
 <embed src="./ui_mockups/Entrant_UI_Mockup.pdf" width="100%" height="600px" type="application/pdf">
 
@@ -34,7 +34,7 @@ You can view the Entrant interface design below:
 ## Admin Mockups
 You can view the Admin interface design below:
 
-📄 [View Admin UI Mockup (PDF)](./ui_mockups/Admin_UI_Mockup.pdf)
+📄 [View Admin UI Mockup (PDF)](./UI_mockups/Admin_UI_Mockup.pdf)
 
 <embed src="./ui_mockups/Admin_UI_Mockup.pdf" width="100%" height="600px" type="application/pdf">
 
