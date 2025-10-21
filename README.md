@@ -28,7 +28,7 @@ This repository contains all documentation, design notes, and source code for th
 | **Full Name** | **CCID** | **GitHub Username** |
 |----------------|-----------|---------------------|
 | Manas Joshi | mjoshi3 | [BetterThanYou73](https://github.com/BetterThanYou73) |
-| Tharushi Hewaarachchi | hewaarac | [TharuuH](https://github.com/TharuuH) |
+| Tharushi Hewaarachchi | hewaarac | [TharuH](https://github.com/TharuH) |
 | Kabir Gupta | kabir3 | [amkabir](https://github.com/amkabir) |
 | Vrinda Arora | vrinda2 | [Vrinda31](https://github.com/Vrinda31) |
 | Kanav Dutta | kdutta1 | [kdutta1](https://github.com/kdutta1) |
