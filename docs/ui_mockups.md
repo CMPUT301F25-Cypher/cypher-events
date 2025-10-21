@@ -16,9 +16,9 @@ You can view the Storyboard for the interface below:
 ## Organizer Mockups
 You can view the Organizer interface design below:
 
-📄 [View Organizer UI Mockup (PDF)](./ui_mockups/Organizer_UI_Mockup.pdf)
+📄 [View Organizer UI Mockup (PDF)](./UI_mockups/Organizer_UI_Mockup.pdf)
 
-<embed src="./ui_mockups/Organizer_UI_Mockup.pdf" width="100%" height="600px" type="application/pdf">
+<embed src="./UI_mockups/Organizer_UI_Mockup.pdf" width="100%" height="600px" type="application/pdf">
 
 ---
 
