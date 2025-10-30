@@ -1,21 +1,19 @@
 {
   "project_info": {
-    "project_number": "62883347559",
-    "project_id": "cypher-events",
-    "storage_bucket": "cypher-events.firebasestorage.app"
+    "project_id": "dummy-ci",
+    "project_number": "000000000000"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:62883347559:android:e01eb57db94652d05368c2",
+        "mobilesdk_app_id": "1:000000000000:android:dummyci0000000000000000",
         "android_client_info": {
           "package_name": "com.example.cypher_events"
         }
       },
-      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBkdGkD_Nfb0zv-IqH8AGwZr7clkKzrDhY"
+          "current_key": "dummyapikey000000000000000000000000000000"
         }
       ],
       "services": {
