@@ -4,7 +4,7 @@ Welcome to **Cypher Events**, an event lottery and registration management Andro
 
 ## FireBase Google Service
 
-Get the file from [here](/https://drive.google.com/file/d/1-ztT4kKQxFihKGCTTafSvvB78TkCu-hz/view?usp=sharing) then place it in `app/google-services.json`
+Get the file from [here](https://drive.google.com/file/d/1-ztT4kKQxFihKGCTTafSvvB78TkCu-hz/view?usp=sharing) then place it in `app/google-services.json`
 
 
 ---
