@@ -2,4 +2,20 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Primary theme colors -->
+    <color name="primary">#3949AB</color>
+    <color name="primary_dark">#1A237E</color>
+    <color name="accent">#5C6BC0</color>
+    <color name="background">#FFFFFF</color>
+
+    <!-- Navigation colors -->
+    <color name="nav_background">#E8EAF6</color>
+    <color name="nav_item_active">#3949AB</color>
+    <color name="nav_item_inactive">#9E9E9E</color>
+
+    <!-- Text and UI neutrals -->
+    <color name="text_primary">#000000</color>
+    <color name="text_secondary">#666666</color>
+
 </resources>
