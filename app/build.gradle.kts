@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
+    id("com.android.application")
 }
 
 android {
@@ -36,6 +37,8 @@ dependencies {
 
     // Adds firebase to the app
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    implementation("com.google.firebase:firebase-analytics")
 
     // Add the specific SDKs you will use.
     //implementation("com.google.firebase:firebase-analytics")
