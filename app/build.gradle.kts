@@ -35,9 +35,9 @@ android {
 dependencies {
 
     // Adds firebase to the app
-    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore")
 
     // Add the specific SDKs you will use.
     //implementation("com.google.firebase:firebase-analytics")
