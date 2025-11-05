@@ -7,7 +7,7 @@ import java.util.Map;
 public class Entrant {
     private String Entrant_name;
     private String Entrant_email;
-    private String Entrant_phone;
+    private int Entrant_phone;
     private boolean Entrant_notificationsEnabled;
     private boolean Entrant_locationPermissionGranted;
 
@@ -35,7 +35,7 @@ public class Entrant {
         Entrant_email = Entrant_email;
     }
 
-    public String getEntrant_phone() {
+    public int getEntrant_phone() {
         return Entrant_phone;
     }
 
