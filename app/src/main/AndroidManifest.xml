@@ -2,24 +2,78 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Cypherevents">
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+        tools:targetApi="31">
+
+        <!-- Google Maps API Key - Add your key here later -->
+        <!-- <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="YOUR_API_KEY_HERE" /> -->
+
+        <!-- Main Activity - Entry Point -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Entrant Activities -->
+        <activity
+            android:name=".activities.entrant.EntrantDashboardActivity"
+            android:exported="false" />
+
+        <!-- Organizer Activities -->
+        <activity
+            android:name=".activities.organizer.OrganizerDashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.organizer.CreateEventActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.organizer.OrganizerDashboardActivity" />
+        <activity
+            android:name=".activities.organizer.ManageEventActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.organizer.OrganizerDashboardActivity" />
+        <activity
+            android:name=".activities.organizer.SelectedEntrantsActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.organizer.OrganizerDashboardActivity" />
+        <activity
+            android:name=".activities.organizer.CancelledEntrantsActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.organizer.OrganizerDashboardActivity" />
+        <activity
+            android:name=".activities.organizer.DrawReplacementActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.organizer.OrganizerDashboardActivity" />
+        <activity
+            android:name=".activities.organizer.EntrantsMapActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.organizer.OrganizerDashboardActivity" />
+
+        <!-- Admin Activities -->
+        <activity
+            android:name=".activities.admin.AdminDashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.admin.NotificationLogsActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.admin.AdminDashboardActivity" />
+
     </application>
 
 </manifest>

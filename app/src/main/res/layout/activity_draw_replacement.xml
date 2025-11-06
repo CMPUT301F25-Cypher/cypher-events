@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Draw Replacement Entrant"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/textViewEventName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Event Name"
+        android:textSize="18sp"
+        android:layout_marginBottom="32dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="When someone declines or cancels, you can draw a replacement from the waiting list."
+        android:textSize="14sp"
+        android:textAlignment="center"
+        android:layout_marginBottom="16dp"
+        android:paddingHorizontal="16dp" />
+
+    <TextView
+        android:id="@+id/textViewAvailablePool"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Available entrants in pool: --"
+        android:textSize="14sp"
+        android:layout_marginBottom="32dp" />
+
+    <Button
+        android:id="@+id/btnDrawReplacement"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:text="Draw Replacement"
+        android:textSize="16sp"
+        android:paddingHorizontal="32dp"
+        style="@style/Widget.MaterialComponents.Button" />
+
+</LinearLayout>
