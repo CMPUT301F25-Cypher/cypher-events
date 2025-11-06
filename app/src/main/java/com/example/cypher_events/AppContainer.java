@@ -2,7 +2,12 @@ package com.example.cypher_events;
 
 import com.example.cypher_events.data.repository.*;
 import com.example.cypher_events.data.repository.fake.*;
+import com.example.cypher_events.domain.model.Entrant;
 import com.example.cypher_events.domain.service.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class AppContainer {
     private static AppContainer INSTANCE;
@@ -21,4 +26,8 @@ public final class AppContainer {
         if (INSTANCE == null) INSTANCE = new AppContainer();
         return INSTANCE;
     }
+
+
+
+
 }
