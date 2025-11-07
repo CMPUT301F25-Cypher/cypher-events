@@ -25,7 +25,6 @@
             android:background="@android:drawable/edit_text"
             android:singleLine="true"/>
 
-
         <!-- Filter Button -->
         <Button
             android:id="@+id/btnFilter"
@@ -35,7 +34,7 @@
             android:layout_marginStart="8dp"/>
     </LinearLayout>
 
-    <!-- Event List -->
+    <!-- Event List (dynamic from Firebase) -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewEvents"
         android:layout_width="match_parent"

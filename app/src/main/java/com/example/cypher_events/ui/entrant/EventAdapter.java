@@ -47,10 +47,18 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
         holder.title.setText(event.getEvent_title());
         holder.location.setText(event.getEvent_location());
-        holder.itemView.setOnClickListener(v -> listener.open(event.getEvent_id()));
 
-        // Optional placeholder image
-        holder.image.setImageResource(R.drawable.ic_launcher_background);
+        // Load image dynamically (Firebase Storage or URL)
+        if (event.getImageUrl() != null && !event.getImageUrl().isEmpty()) {
+            Glide.with(holder.image.getContext())
+                    .load(event.getImageUrl())
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .into(holder.image);
+        } else {
+            holder.image.setImageResource(R.drawable.ic_launcher_background);
+        }
+
+        holder.itemView.setOnClickListener(v -> listener.open(event.getEvent_id()));
     }
 
     @Override
