@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/tbAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="Manage Profiles"
+        android:backgroundTint="?attr/colorSurface"
+        android:titleTextColor="?attr/colorOnSurface"
+        android:padding="16dp"/>
+
+    <!-- Search -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilSearchProfiles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search profile"
+        android:layout_margin="12dp"
+        android:layout_marginTop="?attr/actionBarSize">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSearchProfiles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionSearch"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvProfiles"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:padding="12dp"
+        android:layout_marginTop="?attr/actionBarSize"/>
+
+    <!-- Delete Selected -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDeleteSelectedProfile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete Selected"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_margin="16dp"
+        app:layout_anchor="@id/rvProfiles"
+        app:layout_anchorGravity="bottom"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
