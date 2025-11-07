@@ -16,6 +16,7 @@
 
     <!-- Text and UI neutrals -->
     <color name="text_primary">#000000</color>
-    <color name="text_secondary">#666666</color>
+    <color name="text_secondary">#757575</color>
+    <color name="light_gray">#DDDDDD</color>
 
 </resources>

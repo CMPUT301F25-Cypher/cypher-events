@@ -1,0 +1,37 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/tbAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="Manage Images"
+        android:backgroundTint="?attr/colorSurface"
+        android:titleTextColor="?attr/colorOnSurface"
+        android:padding="16dp"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilSearchImages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search"
+        android:layout_margin="12dp"
+        android:layout_marginTop="?attr/actionBarSize">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSearchImages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionSearch"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvImages"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:padding="8dp"
+        android:layout_marginTop="?attr/actionBarSize"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
