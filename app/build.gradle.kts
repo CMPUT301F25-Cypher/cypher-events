@@ -45,6 +45,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("com.google.firebase:firebase-firestore:25.1.1")
 
     // Add the specific SDKs you will use.
     //implementation("com.google.firebase:firebase-analytics")

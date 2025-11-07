@@ -26,4 +26,7 @@
 
     <string name="exit_label">Exit</string>
     <string name="create_event_label">Create event</string>
+    <string name="registration_opens">Registration opens</string>
+    <string name="registration_closes">Registration closes</string>
+    <string name="poster_image_cd">Event poster preview</string>
 </resources>
