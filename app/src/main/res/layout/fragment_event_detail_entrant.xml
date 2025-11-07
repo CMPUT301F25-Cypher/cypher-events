@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:padding="16dp"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Top Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back_button"
+                android:contentDescription="Back"
+                android:scaleType="centerInside" />
+
+            <TextView
+                android:id="@+id/tvEventTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Event Details"
+                android:textStyle="bold"
+                android:textSize="24sp"
+                android:layout_marginStart="8dp"
+                android:textColor="#000000" />
+        </LinearLayout>
+
+        <!-- Event Poster -->
+        <ImageView
+            android:id="@+id/imgEventPoster"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_placeholder_image_event"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/rounded_border_light" />
+
+        <!-- Event Info Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:background="#FAFAFA"
+            android:elevation="2dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/tvEventLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Location: SUB Building"
+                android:textSize="16sp"
+                android:textColor="#333333"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tvSignupStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Signup Starts: 2025-11-06"
+                android:textSize="16sp"
+                android:textColor="#333333"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tvSignupEnd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Signup Ends: 2025-11-12"
+                android:textSize="16sp"
+                android:textColor="#333333"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tvEventStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Status: Open"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="#00796B"
+                android:layout_marginBottom="8dp" />
+        </LinearLayout>
+
+        <!-- Organizer info -->
+        <TextView
+            android:id="@+id/tvOrganizerName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Organizer: John Doe"
+            android:textSize="16sp"
+            android:textColor="#333333"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvOrganizerPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Phone: +1 234 567 890"
+            android:textSize="16sp"
+            android:textColor="#333333"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvOrganizerEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Email: organizer@example.com"
+            android:textSize="16sp"
+            android:textColor="#333333"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/tvEventDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Description: This event is about..."
+            android:textSize="16sp"
+            android:textColor="#444444"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Buttons Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="8dp">
+
+            <!-- Join Waiting List -->
+            <Button
+                android:id="@+id/btnJoinWaitlist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Join Waiting List"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/rounded_button_minimal"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Accept & Decline Buttons (hidden until selected) -->
+            <LinearLayout
+                android:id="@+id/layoutAcceptDecline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/btnAccept"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Accept"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/rounded_button_minimal"
+                    android:layout_marginEnd="8dp"
+                    android:padding="12dp" />
+
+                <Button
+                    android:id="@+id/btnDecline"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Decline"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/rounded_button_minimal"
+                    android:layout_marginStart="8dp"
+                    android:padding="12dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

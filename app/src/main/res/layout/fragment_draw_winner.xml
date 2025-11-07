@@ -1,0 +1,43 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFFFFF"
+    android:gravity="center_horizontal">
+
+    <ImageButton
+        android:id="@+id/btnBackWinner"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_back_button"
+        android:layout_gravity="start"
+        android:contentDescription="Back" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Draw Winner"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/btnGenerateWinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Winner"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/rounded_button_minimal" />
+
+    <TextView
+        android:id="@+id/tvWinnerResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Winner: (not drawn yet)"
+        android:layout_marginTop="24dp"
+        android:textSize="18sp" />
+</LinearLayout>

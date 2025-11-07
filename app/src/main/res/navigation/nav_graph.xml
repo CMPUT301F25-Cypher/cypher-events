@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/organizerDashboardFragment">
+
+    <fragment
+        android:id="@+id/organizerDashboardFragment"
+        android:name="com.example.cypher_events.ui.organizer.OrganizerDashboardFragment"
+        android:label="Organizer Dashboard">
+
+        <action
+            android:id="@+id/action_organizerDashboard_to_createEventFragment"
+            app:destination="@id/createEventFragment" />
+
+        <action
+            android:id="@+id/action_organizerDashboard_to_myEventsFragment"
+            app:destination="@id/myEventsFragment" />
+
+        <action
+            android:id="@+id/action_organizerDashboard_to_entrantDashboardFragment"
+            app:destination="@id/entrantDashboardFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/createEventFragment"
+        android:name="com.example.cypher_events.ui.organizer.CreateEventFragment"
+        android:label="Create Event" />
+
+    <fragment
+        android:id="@+id/myEventsFragment"
+        android:name="com.example.cypher_events.ui.organizer.MyEventsFragment"
+        android:label="My Events" />
+
+    <fragment
+        android:id="@+id/entrantDashboardFragment"
+        android:name="com.example.cypher_events.ui.entrant.EntrantDashboardFragment"
+        android:label="Entrant Dashboard">
+
+    <action
+        android:id="@+id/action_entrantDashboard_to_eventEntrant"
+        app:destination="@id/eventEntrant" />
+
+    <action
+        android:id="@+id/action_entrantDashboard_to_historyEntrant"
+        app:destination="@id/historyEntrant" />
+
+    <action
+        android:id="@+id/action_entrantDashboard_to_updateProfileEntrant"
+        app:destination="@id/updateProfileEntrant" />
+
+    <action
+        android:id="@+id/action_entrantDashboard_to_organizerDashboard"
+        app:destination="@id/organizerDashboardFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/eventEntrant"
+        android:name="com.example.cypher_events.ui.entrant.EventEntrantFragment"
+        android:label="Entrant Events"
+        tools:layout="@layout/fragment_event_entrant">
+        <action
+            android:id="@+id/action_eventEntrant_to_eventDetailEntrant"
+            app:destination="@id/eventDetailEntrant" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/eventDetailEntrant"
+        android:name="com.example.cypher_events.ui.entrant.EventDetailEntrantFragment"
+        android:label="Event Details"
+        tools:layout="@layout/fragment_event_detail_entrant" />
+
+    <!-- Entrant: History Screen -->
+    <fragment
+        android:id="@+id/historyEntrant"
+        android:name="com.example.cypher_events.ui.entrant.HistoryFragmentEntrant"
+        android:label="Event History"
+        tools:layout="@layout/fragment_history_entrant" />
+
+    <!-- Entrant: Update Profile Screen -->
+    <fragment
+        android:id="@+id/updateProfileEntrant"
+        android:name="com.example.cypher_events.ui.entrant.UpdateProfileEntrantFragment"
+        android:label="Update Profile"
+        tools:layout="@layout/fragment_update_profile_entrant" />
+
+
+
+</navigation>
