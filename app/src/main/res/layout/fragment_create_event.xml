@@ -1,0 +1,163 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:scrollbars="none"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Title -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <!-- Back Button -->
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_back_button"
+                android:contentDescription="Back"
+                />
+
+            <!-- Spacer -->
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="wrap_content" />
+
+            <!-- Title Text -->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Create Events"
+                android:textStyle="bold"
+                android:textSize="26sp"
+                android:fontFamily="sans-serif-thin"
+                android:textColor="#000000"
+                android:gravity="clip_horizontal" />
+        </LinearLayout>
+
+        <!-- Event Name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Event Name">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/inputEventName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Description -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description"
+            android:layout_marginTop="12dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/inputEventDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:minLines="3"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Location -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Location"
+            android:layout_marginTop="12dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/inputEventLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Category -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Category"
+            android:layout_marginTop="12dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/inputEventCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Signup Start Date -->
+        <Button
+            android:id="@+id/btnSelectStartDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Signup Start Date"
+            android:textAllCaps="false"
+            android:background="@drawable/rounded_button_minimal"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Signup End Date -->
+        <Button
+            android:id="@+id/btnSelectEndDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Signup End Date"
+            android:textAllCaps="false"
+            android:background="@drawable/rounded_button_minimal"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="10dp"/>
+
+        <!-- Capacity -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Event Capacity"
+            android:layout_marginTop="12dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/inputEventCapacity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Upload Poster -->
+        <Button
+            android:id="@+id/btnUploadPoster"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Upload Poster"
+            android:textAllCaps="false"
+            android:background="@drawable/rounded_button_minimal"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Submit -->
+        <Button
+            android:id="@+id/btnCreateEventSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create Event"
+            android:textAllCaps="false"
+            android:backgroundTint="#6A4BBC"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="32dp"
+            android:padding="12dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/rounded_button_minimal" />
+    </LinearLayout>
+</ScrollView>

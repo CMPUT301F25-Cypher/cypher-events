@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.example.cypher_events.domain.model.DummyData;
 
+import com.example.cypher_events.ui.entrant.EntrantDashboardFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
@@ -31,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
-
         if (DEBUG_FIRESTORE_DUMMY_DATA) {
             DummyData.seed();
         }
@@ -46,21 +45,22 @@ public class MainActivity extends AppCompatActivity {
         // Load default fragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, new OrganizerDashboardFragment())
+                    .replace(R.id.container, new EntrantDashboardFragment())
                     .commit();
         }
 
-        // Handle navigation clicks
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             int itemId = item.getItemId();
 
             if (itemId == R.id.nav_home) {
-                selectedFragment = new OrganizerDashboardFragment();
-            } else if (itemId == R.id.nav_profile) {
-                selectedFragment = new ProfileFragment();
+                selectedFragment = new EntrantDashboardFragment(); // Entrant
             } else if (itemId == R.id.nav_notifications) {
-                selectedFragment = new NotificationFragment();
+                selectedFragment = new OrganizerDashboardFragment(); // Organizer
+            } else if (itemId == R.id.nav_profile) {
+                selectedFragment = new ProfileFragment(); // Profile
             }
 
             if (selectedFragment != null) {

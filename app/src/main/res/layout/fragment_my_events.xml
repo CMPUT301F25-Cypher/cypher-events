@@ -1,0 +1,62 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:padding="16dp">
+
+
+    <!-- Title Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <!-- Back Button -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_back_button"
+            android:contentDescription="Back"
+            />
+
+        <!-- Spacer -->
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="wrap_content" />
+
+        <!-- Title Text -->
+        <TextView
+            android:id="@+id/tvMyEventsTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="My Events"
+            android:textStyle="bold"
+            android:textSize="26sp"
+            android:fontFamily="sans-serif-thin"
+            android:textColor="#000000"
+            android:gravity="clip_horizontal" />
+    </LinearLayout>
+
+
+
+
+
+    <!-- RecyclerView for event list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerMyEvents"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp" />
+</LinearLayout>
