@@ -9,4 +9,6 @@ public interface EventRepository {
     Result<Event> getEventById(String eventId);
     Result<Void> updateEvent(Event event);
     Result<Void> addEvent(Event event);
+    Result<Boolean> deleteEvent(String eventId);
+
 }

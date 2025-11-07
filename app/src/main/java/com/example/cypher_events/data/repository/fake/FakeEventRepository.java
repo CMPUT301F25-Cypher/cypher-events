@@ -80,4 +80,10 @@ public class FakeEventRepository implements EventRepository {
         store.put(event.getEvent_id(), event);
         return Result.ok(null);
     }
+
+    @Override
+    public Result<Boolean> deleteEvent(String eventId) {
+        if (store.remove(eventId) != null) return Result.ok(true);
+        return Result.err(new Exception("Event not found"));
+    }
 }
