@@ -4,63 +4,81 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.cypher_events.R;
 import com.example.cypher_events.domain.model.Event;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-public class EventAdapter extends RecyclerView.Adapter<EventAdapter.VH> {
+public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
-    public interface OnClick {
-        void open(String eventId);
+    public interface OnEventClickListener {
+        void onEventClick(String eventId);
     }
 
-    private final List<Event> data = new ArrayList<>();
-    private final OnClick onClick;
+    private List<Event> eventList = new ArrayList<>();
+    private final OnEventClickListener listener;
 
-    public EventAdapter(OnClick onClick) {
-        this.onClick = onClick;
-    }
-
-    static class VH extends RecyclerView.ViewHolder {
-        TextView title, subtitle;
-
-        VH(@NonNull View v) {
-            super(v);
-            title = v.findViewById(R.id.itemTitle);
-            subtitle = v.findViewById(R.id.itemSubtitle);
-        }
+    public EventAdapter(OnEventClickListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
     @Override
-    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
+    public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_event, parent, false);
-        return new VH(v);
+        return new EventViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VH holder, int position) {
-        Event event = data.get(position);
+    public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
+        Event event = eventList.get(position);
 
-        holder.title.setText(event.getEvent_title());
-        holder.subtitle.setText(event.getEvent_location());
+        String title = (event.getEvent_title() == null || event.getEvent_title().isEmpty())
+                ? "Untitled Event" : event.getEvent_title();
+        String loc = (event.getEvent_location() == null || event.getEvent_location().isEmpty())
+                ? "📍 Unknown Location" : "📍 " + event.getEvent_location();
 
-        holder.itemView.setOnClickListener(view -> onClick.open(event.getEvent_id()));
+        holder.tvName.setText(title);
+        holder.tvLocation.setText(loc);
+
+        long start = event.getEvent_signupStartUtc();
+        String dateString = (start > 0)
+                ? new java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
+                .format(new java.util.Date(start))
+                : "N/A";
+        holder.tvDate.setText("🗓 " + dateString);
+
+        holder.itemView.setOnClickListener(v -> listener.onEventClick(event.getEvent_id()));
     }
+
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return eventList.size();
     }
 
     public void submit(List<Event> events) {
-        data.clear();
-        if (events != null) data.addAll(events);
+        this.eventList = events;
         notifyDataSetChanged();
+    }
+
+    static class EventViewHolder extends RecyclerView.ViewHolder {
+        TextView tvName, tvLocation, tvDate;
+
+        public EventViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvName = itemView.findViewById(R.id.tvEventName);
+            tvLocation = itemView.findViewById(R.id.tvEventLocation);
+            tvDate = itemView.findViewById(R.id.tvEventDate);
+        }
     }
 }

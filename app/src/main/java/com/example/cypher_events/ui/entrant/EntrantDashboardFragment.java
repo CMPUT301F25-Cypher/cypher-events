@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.firestore.PropertyName;
+
 import com.example.cypher_events.R;
 import com.example.cypher_events.ui.organizer.OrganizerDashboardFragment;
 

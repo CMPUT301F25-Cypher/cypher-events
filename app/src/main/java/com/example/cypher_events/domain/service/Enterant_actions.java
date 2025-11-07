@@ -18,7 +18,7 @@ public class Enterant_actions {
         return ret;
 
     }
-    public ArrayList<Object> remove_enterant_to_event_array(ArrayList<Map<String,Object>> event,String name, String email, int phone,String event_name,ArrayList<String> history){
+        public ArrayList<Object> remove_enterant_to_event_array(ArrayList<Map<String,Object>> event,String name, String email, int phone,String event_name,ArrayList<String> history){
         ArrayList<Object> ret= new ArrayList<>();
         int val=0;
         while (val<event.size()){
