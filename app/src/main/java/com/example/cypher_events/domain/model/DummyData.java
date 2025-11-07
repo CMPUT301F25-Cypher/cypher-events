@@ -32,7 +32,6 @@ public class DummyData {
         entrant.setEntrant_acceptedEvents(new ArrayList<>());
         entrant.setEntrant_declinedEvents(new ArrayList<>());
 
-        // ────────────────────────────────────────────────
         // Create Organizer (wrapping the Entrant)
         Organizer organizer = new Organizer(entrant);
         organizer.setOrganizer_notificationsEnabled(true);
@@ -85,6 +84,12 @@ public class DummyData {
         declinedEvent.setEvent_category("Hackathon");
         declinedEvent.setEvent_joinedEntrants(Collections.singletonList(entrant));
 
+        Entrant waitlistedEntrant = new Entrant("Alice Waitlist", "alice@pending.com", "5559876");
+        waitlistedEntrant.setEntrant_status("DEVICE_XYZ123");
+
+        List<Entrant> waitlist = new ArrayList<>();
+        waitlist.add(waitlistedEntrant);
+        openEvent.setEvent_waitlistEntrants(waitlist);
 
         // Reflect relationships both ways
         List<Event> joinedEvents = entrant.getEntrant_joinedEvents();
@@ -110,6 +115,7 @@ public class DummyData {
 
         // Push to Firestore
         try {
+            firestore.push_DB("Entrants", waitlistedEntrant.getEntrant_id(), waitlistedEntrant.toMap());
             firestore.push_DB("Entrants", entrant.getEntrant_id(), entrant.toMap());
             firestore.push_DB("Organizers", organizer.getOrganizer_id(), organizer.toMap());
             firestore.push_DB("Events", openEvent.getEvent_id(), openEvent.toMap());
@@ -136,7 +142,6 @@ public class DummyData {
         entrant.updateAdminStatus(key); // false unless matches admin id
 
         // Create Admin
-
         Admin admin = new Admin(entrant);
 
         // Set optional / unique admin data
