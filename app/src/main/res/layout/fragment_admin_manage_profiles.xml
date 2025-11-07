@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- Title (mirrors Manage Images) -->
+    <!-- Title -->
     <TextView
         android:id="@+id/AdminM_profiles_title"
         android:layout_width="wrap_content"
@@ -19,46 +19,36 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Search (mirrors Manage Images) -->
+    <!-- Search -->
     <EditText
-        android:id="@+id/Profil_search"
+        android:id="@+id/Profile_search"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="search profile name...."
+        android:hint="Search profile name..."
         android:inputType="text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/AdminM_profiles_title" />
+        app:layout_constraintTop_toBottomOf="@id/AdminM_profiles_title"
+        android:layout_marginBottom="12dp"/>
 
-    <!-- Add Button -->
-    <Button
-        android:id="@+id/Admin_ad_profile"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Add Profile"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btnDeleteSelectedProfile"
-        app:layout_constraintTop_toBottomOf="@id/Profil_search"
-        app:layout_constraintHorizontalWeight="1" />
-
-    <!-- Delete Button -->
+    <!-- Delete Selected Button -->
     <Button
         android:id="@+id/btnDeleteSelectedProfile"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Delete Selected"
-        app:layout_constraintTop_toBottomOf="@id/Profil_search"
-        app:layout_constraintStart_toEndOf="@id/Admin_ad_profile"
+        app:layout_constraintTop_toBottomOf="@id/Profile_search"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontalWeight="1" />
+        android:layout_marginBottom="12dp"/>
 
-    <!-- List -->
+    <!-- List of Profiles -->
     <ListView
         android:id="@+id/Profile_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:choiceMode="singleChoice"
-        app:layout_constraintTop_toBottomOf="@id/Admin_ad_profile"
+        app:layout_constraintTop_toBottomOf="@id/btnDeleteSelectedProfile"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

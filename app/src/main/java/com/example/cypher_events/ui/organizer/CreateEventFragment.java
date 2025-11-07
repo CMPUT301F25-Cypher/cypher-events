@@ -1,9 +1,10 @@
 package com.example.cypher_events.ui.organizer;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,18 +21,33 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.cypher_events.R;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class CreateEventFragment extends Fragment {
 
-    private Button btnSignupStart, btnSignupEnd, btnUploadPoster;
+    private FirebaseFirestore db;
+    private String deviceId;
+    private String organizerEmail = "unknown@example.com";
+
+    private TextInputEditText inputEventName, inputEventDescription,
+            inputEventLocation, inputEventCategory, inputEventCapacity;
+    private Button btnSignupStart, btnSignupEnd, btnUploadPoster, btnSubmit;
     private ImageButton btnBack;
-    private EditText etEventCapacity;
     private ImageView imgPosterPreview;
+
+    private String startDate = "", endDate = "";
     private Uri selectedImageUri = null;
 
-    // Modern, safe activity result launcher
+    // modern launcher for image selection
     private final ActivityResultLauncher<String> imagePickerLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
@@ -48,48 +64,140 @@ public class CreateEventFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_create_event, container, false);
+        return inflater.inflate(R.layout.fragment_create_event, container, false);
+    }
 
+    @SuppressLint("HardwareIds")
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        db = FirebaseFirestore.getInstance();
+        deviceId = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        // Bind views
+        inputEventName = view.findViewById(R.id.inputEventName);
+        inputEventDescription = view.findViewById(R.id.inputEventDescription);
+        inputEventLocation = view.findViewById(R.id.inputEventLocation);
+        inputEventCategory = view.findViewById(R.id.inputEventCategory);
+        inputEventCapacity = view.findViewById(R.id.inputEventCapacity);
         btnSignupStart = view.findViewById(R.id.btnSelectStartDate);
         btnSignupEnd = view.findViewById(R.id.btnSelectEndDate);
         btnUploadPoster = view.findViewById(R.id.btnUploadPoster);
+        imgPosterPreview = view.findViewById(R.id.imgPosterPreview);
+        btnSubmit = view.findViewById(R.id.btnCreateEventSubmit);
         btnBack = view.findViewById(R.id.btnBack);
-        etEventCapacity = view.findViewById(R.id.inputEventCapacity);
 
-
-        // Back button → Organizer dashboard
+        // Back navigation
         if (btnBack != null) {
             btnBack.setOnClickListener(v ->
-                    requireActivity().getSupportFragmentManager()
-                            .beginTransaction()
-                            .setReorderingAllowed(true)
-                            .replace(R.id.container, new OrganizerDashboardFragment())
-                            .commit());
+                    requireActivity().getSupportFragmentManager().popBackStack());
         }
 
-        // Date pickers
-        if (btnSignupStart != null)
-            btnSignupStart.setOnClickListener(v -> showDatePicker("Signup Start Date selected"));
+        // Pick start/end dates
+        btnSignupStart.setOnClickListener(v -> showDatePicker(true));
+        btnSignupEnd.setOnClickListener(v -> showDatePicker(false));
 
-        if (btnSignupEnd != null)
-            btnSignupEnd.setOnClickListener(v -> showDatePicker("Signup End Date selected"));
+        // Poster picker
+        btnUploadPoster.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
 
-        // Upload Poster → open image picker
-        if (btnUploadPoster != null)
-            btnUploadPoster.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
+        // Load or create organizer
+        loadOrganizerInfo();
 
-        return view;
+        // Create event
+        btnSubmit.setOnClickListener(v -> createEvent());
     }
 
-    private void showDatePicker(String message) {
+    private void showDatePicker(boolean isStart) {
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
 
-        new DatePickerDialog(getContext(), (view, y, m, d) ->
-                Toast.makeText(getContext(), message + ": " + d + "/" + (m + 1) + "/" + y,
-                        Toast.LENGTH_SHORT).show(),
-                year, month, day).show();
+        new DatePickerDialog(getContext(), (view, y, m, d) -> {
+            String date = d + "/" + (m + 1) + "/" + y;
+            if (isStart) {
+                startDate = date;
+                Toast.makeText(getContext(), "Signup Start: " + date, Toast.LENGTH_SHORT).show();
+            } else {
+                endDate = date;
+                Toast.makeText(getContext(), "Signup End: " + date, Toast.LENGTH_SHORT).show();
+            }
+        }, year, month, day).show();
+    }
+
+    private void loadOrganizerInfo() {
+        db.collection("Organizers").document(deviceId).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        String email = doc.getString("Organizer_email");
+                        if (email != null && !email.isEmpty()) {
+                            organizerEmail = email;
+                        }
+                    } else {
+                        // Create organizer entry if not exists
+                        Map<String, Object> org = new HashMap<>();
+                        org.put("Organizer_id", deviceId);
+                        org.put("Organizer_email", organizerEmail);
+                        db.collection("Organizers").document(deviceId)
+                                .set(org, SetOptions.merge());
+                    }
+                });
+    }
+
+    private void createEvent() {
+        String title = safeText(inputEventName);
+        String desc = safeText(inputEventDescription);
+        String loc = safeText(inputEventLocation);
+        String cat = safeText(inputEventCategory);
+        String capStr = safeText(inputEventCapacity);
+
+        if (title.isEmpty() || loc.isEmpty() || capStr.isEmpty()) {
+            Toast.makeText(getContext(), "Please fill required fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int cap;
+        try {
+            cap = Integer.parseInt(capStr);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Invalid capacity", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String eventId = "EVT" + UUID.randomUUID().toString().substring(0, 5).toUpperCase();
+
+        Map<String, Object> event = new HashMap<>();
+        event.put("Event_id", eventId);
+        event.put("Event_title", title);
+        event.put("Event_description", desc);
+        event.put("Event_location", loc);
+        event.put("Event_category", cat);
+        event.put("Event_capacity", cap);
+        event.put("Event_startDate", startDate);
+        event.put("Event_endDate", endDate);
+        event.put("Event_posterUri", selectedImageUri != null ? selectedImageUri.toString() : "");
+        event.put("Event_organizerEmail", organizerEmail);
+        event.put("Event_status", "Draft");
+
+        WriteBatch batch = db.batch();
+        batch.set(db.collection("Events").document(eventId), event);
+
+        Map<String, Object> org = new HashMap<>();
+        org.put("Organizer_id", deviceId);
+        org.put("Organizer_email", organizerEmail);
+        batch.set(db.collection("Organizers").document(deviceId), org, SetOptions.merge());
+        batch.update(db.collection("Organizers").document(deviceId),
+                "Organizer_createdEventIDs", FieldValue.arrayUnion(eventId));
+
+        batch.commit().addOnSuccessListener(a -> {
+            Toast.makeText(getContext(), "Event created successfully!", Toast.LENGTH_SHORT).show();
+            requireActivity().getSupportFragmentManager().popBackStack();
+        }).addOnFailureListener(e ->
+                Toast.makeText(getContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private String safeText(EditText et) {
+        return et.getText() != null ? et.getText().toString().trim() : "";
     }
 }

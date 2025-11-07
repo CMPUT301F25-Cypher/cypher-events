@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static final boolean DEBUG_LOG_ADMIN_ID = false;
-    private static final boolean DEBUG_FIRESTORE_DUMMY_DATA = true;
+    private static final boolean DEBUG_FIRESTORE_DUMMY_DATA = false;
 
     private static final boolean CREATE_ADMIN = true; // will have to mess with the DummyData.adminSeed()
                                                       // to create a new admin (i suggest keep one for now)

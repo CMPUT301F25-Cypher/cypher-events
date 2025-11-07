@@ -76,9 +76,20 @@
             android:id="@+id/btnSaveProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/rounded_button_minimal"
             android:text="Save Changes"
-            android:textColor="#FFFFFF"
             android:textAllCaps="false"
-            android:background="@drawable/rounded_button_minimal" />
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnDeleteProfile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_button_minimal"
+            android:padding="1dp"
+            android:layout_marginTop="30sp"
+            android:text="DeleteProfile"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF" />
     </LinearLayout>
 </ScrollView>
