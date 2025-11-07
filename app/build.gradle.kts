@@ -52,6 +52,10 @@ dependencies {
     //implementation("com.google.firebase:firebase-firestore")
     //implementation("com.google.firebase:firebase-storage")
 
+
+    implementation("androidx.navigation:navigation-fragment:2.8.3")
+    implementation("androidx.navigation:navigation-ui:2.8.3")
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

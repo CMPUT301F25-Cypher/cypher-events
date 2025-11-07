@@ -12,10 +12,6 @@ import com.example.cypher_events.domain.model.Event;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Adapter to display a list of events for entrants.
- * Updated to match the new Event model with getters.
- */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.VH> {
 
     public interface OnClick {
@@ -51,7 +47,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.VH> {
     public void onBindViewHolder(@NonNull VH holder, int position) {
         Event event = data.get(position);
 
-        // Use the getters from your Event model
         holder.title.setText(event.getEvent_title());
         holder.subtitle.setText(event.getEvent_location());
 
