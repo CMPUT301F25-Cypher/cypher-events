@@ -157,6 +157,7 @@ public class DummyData {
 
         // Push to Firestore
         try {
+            firestore.push_DB("Entrants", key, entrant.toMap());
             firestore.push_DB("Admin", "CypherV1", admin.toMap());
             Log.d(TAG, "Cypher information has been uploaded.");
         } catch (Exception e) {
