@@ -10,7 +10,7 @@
         android:layout_width="353dp"
         android:layout_height="53dp"
         android:layout_marginStart="40dp"
-        android:text="@string/Event_page"
+        android:text="@string/event_page"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -31,7 +31,7 @@
         android:layout_height="59dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="28dp"
-        android:text="@string/Name"
+        android:text="@string/name_label"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/Event_image" />
@@ -42,7 +42,7 @@
         android:layout_height="59dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="48dp"
-        android:text="@string/Phone"
+        android:text="@string/phone_label"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/Name_ev_page" />
@@ -53,7 +53,7 @@
         android:layout_height="59dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="48dp"
-        android:text="@string/email"
+        android:text="@string/email_label"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/Phone_ev" />

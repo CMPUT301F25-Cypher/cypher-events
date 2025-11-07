@@ -29,4 +29,8 @@
     <string name="registration_opens">Registration opens</string>
     <string name="registration_closes">Registration closes</string>
     <string name="poster_image_cd">Event poster preview</string>
+    <string name="event_page">Event page</string>
+    <string name="name_label">Name</string>
+    <string name="phone_label">Phone</string>
+    <string name="email_label">Email</string>
 </resources>
