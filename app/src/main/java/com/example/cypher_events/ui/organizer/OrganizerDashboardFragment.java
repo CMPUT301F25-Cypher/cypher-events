@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ public class OrganizerDashboardFragment extends Fragment {
     private String deviceId;
     private TextView welcomeText;
     private Button btnCreateEvent, btnMyEvents;
+    private ImageButton btnSwitchEntrant;
 
     @Nullable
     @Override
@@ -46,11 +48,12 @@ public class OrganizerDashboardFragment extends Fragment {
         welcomeText = view.findViewById(R.id.tvWelcomeName);
         btnCreateEvent = view.findViewById(R.id.btnCreateEvent);
         btnMyEvents = view.findViewById(R.id.btnMyEvents);
+        btnSwitchEntrant = view.findViewById(R.id.btnAccount);
 
-        // Step 1: Pull Entrant Info First
+
         loadEntrantAndSyncOrganizer();
 
-        // Step 2: Navigate to CreateEventFragment
+
         btnCreateEvent.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
@@ -59,7 +62,7 @@ public class OrganizerDashboardFragment extends Fragment {
                     .commit();
         });
 
-        // Step 3: Navigate to MyEventsFragment
+
         btnMyEvents.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
@@ -67,9 +70,19 @@ public class OrganizerDashboardFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+
+        btnSwitchEntrant.setOnClickListener(v -> {
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.container, new com.example.cypher_events.ui.entrant.EntrantDashboardFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
     }
 
-    // --- Step 1: Load Entrant Info ---
+
     private void loadEntrantAndSyncOrganizer() {
         db.collection("Entrants").document(deviceId).get()
                 .addOnSuccessListener(entrantDoc -> {
