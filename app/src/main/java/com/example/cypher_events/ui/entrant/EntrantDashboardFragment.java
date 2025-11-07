@@ -6,22 +6,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import com.example.cypher_events.R;
+import com.example.cypher_events.ui.organizer.OrganizerDashboardFragment;
+
+// Import your own fragments below:
+import com.example.cypher_events.ui.entrant.UpdateProfileEntrantFragment;
+import com.example.cypher_events.ui.entrant.HistoryFragmentEntrant;
+import com.example.cypher_events.ui.entrant.EventDetailEntrantFragment;
 
 public class EntrantDashboardFragment extends Fragment {
 
-    @Nullable
-    @Override
+    @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        // Use the file name you actually have. You posted "entrant_dashboard_fragment.xml".
         return inflater.inflate(R.layout.entrant_dashboard_fragment, container, false);
     }
 
@@ -29,32 +34,44 @@ public class EntrantDashboardFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        NavController navController = Navigation.findNavController(view);
-
-        Button btnEvents = view.findViewById(R.id.btnEvents);
-        Button btnHistory = view.findViewById(R.id.btnShowHistory);
+        Button btnScanQr        = view.findViewById(R.id.buttonScanQr);
+        Button btnEvents        = view.findViewById(R.id.btnEvents);
+        Button btnShowHistory   = view.findViewById(R.id.btnShowHistory);
         Button btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
         ImageButton btnOrganizer = view.findViewById(R.id.btnOrganizer);
-        Button btnScanQr = view.findViewById(R.id.buttonScanQr);
+
+
+        // QR → toast only
+        if (btnScanQr != null) {
+            btnScanQr.setOnClickListener(v ->
+                    Toast.makeText(requireContext(), "QR scanning coming soon 🚧", Toast.LENGTH_SHORT).show()
+            );
+        }
 
         if (btnEvents != null) {
-            btnEvents.setOnClickListener(v ->
-                    navController.navigate(R.id.action_entrantDashboard_to_eventEntrant));
+            btnEvents.setOnClickListener(v -> open(new EventEntrantFragment()));
         }
-
-        if (btnHistory != null) {
-            btnHistory.setOnClickListener(v ->
-                    navController.navigate(R.id.action_entrantDashboard_to_historyEntrant));
+        if (btnShowHistory != null) {
+            btnShowHistory.setOnClickListener(v -> open(new HistoryFragmentEntrant()));
         }
-
         if (btnUpdateProfile != null) {
-            btnUpdateProfile.setOnClickListener(v ->
-                    navController.navigate(R.id.action_entrantDashboard_to_updateProfileEntrant));
+            btnUpdateProfile.setOnClickListener(v -> open(new UpdateProfileEntrantFragment()));
         }
-
         if (btnOrganizer != null) {
             btnOrganizer.setOnClickListener(v ->
-                    navController.navigate(R.id.action_entrantDashboard_to_organizerDashboard));
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, new com.example.cypher_events.ui.organizer.OrganizerDashboardFragment())
+                            .addToBackStack(null)   // so Back returns to Entrant
+                            .commit()
+            );
         }
+    }
+
+    private void open(Fragment f) {
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, f)
+                .addToBackStack(null)
+                .commit();
     }
 }

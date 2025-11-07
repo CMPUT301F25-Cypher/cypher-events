@@ -9,8 +9,6 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import com.example.cypher_events.R;
 
@@ -27,11 +25,9 @@ public class HistoryFragmentEntrant extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        NavController navController = Navigation.findNavController(view);
-        ImageButton backButton = view.findViewById(R.id.btnBack);
-        if (backButton != null) {
-            backButton.setOnClickListener(v -> navController.navigateUp());
-        }
+        ImageButton back = view.findViewById(R.id.btnBack);
+        if (back != null) back.setOnClickListener(v ->
+                requireActivity().getSupportFragmentManager().popBackStack()
+        );
     }
 }

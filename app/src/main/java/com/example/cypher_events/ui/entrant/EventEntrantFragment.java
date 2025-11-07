@@ -32,31 +32,44 @@ public class EventEntrantFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        NavController navController = Navigation.findNavController(view);
         RecyclerView recyclerView = view.findViewById(R.id.recyclerEvents);
         ImageButton backButton = view.findViewById(R.id.btnBack);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        // Back button: use fragment manager pop
+        if (backButton != null) {
+            backButton.setOnClickListener(v ->
+                    requireActivity().getSupportFragmentManager().popBackStack()
+            );
+        }
 
+        // Adapter setup
         EventAdapter adapter = new EventAdapter(eventId -> {
             Bundle bundle = new Bundle();
             bundle.putString("eventId", eventId);
-            navController.navigate(R.id.action_eventEntrant_to_eventDetailEntrant, bundle);
+
+            EventDetailEntrantFragment detailFragment = new EventDetailEntrantFragment();
+            detailFragment.setArguments(bundle);
+
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, detailFragment)
+                    .addToBackStack(null)
+                    .commit();
         });
 
         recyclerView.setAdapter(adapter);
 
-        // Optional: temporary dummy list for testing
+        // ✅ Dummy data for testing
         List<Event> dummyEvents = new ArrayList<>();
         dummyEvents.add(new Event(
                 "1",
                 "Music Night",
                 "A fun evening of music and performances",
                 "Community Hall",
-                System.currentTimeMillis(),                    // signup start
-                System.currentTimeMillis() + 86400000L,        // signup end (next day)
-                50                                             // capacity
+                System.currentTimeMillis(),
+                System.currentTimeMillis() + 86400000L,
+                50
         ));
         dummyEvents.add(new Event(
                 "2",
@@ -67,8 +80,7 @@ public class EventEntrantFragment extends Fragment {
                 System.currentTimeMillis() + 86400000L,
                 100
         ));
-        adapter.submit(dummyEvents);
 
-        backButton.setOnClickListener(v -> navController.navigateUp());
+        adapter.submit(dummyEvents);
     }
 }

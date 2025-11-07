@@ -11,8 +11,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import com.example.cypher_events.R;
 
@@ -30,19 +28,15 @@ public class UpdateProfileEntrantFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        NavController navController = Navigation.findNavController(view);
+        ImageButton back = view.findViewById(R.id.btnBack);
+        if (back != null) back.setOnClickListener(v ->
+                requireActivity().getSupportFragmentManager().popBackStack()
+        );
 
-        ImageButton backButton = view.findViewById(R.id.btnBack);
-        Button btnSave = view.findViewById(R.id.btnSaveProfile);
-
-        if (backButton != null) {
-            backButton.setOnClickListener(v -> navController.navigateUp());
-        }
-
-        if (btnSave != null) {
-            btnSave.setOnClickListener(v ->
-                    Toast.makeText(getContext(), "Profile updated successfully!", Toast.LENGTH_SHORT).show()
-            );
-        }
+        Button save = view.findViewById(R.id.btnSaveProfile);
+        if (save != null) save.setOnClickListener(v ->
+                Toast.makeText(requireContext(), "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+        );
     }
+
 }

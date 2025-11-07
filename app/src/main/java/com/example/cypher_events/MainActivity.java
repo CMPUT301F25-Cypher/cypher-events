@@ -45,32 +45,11 @@ public class MainActivity extends AppCompatActivity {
         // Load default fragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, new EntrantDashboardFragment())
+                    .replace(R.id.container, new com.example.cypher_events.ui.entrant.EntrantDashboardFragment())
                     .commit();
         }
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
 
-        bottomNav.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
-            int itemId = item.getItemId();
-
-            if (itemId == R.id.nav_home) {
-                selectedFragment = new EntrantDashboardFragment(); // Entrant
-            } else if (itemId == R.id.nav_notifications) {
-                selectedFragment = new OrganizerDashboardFragment(); // Organizer
-            } else if (itemId == R.id.nav_profile) {
-                selectedFragment = new ProfileFragment(); // Profile
-            }
-
-            if (selectedFragment != null) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, selectedFragment)
-                        .commit();
-            }
-
-            return true;
-        });
 
     }
 

@@ -38,6 +38,21 @@ public class OrganizerDashboardFragment extends Fragment {
         btnMyEvents = view.findViewById(R.id.btnMyEvents);
         btnAccount = view.findViewById(R.id.btnAccount);
 
+        if (btnAccount != null) {
+            btnAccount.setOnClickListener(v -> {
+                // If we came from Entrant, just go back;
+                // If not, replace with Entrant as a fallback.
+                var fm = requireActivity().getSupportFragmentManager();
+                if (fm.getBackStackEntryCount() > 0) {
+                    fm.popBackStack();
+                } else {
+                    fm.beginTransaction()
+                            .replace(R.id.container, new com.example.cypher_events.ui.entrant.EntrantDashboardFragment())
+                            .commit();
+                }
+            });
+        }
+
         // Example welcome text
         tvWelcomeName.setText("Welcome, John Doe");
 
