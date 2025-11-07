@@ -12,7 +12,6 @@ public class Enterant_actions {
         Ent_info_map.put("phone", phone);
         event.add(Ent_info_map);
         history.add(event_name);
-        //push to Db
     }
     public void remove_enterant_to_event_array(ArrayList<Map<String,Object>> event,String name, String email, int phone,String event_name,ArrayList<String> history){
         //call pull to db
