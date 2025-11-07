@@ -2,29 +2,22 @@ package com.example.cypher_events.ui.entrant;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.DatePicker;
-
+import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.cypher_events.R;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Calendar;
-
-/**
- * Dialog to filter events by interests and availability.
- */
-
-public class FilterDialogFragment extends DialogFragment{
+public class FilterDialogFragment extends DialogFragment {
 
     public interface FilterListener {
-        void onApply(List<String> interests, long startDateUtc, long endDateUtc);
+        void onFilterSelected(String category);
     }
 
     private FilterListener listener;
@@ -36,36 +29,29 @@ public class FilterDialogFragment extends DialogFragment{
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        Dialog dialog = new Dialog(getActivity());
-        dialog.setContentView(R.layout.dialog_filter);
+        View view = LayoutInflater.from(requireContext())
+                .inflate(R.layout.dialog_filter, null);
 
-        Button applyButton = dialog.findViewById(R.id.btnApply);
-        CheckBox music = dialog.findViewById(R.id.checkboxMusic);
-        CheckBox tech = dialog.findViewById(R.id.checkboxTech);
-        DatePicker startDate = dialog.findViewById(R.id.startDatePicker);
-        DatePicker endDate = dialog.findViewById(R.id.endDatePicker);
+        Spinner categorySpinner = view.findViewById(R.id.spinnerCategory);
+        Button applyButton = view.findViewById(R.id.btnApplyFilter);
+
+        String[] categories = {"All", "Sports", "Workshop", "Art", "Tech Talk"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, categories);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setAdapter(adapter);
 
         applyButton.setOnClickListener(v -> {
-            List<String> interests = new ArrayList<>();
-            if (music.isChecked()) interests.add("Music");
-            if (tech.isChecked()) interests.add("Tech");
-
-            // Convert DatePicker to UTC millis
-            Calendar startCal = Calendar.getInstance();
-            startCal.set(startDate.getYear(), startDate.getMonth(), startDate.getDayOfMonth(), 0, 0, 0);
-            startCal.set(Calendar.MILLISECOND, 0);
-            long startUtc = startCal.getTimeInMillis();
-
-            Calendar endCal = Calendar.getInstance();
-            endCal.set(endDate.getYear(), endDate.getMonth(), endDate.getDayOfMonth(), 23, 59, 59);
-            endCal.set(Calendar.MILLISECOND, 999);
-            long endUtc = endCal.getTimeInMillis();
-
-            if (listener != null) listener.onApply(interests, startUtc, endUtc);
+            if (listener != null) {
+                String selectedCategory = categorySpinner.getSelectedItem().toString();
+                listener.onFilterSelected(selectedCategory);
+            }
             dismiss();
         });
 
-        return dialog;
+        return new AlertDialog.Builder(requireContext())
+                .setView(view)
+                .setTitle("Filter Events")
+                .create();
     }
 }
-

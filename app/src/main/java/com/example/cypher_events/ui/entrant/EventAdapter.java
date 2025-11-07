@@ -1,127 +1,75 @@
-/**
- * EventAdapter.java
- *
- * Purpose:
- * RecyclerView adapter that binds Event objects to a list for entrant display.
- * Handles click events via OnClick interface callback.
- *
- * Outstanding Issues:
- * - Currently shows only title and location; additional fields may be added later.
- */
-
 package com.example.cypher_events.ui.entrant;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Button;
-
+import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cypher_events.R;
 import com.example.cypher_events.domain.model.Event;
-import com.example.cypher_events.domain.model.Entrant;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Adapter for displaying Event items in a RecyclerView.
- */
-public class EventAdapter extends RecyclerView.Adapter<EventAdapter.VH> {
+public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
-    /**Callback interface for clikc events on an Event item.*/
     public interface OnClick {
         void open(String eventId);
-        void accept(String eventId);
-        void decline(String eventId);
     }
 
-    private final List<Event> data = new ArrayList<>();
-    private final OnClick onClick;
-    private Entrant currentEntrant;
+    private List<Event> events = new ArrayList<>();
+    private final OnClick listener;
 
-    /**
-     * Constructs an EventAdapter.
-     * @param onClick callback invoked when an Event item is clicked.
-     */
-    public EventAdapter(OnClick onClick) {
-        this.onClick = onClick;
+    public EventAdapter(OnClick listener) {
+        this.listener = listener;
     }
 
-    public void setEntrant(Entrant entrant) {
-        this.currentEntrant = entrant;
+    public void submit(List<Event> updatedEvents) {
+        this.events = updatedEvents != null ? updatedEvents : new ArrayList<>();
         notifyDataSetChanged();
-    }
-
-    /** ViewHolder class for event list items. */
-    static class VH extends RecyclerView.ViewHolder {
-        TextView title, location;
-        Button btnAccept, btnDecline;
-        View buttonContainer;
-
-        VH(@NonNull View v) {
-            super(v);
-            title = v.findViewById(R.id.itemTitle);
-            location = v.findViewById(R.id.itemLocation);
-            btnAccept = v.findViewById(R.id.btnAccept);
-            btnDecline = v.findViewById(R.id.btnDecline);
-            buttonContainer = v.findViewById(R.id.itemButtonContainer);
-        }
     }
 
     @NonNull
     @Override
-    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
+    public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_event, parent, false);
-        return new VH(v);
+        return new EventViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VH holder, int position) {
-        Event event = data.get(position);
-        holder.title.setText(event.title);
-        holder.location.setText(event.location);
+    public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
+        Event event = events.get(position);
 
-        //show button container
-        holder.buttonContainer.setVisibility(View.VISIBLE);
+        holder.title.setText(event.getEvent_title());
+        holder.location.setText(event.getEvent_location());
+        holder.itemView.setOnClickListener(v -> listener.open(event.getEvent_id()));
 
-        //if entrant exists and has accepted/declined lists, reflect state
-        boolean accepted = false;
-        boolean declined = false;
-        if (currentEntrant != null) {
-            List<String> acceptedList = currentEntrant.getEntrant_acceptedEvents();
-            List<String> declinedList = currentEntrant.getEntrant_declinedEvents();
-            accepted = acceptedList != null && acceptedList.contains(event.id);
-            declined = declinedList != null && declinedList.contains(event.id);
-        }
-
-        //update buttons UI
-        holder.btnAccept.setEnabled(!accepted && !declined);
-        holder.btnAccept.setText(accepted ? "Accepted" : "Accept");
-        holder.btnDecline.setEnabled(!declined);
-        holder.btnDecline.setText(declined ? "Declined" : "Decline");
-
-        holder.itemView.setOnClickListener(view -> onClick.open(event.id));
-        holder.btnAccept.setOnClickListener(view -> onClick.accept(event.id));
-        holder.btnDecline.setOnClickListener(view -> onClick.decline(event.id));
+        // Optional placeholder image
+        holder.image.setImageResource(R.drawable.ic_launcher_background);
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return events.size();
     }
 
-    /**
-     * Replaces adapter's data with a new list of events and refreshes the view.
-     * @param events new list of Event objects.
-     */
-    public void submit(List<Event> events) {
-        data.clear();
-        if (events != null) data.addAll(events);
-        notifyDataSetChanged();
+    public static class EventViewHolder extends RecyclerView.ViewHolder {
+        ImageView image;
+        TextView title, location;
+        Button accept, decline;
+
+        public EventViewHolder(@NonNull View itemView) {
+            super(itemView);
+            image = itemView.findViewById(R.id.eventImage);
+            title = itemView.findViewById(R.id.itemTitle);
+            location = itemView.findViewById(R.id.itemLocation);
+            accept = itemView.findViewById(R.id.btnAccept);
+            decline = itemView.findViewById(R.id.btnDecline);
+        }
     }
 }
