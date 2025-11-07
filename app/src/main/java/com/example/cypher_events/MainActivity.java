@@ -42,6 +42,15 @@ public class MainActivity extends AppCompatActivity {
 
         logAdminDeviceId();
 
+
+        // user id
+        String deviceId = Settings.Secure.getString(
+                getContentResolver(),
+                Settings.Secure.ANDROID_ID
+        );
+
+
+
         // Load default fragment
         if (savedInstanceState == null) {
             getSupportFragmentManager()
