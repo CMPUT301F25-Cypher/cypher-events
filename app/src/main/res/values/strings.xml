@@ -1,7 +1,29 @@
 <resources>
     <string name="app_name">cypher-events</string>
-    <string name="Event_page">Event</string>
-    <string name="Name">Name</string>
-    <string name="Phone">Phone</string>
-    <string name="email">Email</string>
+    <string name="event_title_hint">Event title</string>
+    <string name="event_description_hint">Event description</string>
+    <string name="location_hint">Location (text)</string>
+    <string name="contact_hint">Contact (email/phone)</string>
+
+    <string name="registration_period_label">Registration period</string>
+    <string name="start_label">Start</string>
+    <string name="end_label">End</string>
+
+    <string name="pick_image">Pick image</string>
+    <string name="remove">Remove</string>
+
+    <string name="enable_geolocation">Enable geolocation</string>
+    <string name="geofence_radius_hint">Radius (m)</string>
+    <string name="pick_on_map">Pick on map</string>
+
+    <string name="enable_waitlist">Enable waiting list</string>
+    <string name="waitlist_limit_hint">Max on waiting list</string>
+
+    <string name="lottery_sample_hint">Lottery sample size</string>
+
+    <string name="generate_qr_after_creating">Generate QR after creating</string>
+    <string name="qr_preview_cd">QR preview</string>
+
+    <string name="exit_label">Exit</string>
+    <string name="create_event_label">Create event</string>
 </resources>
