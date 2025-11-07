@@ -65,7 +65,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.VH> {
         VH(@NonNull View v) {
             super(v);
             title = v.findViewById(R.id.itemTitle);
-            location = v.findViewById(R.id.itemSubtitle);
+            location = v.findViewById(R.id.itemLocation);
             btnAccept = v.findViewById(R.id.btnAccept);
             btnDecline = v.findViewById(R.id.btnDecline);
             buttonContainer = v.findViewById(R.id.itemButtonContainer);
