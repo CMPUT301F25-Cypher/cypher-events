@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cypher_events.R;
 import com.example.cypher_events.domain.model.Event;
+import com.example.cypher_events.domain.model.Entrant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.VH> {
 
     private final List<Event> data = new ArrayList<>();
     private final OnClick onClick;
+    private Entrant currentEntrant;
 
     /**
      * Constructs an EventAdapter.
@@ -49,10 +51,16 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.VH> {
         this.onClick = onClick;
     }
 
+    public void setEntrant(Entrant entrant) {
+        this.currentEntrant = entrant;
+        notifyDataSetChanged();
+    }
+
     /** ViewHolder class for event list items. */
     static class VH extends RecyclerView.ViewHolder {
         TextView title, location;
         Button btnAccept, btnDecline;
+        View buttonContainer;
 
         VH(@NonNull View v) {
             super(v);
@@ -60,6 +68,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.VH> {
             location = v.findViewById(R.id.itemSubtitle);
             btnAccept = v.findViewById(R.id.btnAccept);
             btnDecline = v.findViewById(R.id.btnDecline);
+            buttonContainer = v.findViewById(R.id.itemButtonContainer);
         }
     }
 
@@ -76,6 +85,25 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.VH> {
         Event event = data.get(position);
         holder.title.setText(event.title);
         holder.location.setText(event.location);
+
+        //show button container
+        holder.buttonContainer.setVisibility(View.VISIBLE);
+
+        //if entrant exists and has accepted/declined lists, reflect state
+        boolean accepted = false;
+        boolean declined = false;
+        if (currentEntrant != null) {
+            List<String> acceptedList = currentEntrant.getEntrant_acceptedEvents();
+            List<String> declinedList = currentEntrant.getEntrant_declinedEvents();
+            accepted = acceptedList != null && acceptedList.contains(event.id);
+            declined = declinedList != null && declinedList.contains(event.id);
+        }
+
+        //update buttons UI
+        holder.btnAccept.setEnabled(!accepted && !declined);
+        holder.btnAccept.setText(accepted ? "Accepted" : "Accept");
+        holder.btnDecline.setEnabled(!declined);
+        holder.btnDecline.setText(declined ? "Declined" : "Decline");
 
         holder.itemView.setOnClickListener(view -> onClick.open(event.id));
         holder.btnAccept.setOnClickListener(view -> onClick.accept(event.id));

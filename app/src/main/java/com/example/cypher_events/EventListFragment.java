@@ -13,7 +13,9 @@
 package com.example.cypher_events;
 
 import android.os.Bundle;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,12 +27,18 @@ import com.example.cypher_events.domain.model.Event;
 import com.example.cypher_events.domain.model.Entrant;
 import com.example.cypher_events.domain.model.Firestore;
 import com.example.cypher_events.ui.entrant.EventAdapter;
+
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+/**
+ * EventListFragment displays available events and allows user to accept/decline invitations.
+ */
 public class EventListFragment extends Fragment {
 
     private RecyclerView recyclerView;
@@ -39,6 +47,7 @@ public class EventListFragment extends Fragment {
     private List<Event> allEvents = new ArrayList<>();
     private Entrant currentEntrant; //load from firestore
     private Firestore firestoreHelper = new Firestore();
+    private String currentUserUid;
 
     @Nullable
     @Override
@@ -53,6 +62,13 @@ public class EventListFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerViewEvents);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        //get current user uid
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        } else {
+            currentUserUid = null;
+        }
+
         adapter = new EventAdapter(new EventAdapter.OnClick() {
             @Override
             public void open(String eventId) {
@@ -61,16 +77,31 @@ public class EventListFragment extends Fragment {
 
             @Override
             public void accept(String eventId) {
-                currentEntrant.getEntrant_acceptedEvents().add(eventId);
-                firestoreHelper.push_DB("entrants", currentEntrant.getEntrant_email(), currentEntrant.toMap());
+                if (currentEntrant == null) {
+                return;
+                }
+                if (currentEntrant.getEntrant_acceptedEvents() == null) {
+                    currentEntrant.setEntrant_acceptedEvents(new ArrayList<>());
+                }
             }
 
             @Override
             public void decline(String eventId) {
-                currentEntrant.getEntrant_declinedEvents().add(eventId);
-                firestoreHelper.push_DB("entrants", currentEntrant.getEntrant_email(), currentEntrant.toMap());
-                //remove from displayed list
-                allEvents.removeIf(e -> e.id.equals(eventId));
+                if (currentEntrant == null) {
+                    return;
+                }
+
+                if (currentEntrant.getEntrant_declinedEvents() == null) {
+                    currentEntrant.setEntrant_declinedEvents(new ArrayList<>());
+                }
+
+                if (!currentEntrant.getEntrant_declinedEvents().contains(eventId)) {
+                    currentEntrant.getEntrant_declinedEvents().add(eventId);
+                    String docId = (currentUserUid != null) ? currentUserUid : currentEntrant.getEntrant_email();
+                    firestoreHelper.push_DB("entrants", docId, currentEntrant.toMap());
+                }
+                //remove from displayed list (local UI)
+                allEvents.removeIf(e -> e.id != null && e.id.equals(eventId));
                 adapter.submit(allEvents);
             }
         });
@@ -94,6 +125,7 @@ public class EventListFragment extends Fragment {
                     allEvents.clear();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         Event event = doc.toObject(Event.class);
+                        if (event.id == null) event.id = doc.getId();
                         allEvents.add(event);
                     }
                     adapter.submit(allEvents);
@@ -102,11 +134,31 @@ public class EventListFragment extends Fragment {
     }
 
     private void fetchEntrant() {
-    String userId = FirebaseAuth.getCurrentUser().getEmail();
-    firestoreHelper.pull_db("entrants", userId).addOnSuccessListener(doc -> {
-        if (doc.exists()) {
-            currentEntrant = doc.toObject(Entrant.class);
+        // use currentUserUid where possible
+        String userId = (FirebaseAuth.getInstance().getCurrentUser() != null)
+                ? FirebaseAuth.getInstance().getCurrentUser().getUid()
+                : null;
+
+        if (userId == null) {
+            // redirect to login page if no user is signed in
+            return;
         }
-    }).addOnFailureListener(Throwable::printStackTrace);
+
+        firestoreHelper.pull_db("entrants", userId).addOnSuccessListener(doc -> {
+            if (doc.exists()) {
+                currentEntrant = doc.toObject(Entrant.class);
+
+                // Ensure lists are not null
+                if (currentEntrant.getEntrant_acceptedEvents() == null) {
+                    currentEntrant.setEntrant_acceptedEvents(new ArrayList<>());
+                }
+                if (currentEntrant.getEntrant_declinedEvents() == null) {
+                    currentEntrant.setEntrant_declinedEvents(new ArrayList<>());
+                }
+                if (currentEntrant.getEntrant_joinedEvents() == null) {
+                    currentEntrant.setEntrant_joinedEvents(new ArrayList<>());
+                }
+            }
+        }).addOnFailureListener(Throwable::printStackTrace);
     }
 }

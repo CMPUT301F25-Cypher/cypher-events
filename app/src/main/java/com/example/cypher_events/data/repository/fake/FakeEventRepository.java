@@ -17,10 +17,27 @@ public class FakeEventRepository implements EventRepository {
     private final Map<String, Event> store = new LinkedHashMap<>();
 
     public FakeEventRepository() {
-        Event e1 = new Event("e1","Campus Tour","Guided tour","CCIS",
-                now(-3600_000), now(+86_400_000), 50);
-        Event e2 = new Event("e2","Esports Night","Smash + Valorant","SUB",
-                now(-3600_000), now(+172_800_000), 32);
+        Event e1 = new Event(
+                "e1",
+                "Campus Tour",
+                "Guided tour",
+                "CCIS",
+                now(-3600_000),
+                now(+86_400_000),
+                50,
+                Arrays.asList("Music", "Tech")
+        );
+
+        Event e2 = new Event(
+                "e2",
+                "Esports Night",
+                "Smash + Valorant",
+                "SUB",
+                now(-3600_000),
+                now(+172_800_000),
+                32,
+                Arrays.asList("Gaming", "Tech")
+        );
         store.put(e1.id, e1);
         store.put(e2.id, e2);
     }

@@ -15,6 +15,7 @@ import com.example.cypher_events.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Calendar;
 
 /**
  * Dialog to filter events by interests and availability.
@@ -50,8 +51,15 @@ public class FilterDialogFragment extends DialogFragment{
             if (tech.isChecked()) interests.add("Tech");
 
             // Convert DatePicker to UTC millis
-            long startUtc = startDate.getYear() * 1000L;
-            long endUtc = endDate.getYear() * 1000L;
+            Calendar startCal = Calendar.getInstance();
+            startCal.set(startDate.getYear(), startDate.getMonth(), startDate.getDayOfMonth(), 0, 0, 0);
+            startCal.set(Calendar.MILLISECOND, 0);
+            long startUtc = startCal.getTimeInMillis();
+
+            Calendar endCal = Calendar.getInstance();
+            endCal.set(endDate.getYear(), endDate.getMonth(), endDate.getDayOfMonth(), 23, 59, 59);
+            endCal.set(Calendar.MILLISECOND, 999);
+            long endUtc = endCal.getTimeInMillis();
 
             if (listener != null) listener.onApply(interests, startUtc, endUtc);
             dismiss();
@@ -60,5 +68,4 @@ public class FilterDialogFragment extends DialogFragment{
         return dialog;
     }
 }
-    }
-}
+

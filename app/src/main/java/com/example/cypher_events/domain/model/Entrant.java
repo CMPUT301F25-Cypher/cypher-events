@@ -41,7 +41,7 @@ public class Entrant {
     }
 
     public void setEntrant_name(String Entrant_name) {
-        Entrant_name = Entrant_name;
+        this.Entrant_name = Entrant_name;
     }
 
     public String getEntrant_email() {
@@ -49,15 +49,15 @@ public class Entrant {
     }
 
     public void setEntrant_email(String Entrant_email) {
-        Entrant_email = Entrant_email;
+        this.Entrant_email = Entrant_email;
     }
 
     public int getEntrant_phone() {
         return Entrant_phone;
     }
 
-    public void setEntrant_phone(String Entrant_phone) {
-        Entrant_phone = Entrant_phone;
+    public void setEntrant_phone(int Entrant_phone) {
+        this.Entrant_phone = Entrant_phone;
     }
 
     public boolean isEntrant_notificationsEnabled() {
@@ -65,7 +65,7 @@ public class Entrant {
     }
 
     public void setEntrant_notificationsEnabled(boolean Entrant_notificationsEnabled) {
-        Entrant_notificationsEnabled = Entrant_notificationsEnabled;
+        this.Entrant_notificationsEnabled = Entrant_notificationsEnabled;
     }
 
     public boolean isEntrant_locationPermissionGranted() {
@@ -73,7 +73,7 @@ public class Entrant {
     }
 
     public void setEntrant_locationPermissionGranted(boolean Entrant_locationPermissionGranted) {
-        Entrant_locationPermissionGranted = Entrant_locationPermissionGranted;
+        this.Entrant_locationPermissionGranted = Entrant_locationPermissionGranted;
     }
 
     public List<String> getEntrant_joinedEvents() {
@@ -81,7 +81,7 @@ public class Entrant {
     }
 
     public void setEntrant_joinedEvents(List<String> Entrant_joinedEvents) {
-        Entrant_joinedEvents = Entrant_joinedEvents;
+        this.Entrant_joinedEvents = Entrant_joinedEvents;
     }
 
     public List<String> getEntrant_acceptedEvents() {
@@ -89,7 +89,7 @@ public class Entrant {
     }
 
     public void setEntrant_acceptedEvents(List<String> Entrant_acceptedEvents) {
-        Entrant_acceptedEvents = Entrant_acceptedEvents;
+        this.Entrant_acceptedEvents = Entrant_acceptedEvents;
     }
 
     public List<String> getEntrant_declinedEvents() {
@@ -97,7 +97,7 @@ public class Entrant {
     }
 
     public void setEntrant_declinedEvents(List<String> Entrant_declinedEvents) {
-        Entrant_declinedEvents = Entrant_declinedEvents;
+        this.Entrant_declinedEvents = Entrant_declinedEvents;
     }
 
     public double getEntrant_latitude() {
@@ -105,7 +105,7 @@ public class Entrant {
     }
 
     public void setEntrant_latitude(double Entrant_latitude) {
-        Entrant_latitude = Entrant_latitude;
+        this.Entrant_latitude = Entrant_latitude;
     }
 
     public double getEntrant_longitude() {
@@ -113,7 +113,7 @@ public class Entrant {
     }
 
     public void setEntrant_longitude(double Entrant_longitude) {
-        Entrant_longitude = Entrant_longitude;
+        this.Entrant_longitude = Entrant_longitude;
     }
 
     public String getEntrant_status() {
@@ -121,16 +121,8 @@ public class Entrant {
     }
 
     public void setEntrant_status(String Entrant_status) {
-        Entrant_status = Entrant_status;
+        this.Entrant_status = Entrant_status;
     }
-
-    public Entrant(){}
-    // will add other attributes later
-
-    /**
-     * Converts the Entrant object into a key-value map for Firebase storage.
-     * @return Map containing entrant details for database insertion.
-     */
 
     public Map<String, Object> toMap() {
         Map<String, Object> Entrant_firebase_info = new HashMap<>();

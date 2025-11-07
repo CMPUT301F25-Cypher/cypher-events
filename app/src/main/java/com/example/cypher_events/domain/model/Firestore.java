@@ -26,8 +26,7 @@ public class Firestore {
      * @param obj_id Document ID to create or overwrite.
      * @param db Map containing object data.
      */
-    public void push_DB(String obj_name, String obj_id, Map<String,Object> db){
-        FirebaseFirestore database=FirebaseFirestore.getInstance();
+    public void push_DB(String obj_name, String obj_id, Map<String,Object> db) {
         database.collection(obj_name).document(obj_id).set(db);
     }
 
