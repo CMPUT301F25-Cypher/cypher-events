@@ -12,7 +12,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 
 import com.example.cypher_events.R;
 
@@ -29,7 +28,6 @@ public class UpdateEventFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_update_event, container, false);
 
-        // Initialize fields
         etEventName = view.findViewById(R.id.etEventName);
         etDescription = view.findViewById(R.id.etDescription);
         etLocation = view.findViewById(R.id.etLocation);
@@ -37,24 +35,36 @@ public class UpdateEventFragment extends Fragment {
         btnSaveChanges = view.findViewById(R.id.btnSaveChanges);
         btnBackUpdate = view.findViewById(R.id.btnBackUpdate);
 
-        // Go back
-        btnBackUpdate.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
+        if (btnBackUpdate != null) {
+            btnBackUpdate.setOnClickListener(v ->
+                    requireActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .setReorderingAllowed(true)
+                            .replace(R.id.container, new MyEventsFragment())
+                            .commit());
+        }
 
-        // Save logic
-        btnSaveChanges.setOnClickListener(v -> {
-            String name = etEventName.getText().toString().trim();
-            String desc = etDescription.getText().toString().trim();
-            String loc = etLocation.getText().toString().trim();
-            String cat = etCategory.getText().toString().trim();
+        if (btnSaveChanges != null) {
+            btnSaveChanges.setOnClickListener(v -> {
+                String name = etEventName.getText().toString().trim();
+                String desc = etDescription.getText().toString().trim();
+                String loc = etLocation.getText().toString().trim();
+                String cat = etCategory.getText().toString().trim();
 
-            if (name.isEmpty() || desc.isEmpty()) {
-                Toast.makeText(getContext(), "Please fill all details.", Toast.LENGTH_SHORT).show();
-            } else {
-                // TODO: Save to Firestore
-                Toast.makeText(getContext(), "Changes saved successfully!", Toast.LENGTH_SHORT).show();
-                Navigation.findNavController(v).popBackStack();
-            }
-        });
+                if (name.isEmpty() || desc.isEmpty() || loc.isEmpty() || cat.isEmpty()) {
+                    Toast.makeText(getContext(), "Please fill all details.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Changes saved successfully!", Toast.LENGTH_SHORT).show();
+
+                    // Return to My Events after saving
+                    requireActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .setReorderingAllowed(true)
+                            .replace(R.id.container, new MyEventsFragment())
+                            .commit();
+                }
+            });
+        }
 
         return view;
     }

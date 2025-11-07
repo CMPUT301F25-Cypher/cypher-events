@@ -28,47 +28,39 @@ public class OrganizerDashboardFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.organiser_dashboard, container, false);
 
-        // Initialize UI
         tvWelcomeName = view.findViewById(R.id.tvWelcomeName);
         btnCreateEvent = view.findViewById(R.id.btnCreateEvent);
         btnMyEvents = view.findViewById(R.id.btnMyEvents);
         btnAccount = view.findViewById(R.id.btnAccount);
 
-        // Example welcome text (replace with actual username if available)
         tvWelcomeName.setText("Welcome, John Doe");
 
-        // Create Event
         if (btnCreateEvent != null) {
-            btnCreateEvent.setOnClickListener(v -> {
-                requireActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .setReorderingAllowed(true)
-                        .replace(R.id.container, new CreateEventFragment())
-                        .commit();
-            });
+            btnCreateEvent.setOnClickListener(v ->
+                    requireActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .setReorderingAllowed(true)
+                            .replace(R.id.container, new CreateEventFragment())
+                            .commit());
         }
 
-        // My Events
         if (btnMyEvents != null) {
-            btnMyEvents.setOnClickListener(v -> {
-                requireActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .setReorderingAllowed(true)
-                        .replace(R.id.container, new MyEventsFragment())
-                        .commit();
-            });
+            btnMyEvents.setOnClickListener(v ->
+                    requireActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .setReorderingAllowed(true)
+                            .replace(R.id.container, new MyEventsFragment())
+                            .commit());
         }
 
-        // Account Button
         if (btnAccount != null) {
-            btnAccount.setOnClickListener(v -> {
-                requireActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .setReorderingAllowed(true)
-                        .replace(R.id.container,
-                                new com.example.cypher_events.ui.entrant.EntrantDashboardFragment())
-                        .commit();
-            });
+            btnAccount.setOnClickListener(v ->
+                    requireActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .setReorderingAllowed(true)
+                            .replace(R.id.container,
+                                    new com.example.cypher_events.ui.entrant.EntrantDashboardFragment())
+                            .commit());
         }
 
         return view;

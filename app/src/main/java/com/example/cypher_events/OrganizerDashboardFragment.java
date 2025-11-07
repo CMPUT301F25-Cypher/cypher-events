@@ -15,4 +15,5 @@ public class OrganizerDashboardFragment extends Fragment {
         // Inflate the fragment layout XML
         return inflater.inflate(R.layout.organizer_dashboard_fragment, container, false);
     }
+
 }
