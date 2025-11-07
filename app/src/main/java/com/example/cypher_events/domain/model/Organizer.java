@@ -4,77 +4,103 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Organizer class
+ * Each Organizer wraps one Entrant object (its own user identity)
+ * and adds Organizer-specific fields like event management & notifications.
+ */
 public class Organizer {
 
-    private String Organizer_name;
-    private String Organizer_email;
-    private String Organizer_phone;
+    // The Entrant profile representing this Organizer
+    private Entrant Organizer;
+    private String Organizer_id; // same as device ID
 
-    private String Organizer_status;
-    private List<String> Organizer_createdEvents;
-    private List<String> Organizer_activeEvents;
-    private List<String> Organizer_completedEvents;
+    // Organizer-specific event and notification data
+    private List<Event> Organizer_createdEvents;
+    private List<Event> Organizer_activeEvents;
+    private List<Event> Organizer_completedEvents;
 
     private boolean Organizer_notificationsEnabled;
     private List<String> Organizer_sentNotifications;
     private String Organizer_removalReason;
 
+
+    // Constructors
+
     public Organizer() {}
 
-    public String getOrganizer_name() {
-        return Organizer_name;
+    public Organizer(Entrant entrant) {
+        this.Organizer = entrant;
+        this.Organizer_id = entrant.getEntrant_id();
     }
 
-    public void setOrganizer_name(String organizer_name) {
-        Organizer_name = organizer_name;
+
+    // Delegation: Accessor methods to Entrant fields
+    // So organizer.getName() → organizer.getOrganizer().getEntrant_name()
+
+
+    public String getOrganizer_id() {
+        return Organizer_id;
     }
 
-    public String getOrganizer_email() {
-        return Organizer_email;
+    public Entrant getOrganizer() {
+        return Organizer;
     }
 
-    public void setOrganizer_email(String organizer_email) {
-        Organizer_email = organizer_email;
+    public void setOrganizer(Entrant organizer) {
+        this.Organizer = organizer;
     }
 
-    public String getOrganizer_phone() {
-        return Organizer_phone;
+    // For convenience: shortcuts to Entrant fields
+    public String getName() {
+        return Organizer != null ? Organizer.getEntrant_name() : null;
     }
 
-    public void setOrganizer_phone(String organizer_phone) {
-        Organizer_phone = organizer_phone;
+    public String getEmail() {
+        return Organizer != null ? Organizer.getEntrant_email() : null;
     }
 
-    public String getOrganizer_status() {
-        return Organizer_status;
+    public String getPhone() {
+        return Organizer != null ? Organizer.getEntrant_phone() : null;
     }
 
-    public void setOrganizer_status(String organizer_status) {
-        Organizer_status = organizer_status;
+    public double getLatitude() {
+        return Organizer != null ? Organizer.getEntrant_latitude() : 0.0;
     }
 
-    public List<String> getOrganizer_createdEvents() {
+    public double getLongitude() {
+        return Organizer != null ? Organizer.getEntrant_longitude() : 0.0;
+    }
+
+    public boolean isAdmin() {
+        return Organizer != null && Organizer.isEntrant_isAdmin();
+    }
+
+
+    // Organizer-specific fields
+
+    public List<Event> getOrganizer_createdEvents() {
         return Organizer_createdEvents;
     }
 
-    public void setOrganizer_createdEvents(List<String> organizer_createdEvents) {
-        Organizer_createdEvents = organizer_createdEvents;
+    public void setOrganizer_createdEvents(List<Event> organizer_createdEvents) {
+        this.Organizer_createdEvents = organizer_createdEvents;
     }
 
-    public List<String> getOrganizer_activeEvents() {
+    public List<Event> getOrganizer_activeEvents() {
         return Organizer_activeEvents;
     }
 
-    public void setOrganizer_activeEvents(List<String> organizer_activeEvents) {
-        Organizer_activeEvents = organizer_activeEvents;
+    public void setOrganizer_activeEvents(List<Event> organizer_activeEvents) {
+        this.Organizer_activeEvents = organizer_activeEvents;
     }
 
-    public List<String> getOrganizer_completedEvents() {
+    public List<Event> getOrganizer_completedEvents() {
         return Organizer_completedEvents;
     }
 
-    public void setOrganizer_completedEvents(List<String> organizer_completedEvents) {
-        Organizer_completedEvents = organizer_completedEvents;
+    public void setOrganizer_completedEvents(List<Event> organizer_completedEvents) {
+        this.Organizer_completedEvents = organizer_completedEvents;
     }
 
     public boolean isOrganizer_notificationsEnabled() {
@@ -82,7 +108,7 @@ public class Organizer {
     }
 
     public void setOrganizer_notificationsEnabled(boolean organizer_notificationsEnabled) {
-        Organizer_notificationsEnabled = organizer_notificationsEnabled;
+        this.Organizer_notificationsEnabled = organizer_notificationsEnabled;
     }
 
     public List<String> getOrganizer_sentNotifications() {
@@ -90,7 +116,7 @@ public class Organizer {
     }
 
     public void setOrganizer_sentNotifications(List<String> organizer_sentNotifications) {
-        Organizer_sentNotifications = organizer_sentNotifications;
+        this.Organizer_sentNotifications = organizer_sentNotifications;
     }
 
     public String getOrganizer_removalReason() {
@@ -98,21 +124,34 @@ public class Organizer {
     }
 
     public void setOrganizer_removalReason(String organizer_removalReason) {
-        Organizer_removalReason = organizer_removalReason;
+        this.Organizer_removalReason = organizer_removalReason;
     }
 
+    private List<String> extractEventIds(List<Event> events) {
+        List<String> ids = new java.util.ArrayList<>();
+        if (events != null) {
+            for (Event e : events) {
+                ids.add(e.getEvent_id());
+            }
+        }
+        return ids;
+    }
+
+
+    // Firebase mapping
     public Map<String, Object> toMap() {
-        Map<String, Object> Organizer_firebase_info = new HashMap<>();
-        Organizer_firebase_info.put("Organizer_name", Organizer_name);
-        Organizer_firebase_info.put("Organizer_email", Organizer_email);
-        Organizer_firebase_info.put("Organizer_phone", Organizer_phone);
-        Organizer_firebase_info.put("Organizer_status", Organizer_status);
-        Organizer_firebase_info.put("Organizer_createdEvents", Organizer_createdEvents);
-        Organizer_firebase_info.put("Organizer_activeEvents", Organizer_activeEvents);
-        Organizer_firebase_info.put("Organizer_completedEvents", Organizer_completedEvents);
-        Organizer_firebase_info.put("Organizer_notificationsEnabled", Organizer_notificationsEnabled);
-        Organizer_firebase_info.put("Organizer_sentNotifications", Organizer_sentNotifications);
-        Organizer_firebase_info.put("Organizer_removalReason", Organizer_removalReason);
-        return Organizer_firebase_info;
+        Map<String, Object> map = new HashMap<>();
+        map.put("Organizer_id", Organizer_id);
+        map.put("Organizer_email", getEmail());
+        map.put("Organizer_notificationsEnabled", Organizer_notificationsEnabled);
+        map.put("Organizer_removalReason", Organizer_removalReason);
+
+        // Store event IDs instead of full event objects
+        map.put("Organizer_createdEventIDs", extractEventIds(Organizer_createdEvents));
+        map.put("Organizer_activeEventIDs", extractEventIds(Organizer_activeEvents));
+        map.put("Organizer_completedEventIDs", extractEventIds(Organizer_completedEvents));
+
+        map.put("Organizer_sentNotifications", Organizer_sentNotifications);
+        return map;
     }
 }
