@@ -1,75 +1,85 @@
 package com.example.cypher_events;
 
 import android.os.Bundle;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
 import com.example.cypher_events.R;
 import com.example.cypher_events.domain.model.Notification;
-import com.example.cypher_events.domain.model.NotificationItem;
 import com.example.cypher_events.ui.entrant.NotificationAdapter;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotificationFragment extends Fragment {
+public class NotificationsFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private NotificationAdapter adapter;
-    private List<Notification> notificationList;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final FirebaseAuth auth = FirebaseAuth.getInstance();
+    private List<Notification> notificationsList;
+    private TextView textEmptyState;
 
-    @Nullable
+    private DatabaseReference notificationsRef;
+
+    public NotificationsFragment() {
+        // Required empty constructor
+    }
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_notification, container, false);
-        recyclerView = view.findViewById(R.id.recyclerNotifications);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_notification, container, false);
+    }
 
-        notificationList = new ArrayList<>();
-        adapter = new NotificationAdapter();
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        recyclerView = view.findViewById(R.id.recyclerNotifications);
+        textEmptyState = view.findViewById(R.id.textEmptyState);
+
+        notificationsList = new ArrayList<>();
+        adapter = new NotificationAdapter(notificationsList);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
-        db = FirebaseFirestore.getInstance();
+        notificationsRef = FirebaseDatabase.getInstance().getReference("notifications");
 
         loadNotifications();
-        return view;
     }
 
     private void loadNotifications() {
-        String entrantId = "CURRENT_ENTRANT_ID"; // Replace with actual logged-in entrant ID
+        notificationsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                notificationsList.clear();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Notification notification = child.getValue(Notification.class);
+                    notificationsList.add(notification);
+                }
+                adapter.notifyDataSetChanged();
 
-        db.collection("entrants")
-                .document(entrantId)
-                .collection("notifications")
-                .orderBy("timestamp")
-                .addSnapshotListener((QuerySnapshot snapshots, FirebaseFirestore e) -> {
-                    if (e != null) return;
+                // Show empty state if no notifications
+                textEmptyState.setVisibility(notificationsList.isEmpty() ? View.VISIBLE : View.GONE);
+            }
 
-                    notificationList.clear();
-                    if (snapshots != null) {
-                        for (DocumentChange docChange : snapshots.getDocumentChanges()) {
-                            Notification notification = docChange.getDocument().toObject(Notification.class);
-                            notificationList.add(notification);
-                        }
-                        adapter.updateList(notificationList);
-                    }
-                });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error if needed
+            }
+        });
     }
 }

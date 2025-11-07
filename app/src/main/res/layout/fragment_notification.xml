@@ -6,29 +6,26 @@
     android:layout_height="match_parent"
     android:padding="12dp">
 
-    <!-- RecyclerView for notifications -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerNotifications"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:clipToPadding="false"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:clipToPadding="false"/>
 
-    <!-- Empty state when there are no notifications -->
     <TextView
         android:id="@+id/textEmptyState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="No notifications yet!"
-        android:textSize="16sp"
         android:textColor="@android:color/darker_gray"
+        android:textSize="16sp"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
+        app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
