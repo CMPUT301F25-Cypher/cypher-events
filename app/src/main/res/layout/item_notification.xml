@@ -4,8 +4,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="12dp"
-    android:background="@drawable/rounded_background"
-    android:layout_marginBottom="8dp">
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/rounded_background">
 
     <TextView
         android:id="@+id/textTitle"
@@ -20,7 +20,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        android:textColor="@color/text_primary" />
+        android:textColor="@color/text_primary"
+        android:layout_marginTop="2dp" />
 
     <TextView
         android:id="@+id/textTimestamp"
@@ -30,3 +31,4 @@
         android:textColor="@color/text_secondary"
         android:layout_marginTop="4dp" />
 </LinearLayout>
+

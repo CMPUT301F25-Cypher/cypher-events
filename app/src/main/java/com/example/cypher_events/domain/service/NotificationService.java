@@ -1,22 +1,34 @@
 package com.example.cypher_events.domain.service;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.cypher_events.domain.model.Notification;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class NotificationService {
-    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db;
 
-    public void sendNotification(String userId, String title, String message) {
-        Map<String, Object> notification = new HashMap<>();
-        notification.put("title", title);
-        notification.put("message", message);
-        notification.put("timestamp", System.currentTimeMillis());
-        notification.put("isRead", false);
+    public NotificationService() {
+        db = FirebaseFirestore.getInstance();
+    }
 
-        db.collection("users")
-                .document(userId)
+    public void sendWinnerNotification(String entrantId, String eventName) {
+        String title = "Congratulations!";
+        String message = "You won the lottery for " + eventName;
+
+        Notification notification = new Notification(
+                UUID.randomUUID().toString(),
+                title,
+                message,
+                System.currentTimeMillis()
+        );
+
+        db.collection("entrants")
+                .document(entrantId)
                 .collection("notifications")
-                .add(notification);
+                .document(notification.getId())
+                .set(notification.toMap());
     }
 }

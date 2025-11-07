@@ -1,45 +1,31 @@
 package com.example.cypher_events.domain.service;
 
-import com.google.firebase.firestore.FirebaseFirestore;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LotteryResultService {
-    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final LotteryService lotteryService = new DefaultLotteryService();
-    private final NotificationService notificationService = new NotificationService();
 
-    public void executeLottery(String eventId, List<String> entrantUids, int winnersCount, Long seed) {
-        if (entrantUids == null || entrantUids.isEmpty()) return;
+    private final DefaultLotteryService lotteryService = new DefaultLotteryService();
+    private final NotifyWinnerService winningService = new NotifyWinnerService();
+    private final NotifyNotChosenService notChosenService = new NotifyNotChosenService();
 
-        // Draw random winners
-        List<String> winners = lotteryService.draw(entrantUids, winnersCount, seed);
+    /**
+     * Execute lottery and notify entrants.
+     * @param allEntrants list of all entrant IDs
+     * @param numberOfWinners number of winners to select
+     */
+    public void executeLottery(List<String> allEntrants, int numberOfWinners) {
+        if (allEntrants == null || allEntrants.isEmpty()) return;
 
-        // Notify and update Firestore
-        for (String uid : entrantUids) {
-            boolean isWinner = winners.contains(uid);
-            updateEntrantStatus(eventId, uid, isWinner ? "winner" : "not_chosen");
+        // Draw winners
+        List<String> winners = lotteryService.draw(allEntrants, numberOfWinners, null);
 
-            if (isWinner) {
-                notificationService.sendNotification(
-                        uid,
-                        "🎉 You Won the Lottery!",
-                        "Congratulations! You've been selected for event " + eventId + "."
-                );
-            } else {
-                notificationService.sendNotification(
-                        uid,
-                        "Better Luck Next Time",
-                        "Unfortunately, you were not selected for event " + eventId + "."
-                );
-            }
-        }
-    }
+        // Notify winners
+        winningService.sendWinningNotifications(winners);
 
-    private void updateEntrantStatus(String eventId, String userId, String status) {
-        db.collection("events")
-                .document(eventId)
-                .collection("entrants")
-                .document(userId)
-                .update("status", status);
+        // Notify not chosen entrants
+        List<String> notChosen = new ArrayList<>(allEntrants);
+        notChosen.removeAll(winners);
+        notChosenService.sendNotChosenNotifications(notChosen);
     }
 }
