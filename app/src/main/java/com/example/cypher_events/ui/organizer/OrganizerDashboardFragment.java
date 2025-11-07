@@ -2,20 +2,15 @@ package com.example.cypher_events.ui.organizer;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import com.example.cypher_events.R;
 
@@ -30,43 +25,51 @@ public class OrganizerDashboardFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.organiser_dashboard, container, false);
 
-        // Initialize
+        // Initialize UI
         tvWelcomeName = view.findViewById(R.id.tvWelcomeName);
         btnCreateEvent = view.findViewById(R.id.btnCreateEvent);
         btnMyEvents = view.findViewById(R.id.btnMyEvents);
         btnAccount = view.findViewById(R.id.btnAccount);
 
-        if (btnAccount != null) {
-            btnAccount.setOnClickListener(v -> {
-                // If we came from Entrant, just go back;
-                // If not, replace with Entrant as a fallback.
-                var fm = requireActivity().getSupportFragmentManager();
-                if (fm.getBackStackEntryCount() > 0) {
-                    fm.popBackStack();
-                } else {
-                    fm.beginTransaction()
-                            .replace(R.id.container, new com.example.cypher_events.ui.entrant.EntrantDashboardFragment())
-                            .commit();
-                }
+        // Example welcome text (replace with actual username if available)
+        tvWelcomeName.setText("Welcome, John Doe");
+
+        // Create Event
+        if (btnCreateEvent != null) {
+            btnCreateEvent.setOnClickListener(v -> {
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true)
+                        .replace(R.id.container, new CreateEventFragment())
+                        .commit();
             });
         }
 
-        // Example welcome text
-        tvWelcomeName.setText("Welcome, John Doe");
+        // My Events
+        if (btnMyEvents != null) {
+            btnMyEvents.setOnClickListener(v -> {
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true)
+                        .replace(R.id.container, new MyEventsFragment())
+                        .commit();
+            });
+        }
 
-        // Click listeners
-        btnCreateEvent.setOnClickListener(v ->
-                Navigation.findNavController(v).navigate(R.id.action_organizerDashboard_to_createEventFragment));
-
-        btnMyEvents.setOnClickListener(v ->
-                Navigation.findNavController(v).navigate(R.id.action_organizerDashboard_to_myEventsFragment));
-
-        btnAccount.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Switching to Entrant Dashboard", Toast.LENGTH_SHORT).show();
-            Navigation.findNavController(v).navigate(R.id.action_organizerDashboard_to_entrantDashboardFragment);
-        });
+        // Account Button
+        if (btnAccount != null) {
+            btnAccount.setOnClickListener(v -> {
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true)
+                        .replace(R.id.container,
+                                new com.example.cypher_events.ui.entrant.EntrantDashboardFragment())
+                        .commit();
+            });
+        }
 
         return view;
     }

@@ -32,10 +32,16 @@ public class EventDetailEntrantFragment extends Fragment {
                 requireActivity().getSupportFragmentManager().popBackStack()
         );
 
-        Button join = view.findViewById(R.id.btnJoinWaitlist);
-        if (join != null) join.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Joined waiting list!", Toast.LENGTH_SHORT).show()
-        );
+        ImageButton backButton = view.findViewById(R.id.btnBack);
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> {
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true)
+                        .replace(R.id.container, new com.example.cypher_events.ui.entrant.EntrantDashboardFragment())
+                        .commit(); // no addToBackStack -> always lands on Entrant home
+            });
+        }
 
         // (Keep your Accept/Decline wiring as-is if you like.)
     }

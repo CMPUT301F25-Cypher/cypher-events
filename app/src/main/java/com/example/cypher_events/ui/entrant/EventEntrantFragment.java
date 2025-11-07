@@ -37,11 +37,15 @@ public class EventEntrantFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Back button: use fragment manager pop
+
         if (backButton != null) {
-            backButton.setOnClickListener(v ->
-                    requireActivity().getSupportFragmentManager().popBackStack()
-            );
+            backButton.setOnClickListener(v -> {
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true)
+                        .replace(R.id.container, new com.example.cypher_events.ui.entrant.EntrantDashboardFragment())
+                        .commit(); // no addToBackStack -> always lands on Entrant home
+            });
         }
 
         // Adapter setup

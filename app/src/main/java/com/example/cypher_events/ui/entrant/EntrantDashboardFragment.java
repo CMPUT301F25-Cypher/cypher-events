@@ -58,12 +58,14 @@ public class EntrantDashboardFragment extends Fragment {
             btnUpdateProfile.setOnClickListener(v -> open(new UpdateProfileEntrantFragment()));
         }
         if (btnOrganizer != null) {
-            btnOrganizer.setOnClickListener(v ->
-                    requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, new com.example.cypher_events.ui.organizer.OrganizerDashboardFragment())
-                            .addToBackStack(null)   // so Back returns to Entrant
-                            .commit()
-            );
+            btnOrganizer.setOnClickListener(v -> {
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true)
+                        .replace(R.id.container, new com.example.cypher_events.ui.organizer.OrganizerDashboardFragment())
+                        .commit(); // hard switch; no back stack needed
+                android.util.Log.d("EntrantDash","btnOrganizer=" + (btnOrganizer!=null));
+            });
         }
     }
 
