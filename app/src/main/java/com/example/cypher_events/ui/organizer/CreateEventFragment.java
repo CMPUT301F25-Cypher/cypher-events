@@ -132,15 +132,15 @@ public class CreateEventFragment extends Fragment {
         if (regStartUtc == null || regEndUtc == null) { toast("Please set registration open and close."); return; }
         if (regEndUtc < regStartUtc) { toast("Registration must close after it opens."); return; }
 
-        // build Event model (use your existing long fields)
+
         Event event = new Event();
-        event.setEvent_id(null); // Firestore will assign; you can set later from docRef.getId()
+        event.setEvent_id(null);
         event.setEvent_title(title);
         event.setEvent_description(desc);
         event.setEvent_location(loc);
         event.setEvent_signupStartUtc(regStartUtc);
         event.setEvent_signupEndUtc(regEndUtc);
-        // optional fields you may have:
+        // optional fields
         // event.setEvent_status("Open");
         // event.setEvent_category(...);
         // event.setEvent_capacity(parseIntSafe(etLotterySample or a capacity field if you add one));
