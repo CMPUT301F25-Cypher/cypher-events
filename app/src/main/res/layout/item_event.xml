@@ -2,20 +2,50 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:padding="12dp"
     android:orientation="vertical"
+    android:background="?attr/selectableItemBackground"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!-- Event title -->
     <TextView
         android:id="@+id/itemTitle"
         android:textStyle="bold"
         android:textSize="16sp"
+        android:textColor="@android:color/black"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
+    <!-- Location or subtitle -->
     <TextView
         android:id="@+id/itemSubtitle"
         android:textSize="14sp"
         android:textColor="#666"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
+
+    <!-- Buttons for invitation actions -->
+    <LinearLayout
+        android:id="@+id/itemButtonContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:layout_marginTop="6dp">
+
+        <Button
+            android:id="@+id/btnAccept"
+            android:text="Accept"
+            android:textSize="12sp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btnDecline"
+            android:text="Decline"
+            android:textSize="12sp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 </LinearLayout>

@@ -1,3 +1,11 @@
+/**
+ * FakeEventRepository.java
+ *
+ * Purpose:
+ * In-memory fake implementation of EventRepository for testing and UI previews.
+ * Provides deterministic event data without requiring Firebase access.
+ */
+
 package com.example.cypher_events.data.repository.fake;
 
 import com.example.cypher_events.*;
@@ -19,10 +27,12 @@ public class FakeEventRepository implements EventRepository {
 
     private static long now(long delta) { return System.currentTimeMillis() + delta; }
 
+    /** Returns a list of open events currently stored in memory. */
     @Override public Result<List<Event>> listOpenEvents() {
         return Result.ok(new ArrayList<>(store.values()));
     }
 
+    /** Returns a specific event by ID or an error if none exists. */
     @Override public Result<Event> getById(String id) {
         Event e = store.get(id);
         return (e != null) ? Result.ok(e) : Result.err(new NoSuchElementException(id));

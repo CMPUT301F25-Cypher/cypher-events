@@ -1,3 +1,11 @@
+/**
+ * EventRepository.java
+ *
+ * Purpose:
+ * Defined contract for event data retrieval in the repository layer.
+ * Implementations may fetch from Firebase, local cache, or test fakes
+ */
+
 package com.example.cypher_events.data.repository;
 
 import com.example.cypher_events.Result;

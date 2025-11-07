@@ -1,46 +1,96 @@
+/**
+ * EventAdapter.java
+ *
+ * Purpose:
+ * RecyclerView adapter that binds Event objects to a list for entrant display.
+ * Handles click events via OnClick interface callback.
+ *
+ * Outstanding Issues:
+ * - Currently shows only title and location; additional fields may be added later.
+ */
+
 package com.example.cypher_events.ui.entrant;
 
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Button;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.cypher_events.R;
 import com.example.cypher_events.domain.model.Event;
-import java.util.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Adapter for displaying Event items in a RecyclerView.
+ */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.VH> {
-    public interface OnClick { void open(String eventId); }
+
+    /**Callback interface for clikc events on an Event item.*/
+    public interface OnClick {
+        void open(String eventId);
+        void accept(String eventId);
+        void decline(String eventId);
+    }
 
     private final List<Event> data = new ArrayList<>();
     private final OnClick onClick;
 
-    public EventAdapter(OnClick onClick) { this.onClick = onClick; }
+    /**
+     * Constructs an EventAdapter.
+     * @param onClick callback invoked when an Event item is clicked.
+     */
+    public EventAdapter(OnClick onClick) {
+        this.onClick = onClick;
+    }
 
+    /** ViewHolder class for event list items. */
     static class VH extends RecyclerView.ViewHolder {
-        TextView title, subtitle;
+        TextView title, location;
+        Button btnAccept, btnDecline;
+
         VH(@NonNull View v) {
             super(v);
             title = v.findViewById(R.id.itemTitle);
-            subtitle = v.findViewById(R.id.itemSubtitle);
+            location = v.findViewById(R.id.itemSubtitle);
+            btnAccept = v.findViewById(R.id.btnAccept);
+            btnDecline = v.findViewById(R.id.btnDecline);
         }
     }
 
-    @NonNull @Override
-    public VH onCreateViewHolder(@NonNull ViewGroup p, int vt) {
-        View v = LayoutInflater.from(p.getContext())
-                .inflate(R.layout.item_event, p, false);
+    @NonNull
+    @Override
+    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_event, parent, false);
         return new VH(v);
     }
 
-    @Override public void onBindViewHolder(@NonNull VH h, int pos) {
-        Event e = data.get(pos);
-        h.title.setText(e.title);
-        h.subtitle.setText(e.location);
-        h.itemView.setOnClickListener(view -> onClick.open(e.id));
+    @Override
+    public void onBindViewHolder(@NonNull VH holder, int position) {
+        Event event = data.get(position);
+        holder.title.setText(event.title);
+        holder.location.setText(event.location);
+
+        holder.itemView.setOnClickListener(view -> onClick.open(event.id));
+        holder.btnAccept.setOnClickListener(view -> onClick.accept(event.id));
+        holder.btnDecline.setOnClickListener(view -> onClick.decline(event.id));
     }
 
-    @Override public int getItemCount() { return data.size(); }
+    @Override
+    public int getItemCount() {
+        return data.size();
+    }
 
+    /**
+     * Replaces adapter's data with a new list of events and refreshes the view.
+     * @param events new list of Event objects.
+     */
     public void submit(List<Event> events) {
         data.clear();
         if (events != null) data.addAll(events);

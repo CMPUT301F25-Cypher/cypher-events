@@ -1,8 +1,23 @@
+/**
+ * Entrant.java
+ *
+ * Purpose:
+ * Model class representing an entrant (user) of the application.
+ * Stores personal details, permissions, and event participation state.
+ *
+ * Outstanding Issues:
+ * - Validation and synchronizations with Firebase Auth not fully implemented yet.
+ */
+
 package com.example.cypher_events.domain.model;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+/**
+ * Represents an Entrant user.
+ */
 
 public class Entrant {
     private String Entrant_name;
@@ -18,6 +33,8 @@ public class Entrant {
     private double Entrant_latitude;
     private double Entrant_longitude;
     private String Entrant_status;
+
+    public Entrant() {}
 
     public String getEntrant_name() {
         return Entrant_name;
@@ -109,6 +126,12 @@ public class Entrant {
 
     public Entrant(){}
     // will add other attributes later
+
+    /**
+     * Converts the Entrant object into a key-value map for Firebase storage.
+     * @return Map containing entrant details for database insertion.
+     */
+
     public Map<String, Object> toMap() {
         Map<String, Object> Entrant_firebase_info = new HashMap<>();
         Entrant_firebase_info.put("Entrant_name", Entrant_name);
