@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/windowBackground">
+
+    <!-- TOP ROW: Title + Profile Icon -->
+    <LinearLayout
+        android:id="@+id/layoutTopBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Profile Button -->
+        <ImageButton
+            android:id="@+id/btnAdminProfile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Admin Profile"
+            app:srcCompat="@drawable/ic_account_circle"
+            app:tint="?attr/colorOnSurface"
+            android:padding="4dp" />
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvAdminTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Admin Dashboard"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface" />
+    </LinearLayout>
+
+    <!-- TOOLBAR BELOW TITLE ROW -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/tbAdminCommon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="?attr/colorSurface"
+        android:paddingHorizontal="16dp"
+        android:title="Admin Dashboard"
+        android:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
+        android:titleTextColor="?attr/colorOnSurface"
+        app:layout_constraintTop_toBottomOf="@id/layoutTopBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- MANAGE EVENTS -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAdminEvents"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="32dp"
+        android:text="Manage Events"
+        android:textAllCaps="false"
+        app:iconPadding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/tbAdminCommon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- MANAGE PROFILES -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAdminProfiles"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Manage Profiles"
+        android:textAllCaps="false"
+        android:layout_marginTop="16dp"
+        app:iconPadding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/btnAdminEvents"
+        app:layout_constraintStart_toStartOf="@id/btnAdminEvents"
+        app:layout_constraintEnd_toEndOf="@id/btnAdminEvents" />
+
+    <!-- MANAGE IMAGES -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAdminImages"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Manage Images"
+        android:textAllCaps="false"
+        android:layout_marginTop="16dp"
+        app:iconPadding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/btnAdminProfiles"
+        app:layout_constraintStart_toStartOf="@id/btnAdminProfiles"
+        app:layout_constraintEnd_toEndOf="@id/btnAdminProfiles" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -30,18 +30,31 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    sourceSets {
+        getByName("main") {
+            java.srcDirs("src/main/java")
+        }
+    }
+
 }
 
 dependencies {
 
     // Adds firebase to the app
-    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore")
 
     // Add the specific SDKs you will use.
     //implementation("com.google.firebase:firebase-analytics")
     //implementation("com.google.firebase:firebase-auth")
     //implementation("com.google.firebase:firebase-firestore")
     //implementation("com.google.firebase:firebase-storage")
+
+
+    implementation("androidx.navigation:navigation-fragment:2.8.3")
+    implementation("androidx.navigation:navigation-ui:2.8.3")
 
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -50,4 +63,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    testImplementation("junit:junit:4.13.2")
 }

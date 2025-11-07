@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/AdminManage_images_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Manage Images"
+        android:textSize="24sp"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Search -->
+    <EditText
+        android:id="@+id/Image_search"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Search image name..."
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/AdminManage_images_title"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Delete Selected Button -->
+    <Button
+        android:id="@+id/btnDeleteSelectedImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete Selected"
+        app:layout_constraintTop_toBottomOf="@id/Image_search"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- List of Images -->
+    <ListView
+        android:id="@+id/Image_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:choiceMode="singleChoice"
+        app:layout_constraintTop_toBottomOf="@id/btnDeleteSelectedImage"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
