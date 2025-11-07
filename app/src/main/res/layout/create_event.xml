@@ -323,14 +323,6 @@
                 android:textColor="@color/text_primary" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- 10) Generate QR + QR preview -->
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/switch_generate_qr"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/generate_qr_after_creating"
-            android:layout_marginTop="16dp"
-            android:textColor="@color/text_primary" />
 
         <ImageView
             android:id="@+id/iv_qr_preview"
@@ -377,7 +369,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/create_event_label"
+                android:text="@string/submit_event"
                 app:icon="@drawable/ic_check_24"
                 app:iconTint="@color/white"
                 app:iconPadding="6dp"
