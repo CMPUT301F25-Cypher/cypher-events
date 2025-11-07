@@ -6,5 +6,7 @@ import java.util.List;
 
 public interface EventRepository {
     Result<List<Event>> listOpenEvents();
-    Result<Event> getById(String eventId);
+    Result<Event> getEventById(String eventId);
+    Result<Void> updateEvent(Event event);
+    Result<Void> addEvent(Event event);
 }
