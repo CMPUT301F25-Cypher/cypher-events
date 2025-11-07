@@ -5,49 +5,69 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- toolbar -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/tbAdmin"
+    <!-- App bar / toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:title="Manage Profiles"
-        android:backgroundTint="?attr/colorSurface"
-        android:titleTextColor="?attr/colorOnSurface"
-        android:padding="16dp"/>
+        android:fitsSystemWindows="true">
 
-    <!-- Search -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilSearchProfiles"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Search profile"
-        android:layout_margin="12dp"
-        android:layout_marginTop="?attr/actionBarSize">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etSearchProfiles"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/tbAdmin"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:imeOptions="actionSearch"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="?attr/actionBarSize"
+            android:title="Manage Profiles"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:titleCentered="true"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- List -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvProfiles"
+    <!-- Content scrolling under app bar -->
+    <LinearLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:padding="12dp"
-        android:layout_marginTop="?attr/actionBarSize"/>
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-    <!-- Delete Selected -->
+        <!-- Search -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilSearchProfiles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Search profile"
+            android:layout_marginTop="12dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSearchProfiles"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionSearch"
+                android:singleLine="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- List -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvProfiles"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="88dp"/>
+    </LinearLayout>
+
+    <!-- Delete Selected (anchored over content) -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnDeleteSelectedProfile"
+        style="?attr/materialButtonOutlinedStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Delete Selected"
-        style="?attr/materialButtonOutlinedStyle"
         android:layout_margin="16dp"
-        app:layout_anchor="@id/rvProfiles"
+        app:layout_anchor="@id/content"
         app:layout_anchorGravity="bottom"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

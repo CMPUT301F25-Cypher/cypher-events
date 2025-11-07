@@ -5,49 +5,69 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- toolbar -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/tbAdmin"
+    <!-- App bar / toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:title="Manage Images"
-        android:backgroundTint="?attr/colorSurface"
-        android:titleTextColor="?attr/colorOnSurface"
-        android:padding="16dp"/>
+        android:fitsSystemWindows="true">
 
-    <!-- Search -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilSearchImages"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Search"
-        android:layout_margin="12dp"
-        android:layout_marginTop="?attr/actionBarSize">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etSearchImages"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/tbAdmin"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:imeOptions="actionSearch"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="?attr/actionBarSize"
+            android:title="Manage Images"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:titleCentered="true"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Grid -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvImages"
+    <!-- Content container that scrolls under the AppBar -->
+    <LinearLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:padding="8dp"
-        android:layout_marginTop="?attr/actionBarSize"/>
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-    <!-- Delete Selected -->
+        <!-- Search -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilSearchImages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Search"
+            android:layout_marginTop="12dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSearchImages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionSearch"
+                android:singleLine="true"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Grid -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvImages"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="88dp"/>
+    </LinearLayout>
+
+    <!-- Delete Selected (anchored at bottom over content) -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnDeleteSelectedImage"
+        style="?attr/materialButtonOutlinedStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Delete Selected"
-        style="?attr/materialButtonOutlinedStyle"
         android:layout_margin="16dp"
-        app:layout_anchor="@id/rvImages"
+        app:layout_anchor="@id/content"
         app:layout_anchorGravity="bottom"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
