@@ -147,6 +147,15 @@
             android:textColor="#FFFFFF"
             android:layout_marginTop="16dp"/>
 
+        <ImageView
+            android:id="@+id/imgPosterPreview"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="12dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="Poster preview"
+            android:src="@drawable/ic_image" />
+
         <!-- Submit -->
         <Button
             android:id="@+id/btnCreateEventSubmit"
