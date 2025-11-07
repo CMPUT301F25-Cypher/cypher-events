@@ -1,30 +1,72 @@
 package com.example.cypher_events.data.repository.fake;
 
-import com.example.cypher_events.*;
 import com.example.cypher_events.data.repository.EventRepository;
+import com.example.cypher_events.domain.model.Entrant;
 import com.example.cypher_events.domain.model.Event;
-import java.util.*;
+import com.example.cypher_events.domain.model.Organizer;
+import com.example.cypher_events.util.Result;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
+/**
+ * Fake repository for testing events locally (no Firebase needed).
+ */
 public class FakeEventRepository implements EventRepository {
+
     private final Map<String, Event> store = new LinkedHashMap<>();
 
     public FakeEventRepository() {
-        Event e1 = new Event("e1","Campus Tour","Guided tour","CCIS",
-                now(-3600_000), now(+86_400_000), 50);
-        Event e2 = new Event("e2","Esports Night","Smash + Valorant","SUB",
-                now(-3600_000), now(+172_800_000), 32);
-        store.put(e1.id, e1);
-        store.put(e2.id, e2);
+        // Create a dummy Entrant + Organizer
+        Entrant entrant = new Entrant("Jane Doe", "jane@example.com", "5554321");
+        Organizer organizer = new Organizer(entrant);
+
+        // Create a few events
+        Event e1 = new Event(
+                "e1",
+                "Campus Tour",
+                "Guided tour for first-years",
+                "CCIS",
+                now(-3600_000),
+                now(+86_400_000),
+                50,
+                organizer
+        );
+
+        Event e2 = new Event(
+                "e2",
+                "Esports Night",
+                "Smash + Valorant tournament",
+                "SUB",
+                now(-3600_000),
+                now(+172_800_000),
+                32,
+                organizer
+        );
+
+        store.put(e1.getEvent_id(), e1);
+        store.put(e2.getEvent_id(), e2);
     }
 
-    private static long now(long delta) { return System.currentTimeMillis() + delta; }
+    private static long now(long delta) {
+        return System.currentTimeMillis() + delta;
+    }
 
-    @Override public Result<List<Event>> listOpenEvents() {
+
+    // Implementations of EventRepository interface
+
+    @Override
+    public Result<List<Event>> listOpenEvents() {
         return Result.ok(new ArrayList<>(store.values()));
     }
 
-    @Override public Result<Event> getById(String id) {
-        Event e = store.get(id);
-        return (e != null) ? Result.ok(e) : Result.err(new NoSuchElementException(id));
+    @Override
+    public Result<Event> getById(String eventId) {
+        Event event = store.get(eventId);
+        if (event == null) {
+            return Result.err(new Exception("Event not found"));
+        }
+        return Result.ok(event);
     }
 }

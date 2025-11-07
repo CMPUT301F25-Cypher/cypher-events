@@ -1,6 +1,6 @@
 package com.example.cypher_events.data.repository;
 
-import com.example.cypher_events.Result;
+import com.example.cypher_events.util.Result;
 import com.example.cypher_events.domain.model.Event;
 import java.util.List;
 

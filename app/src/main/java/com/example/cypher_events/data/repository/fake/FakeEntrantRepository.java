@@ -1,6 +1,6 @@
 package com.example.cypher_events.data.repository.fake;
 
-import com.example.cypher_events.Result;
+import com.example.cypher_events.util.Result;
 import com.example.cypher_events.data.repository.EntrantRepository;
 import java.util.*;
 

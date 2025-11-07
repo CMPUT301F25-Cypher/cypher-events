@@ -1,4 +1,4 @@
-package com.example.cypher_events;
+package com.example.cypher_events.util;
 
 public class Result<T> {
     public final T data;
