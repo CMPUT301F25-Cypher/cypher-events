@@ -1,7 +1,3 @@
 <resources>
-    <string name="app_name">cypher-events</string>
-    <string name="Event_page">Event</string>
-    <string name="Name">Name</string>
-    <string name="Phone">Phone</string>
-    <string name="email">Email</string>
+    <string name="app_name">Cypher Events</string>
 </resources>
