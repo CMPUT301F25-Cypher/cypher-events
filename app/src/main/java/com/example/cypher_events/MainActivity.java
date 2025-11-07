@@ -44,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Load default fragment
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
+            getSupportFragmentManager()
+                    .beginTransaction()
                     .replace(R.id.container, new com.example.cypher_events.ui.entrant.EntrantDashboardFragment())
                     .commit();
         }

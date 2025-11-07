@@ -20,7 +20,7 @@ public class DrawWinnerFragment extends Fragment {
 
     private Button btnGenerateWinner;
     private TextView tvWinnerResult;
-    private ImageButton btnBackWinner;
+    private ImageButton backButton;
 
     @Nullable
     @Override
@@ -31,9 +31,19 @@ public class DrawWinnerFragment extends Fragment {
 
         btnGenerateWinner = view.findViewById(R.id.btnGenerateWinner);
         tvWinnerResult = view.findViewById(R.id.tvWinnerResult);
-        btnBackWinner = view.findViewById(R.id.btnBackWinner);
+        backButton = view.findViewById(R.id.btnBackWinner);
 
-        btnBackWinner.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
+        // In every organizer subfragment with a back button
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> {
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true)
+                        .replace(R.id.container, new com.example.cypher_events.ui.organizer.OrganizerDashboardFragment())
+                        .commit(); // hard return to Organizer home
+            });
+        }
+
 
         btnGenerateWinner.setOnClickListener(v -> {
             // TODO: Connect to Firestore or DrawWinnerService

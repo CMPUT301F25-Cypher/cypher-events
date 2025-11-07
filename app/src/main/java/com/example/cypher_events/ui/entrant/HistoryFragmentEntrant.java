@@ -25,9 +25,18 @@ public class HistoryFragmentEntrant extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ImageButton back = view.findViewById(R.id.btnBack);
-        if (back != null) back.setOnClickListener(v ->
-                requireActivity().getSupportFragmentManager().popBackStack()
-        );
+
+
+        ImageButton backButton = view.findViewById(R.id.btnBack);
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> {
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true)
+                        .replace(R.id.container, new com.example.cypher_events.ui.entrant.EntrantDashboardFragment())
+                        .commit(); // no addToBackStack -> always lands on Entrant home
+            });
+        }
+
     }
 }
