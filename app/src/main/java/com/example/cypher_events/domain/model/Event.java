@@ -25,6 +25,7 @@ public class Event {
 
     private Organizer event_organizer;
 
+    private List<Entrant> event_waitlistEntrants = new ArrayList<>();
     private List<Entrant> event_selectedEntrants = new ArrayList<>();
     private List<Entrant> event_joinedEntrants = new ArrayList<>();
     private List<Entrant> event_declinedEntrants = new ArrayList<>();
@@ -99,6 +100,14 @@ public class Event {
     public boolean isEvent_isActive() { return event_isActive; }
     public void setEvent_isActive(boolean active) { this.event_isActive = active; }
 
+    public List<Entrant> getEvent_waitlistEntrants() {
+        return event_waitlistEntrants;
+    }
+
+    public void setEvent_waitlistEntrants(List<Entrant> waitlistEntrants) {
+        this.event_waitlistEntrants = waitlistEntrants;
+    }
+
     // HELPERS
     private List<Map<String, Object>> summarizeEntrants(List<Entrant> entrants) {
         List<Map<String, Object>> list = new ArrayList<>();
@@ -134,6 +143,9 @@ public class Event {
         map.put("Event_joinedEntrants", summarizeEntrants(event_joinedEntrants));
         map.put("Event_selectedEntrants", summarizeEntrants(event_selectedEntrants));
         map.put("Event_declinedEntrants", summarizeEntrants(event_declinedEntrants));
+
+        map.put("Event_waitlistEntrants", summarizeEntrants(event_waitlistEntrants));
+
         return map;
     }
 }
