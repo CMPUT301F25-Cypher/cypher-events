@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.cypher_events.R;
 import com.example.cypher_events.domain.model.Event;
-import com.example.cypher_events.domain.services.FilterEventsService;
-import com.example.cypher_events.domain.services.ListEventsService;
+import com.example.cypher_events.domain.service.FilterEventsService;
+import com.example.cypher_events.domain.service.ListEventsService;
 
 import java.util.ArrayList;
 import java.util.List;

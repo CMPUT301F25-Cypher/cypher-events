@@ -1,4 +1,4 @@
-package com.example.cypher_events.domain.services;
+package com.example.cypher_events.domain.service;
 
 import com.example.cypher_events.domain.model.Event;
 import java.util.ArrayList;

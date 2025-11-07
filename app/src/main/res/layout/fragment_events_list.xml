@@ -15,7 +15,7 @@
 
         <!-- Search Bar -->
         <EditText
-            android:id="@+id/editTextSearch"
+            android:id="@+id/searchBar"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
@@ -24,6 +24,7 @@
             android:padding="8dp"
             android:background="@android:drawable/edit_text"
             android:singleLine="true"/>
+
 
         <!-- Filter Button -->
         <Button

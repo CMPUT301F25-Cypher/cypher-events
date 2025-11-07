@@ -8,12 +8,14 @@
 
     <!--event image-->
     <ImageView
+        android:id="@+id/eventImage"
         android:padding="12dp"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_launcher_background"
         android:contentDescription="Event Image" />
+
 
     <!--event info-->
     <LinearLayout
