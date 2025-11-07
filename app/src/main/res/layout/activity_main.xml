@@ -15,16 +15,5 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <!-- Bottom navigation bar -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNav"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        app:menu="@menu/bottom_nav_menu"
-        app:itemIconTint="@color/nav_item_selector"
-        app:itemTextColor="@color/nav_item_selector"
-        app:labelVisibilityMode="labeled"
-        app:itemRippleColor="@color/teal_200" />
 
 </LinearLayout>
