@@ -18,11 +18,11 @@ public class FakeEventRepository implements EventRepository {
     private final Map<String, Event> store = new LinkedHashMap<>();
 
     public FakeEventRepository() {
-        // Create a dummy Entrant + Organizer
+        // Dummy Entrant + Organizer
         Entrant entrant = new Entrant("Jane Doe", "jane@example.com", "5554321");
         Organizer organizer = new Organizer(entrant);
 
-        // Create a few events
+        // Example events
         Event e1 = new Event(
                 "e1",
                 "Campus Tour",
@@ -53,7 +53,6 @@ public class FakeEventRepository implements EventRepository {
         return System.currentTimeMillis() + delta;
     }
 
-
     // Implementations of EventRepository interface
 
     @Override
@@ -62,11 +61,23 @@ public class FakeEventRepository implements EventRepository {
     }
 
     @Override
-    public Result<Event> getById(String eventId) {
+    public Result<Event> getEventById(String eventId) {
         Event event = store.get(eventId);
         if (event == null) {
             return Result.err(new Exception("Event not found"));
         }
         return Result.ok(event);
+    }
+
+    @Override
+    public Result<Void> updateEvent(Event event) {
+        store.put(event.getEvent_id(), event);
+        return Result.ok(null);
+    }
+
+    @Override
+    public Result<Void> addEvent(Event event) {
+        store.put(event.getEvent_id(), event);
+        return Result.ok(null);
     }
 }
