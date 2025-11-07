@@ -130,7 +130,7 @@ public class ManageEventActivity extends AppCompatActivity {
         textViewEventDetails.setText(details);
 
         // US 02.03.01 - Display capacity info
-        String capacityInfo = "Waiting List: " + event.getCapacityDisplay() + "\n" +
+        String capacityInfo = "Waiting List: " + event.getCapacity() + "\n" +
                 "Selected: " + event.getSelectedCount() + "\n" +
                 "Enrolled: " + event.getEnrolledCount() + "\n" +
                 "Cancelled: " + event.getCancelledCount();

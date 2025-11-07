@@ -152,7 +152,7 @@ public class Event {
             return false; // Unlimited
         }
         return currentWaitingListCount >= maxEntrants;
-    }
+    }}
 
 /**
- * Gets the available spots remai
+ * Gets the available spots remai */

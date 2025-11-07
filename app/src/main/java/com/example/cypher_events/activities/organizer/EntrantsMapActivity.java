@@ -29,7 +29,7 @@ public class EntrantsMapActivity extends AppCompatActivity implements OnMapReady
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_entrants_map);
+        setContentView(R.layout.activity_entrant_map);
 
         // Get event ID from intent
         eventId = getIntent().getStringExtra("eventId");
