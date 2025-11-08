@@ -12,10 +12,17 @@ public class NotifyWinnerService {
     private final DatabaseReference notificationsRef;
 
     public NotifyWinnerService() {
-        notificationsRef = FirebaseDatabase.getInstance().getReference("notifications");
+        // Use the getter to allow test injection
+        notificationsRef = getNotificationsRef();
     }
 
+    /**
+     * Send winning notifications to entrants who won
+     * @param winnerEntrantIds list of entrant IDs who won
+     */
     public void sendWinningNotifications(List<String> winnerEntrantIds) {
+        if (winnerEntrantIds == null || winnerEntrantIds.isEmpty()) return;
+
         for (String entrantId : winnerEntrantIds) {
             String title = "🎉 You Won the Lottery!";
             String message = "Congratulations! You've been selected.";
@@ -30,5 +37,13 @@ public class NotifyWinnerService {
 
             notificationsRef.child(notification.getId()).setValue(notification);
         }
+    }
+
+    /**
+     * Protected getter for Firebase reference.
+     * Can be overridden in tests to inject a mock DatabaseReference.
+     */
+    protected DatabaseReference getNotificationsRef() {
+        return FirebaseDatabase.getInstance().getReference("notifications");
     }
 }
