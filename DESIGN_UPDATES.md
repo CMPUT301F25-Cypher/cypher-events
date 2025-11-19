@@ -13,16 +13,16 @@ Your app has been updated with a clean, modern, and minimalistic design system.
 ## Key Changes
 
 ### 1. Theme & Colors
-- ✅ Light theme with soft, modern colors
-- ✅ Dark mode support (auto-switches based on system)
-- ✅ Consistent color usage across all screens
-- ✅ Better contrast for accessibility
+-  Light theme with soft, modern colors
+-  Dark mode support (auto-switches based on system)
+-  Consistent color usage across all screens
+-  Better contrast for accessibility
 
 ### 2. Typography
-- ✅ Larger, bolder headings (28sp)
-- ✅ Better letter spacing (-0.02)
-- ✅ Consistent font weights
-- ✅ Improved hierarchy
+-  Larger, bolder headings (28sp)
+-  Better letter spacing (-0.02)
+-  Consistent font weights
+-  Improved hierarchy
 
 ### 3. Components
 
@@ -44,13 +44,13 @@ Your app has been updated with a clean, modern, and minimalistic design system.
 - Better padding and spacing
 
 ### 4. Layouts Updated
-- ✅ Entrant Dashboard
-- ✅ Organizer Dashboard
-- ✅ Profile Screen
-- ✅ Event List
-- ✅ Event Item Cards
-- ✅ Signup Screen
-- ✅ Notifications Screen
+-  Entrant Dashboard
+-  Organizer Dashboard
+-  Profile Screen
+-  Event List
+-  Event Item Cards
+-  Signup Screen
+-  Notifications Screen
 
 ### 5. Spacing & Padding
 - Consistent 20dp screen padding
