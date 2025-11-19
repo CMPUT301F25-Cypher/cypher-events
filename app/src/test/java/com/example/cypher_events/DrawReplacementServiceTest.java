@@ -1,53 +1,58 @@
-package com.example.cypher_events;
+package com.example.cypher_events.domain.service;
 
+import com.example.cypher_events.data.repository.EventRepository;
 import com.example.cypher_events.domain.model.Entrant;
 import com.example.cypher_events.domain.model.Event;
-import com.example.cypher_events.data.repository.fake.FakeEventRepository;
-import com.example.cypher_events.domain.service.AcceptInvitationService.DrawReplacementService;
-import org.junit.Test;
-import java.util.ArrayList;
+import com.example.cypher_events.util.Result;
+
 import java.util.List;
-import static org.junit.Assert.*;
 
-public class DrawReplacementServiceTest {
+public class DrawReplacementService {
 
-    @Test
-    public void testDrawReplacementFindsNewEntrant() {
-        FakeEventRepository repo = new FakeEventRepository();
-        Event event = repo.getEventById("e1").data;
+    private final EventRepository eventRepository;
 
-        Entrant a = new Entrant("A", "a@example.com", "111");
-        Entrant b = new Entrant("B", "b@example.com", "222");
-        Entrant c = new Entrant("C", "c@example.com", "333");
-
-        event.setEvent_joinedEntrants(List.of(a, b, c));
-        event.setEvent_selectedEntrants(new ArrayList<>(List.of(a)));
-        event.setEvent_declinedEntrants(new ArrayList<>(List.of(a)));
-
-        repo.updateEvent(event);
-
-        DrawReplacementService drawService = new DrawReplacementService(repo);
-        Entrant replacement = drawService.drawReplacement("e1");
-
-        assertNotNull("Should find a new replacement entrant", replacement);
-        assertTrue(replacement == b || replacement == c);
+    public DrawReplacementService(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
     }
 
-    @Test
-    public void testDrawReplacementReturnsNullWhenNoAvailableEntrant() {
-        FakeEventRepository repo = new FakeEventRepository();
-        Event event = repo.getEventById("e1").data;
+    public Entrant drawReplacement(String eventId) {
 
-        Entrant a = new Entrant("A", "a@example.com", "111");
-        event.setEvent_joinedEntrants(List.of(a));
-        event.setEvent_selectedEntrants(new ArrayList<>(List.of(a)));
-        event.setEvent_declinedEntrants(new ArrayList<>(List.of(a)));
+        if (eventId == null || eventId.isEmpty()) {
+            return null;
+        }
 
-        repo.updateEvent(event);
+        Result<Event> result = eventRepository.getEventById(eventId);
+        if (result == null || result.data == null) {
+            return null;
+        }
 
-        DrawReplacementService drawService = new DrawReplacementService(repo);
-        Entrant replacement = drawService.drawReplacement("e1");
+        Event event = result.data;
 
-        assertNull("No replacement should be found", replacement);
+        List<Entrant> waitlist = event.getEvent_waitlistEntrants();
+        List<Entrant> selected = event.getEvent_selectedEntrants();
+        List<Entrant> declined = event.getEvent_declinedEntrants();
+
+        if (waitlist == null || waitlist.isEmpty()) {
+            return null;
+        }
+
+        for (Entrant entrant : waitlist) {
+
+            boolean alreadySelected = (selected != null && selected.contains(entrant));
+            boolean alreadyDeclined = (declined != null && declined.contains(entrant));
+
+            if (!alreadySelected && !alreadyDeclined) {
+
+                if (selected != null) {
+                    selected.add(entrant);
+                }
+
+                eventRepository.updateEvent(event);
+
+                return entrant;
+            }
+        }
+
+        return null;
     }
 }

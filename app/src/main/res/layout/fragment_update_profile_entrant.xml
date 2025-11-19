@@ -4,12 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:padding="24dp">
+    android:padding="24dp"
+    android:scrollbars="none">
 
     <LinearLayout
-        android:layout_marginTop="40sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
         android:orientation="vertical">
 
         <!-- Top Bar -->
@@ -39,56 +40,80 @@
                 android:layout_marginStart="8dp" />
         </LinearLayout>
 
-        <!-- Editable fields -->
-        <EditText
-            android:id="@+id/etFullName"
+        <!-- Full Name -->
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Full Name"
-            android:inputType="textPersonName"
-            android:layout_marginBottom="16dp" />
+            android:hint="Full Name">
 
-        <EditText
-            android:id="@+id/etEmail"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etFullName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Email -->
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email Address"
-            android:inputType="textEmailAddress"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginTop="16dp"
+            android:hint="Email Address">
 
-        <EditText
-            android:id="@+id/etPhone"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Phone -->
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Phone Number"
-            android:inputType="phone"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginTop="16dp"
+            android:hint="Phone Number">
 
-        <EditText
-            android:id="@+id/etAddress"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Address -->
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Address (optional)"
-            android:inputType="textPostalAddress"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginTop="16dp"
+            android:hint="Address (optional)">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPostalAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Save button -->
         <Button
             android:id="@+id/btnSaveProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:background="@drawable/rounded_button_minimal"
             android:text="Save Changes"
             android:textAllCaps="false"
             android:textColor="#FFFFFF" />
 
+        <!-- Delete button -->
         <Button
             android:id="@+id/btnDeleteProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:background="@drawable/rounded_button_minimal"
-            android:padding="1dp"
-            android:layout_marginTop="30sp"
-            android:text="DeleteProfile"
+            android:text="Delete Profile"
             android:textAllCaps="false"
             android:textColor="#FFFFFF" />
     </LinearLayout>

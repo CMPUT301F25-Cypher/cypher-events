@@ -5,6 +5,7 @@ import com.example.cypher_events.domain.model.Entrant;
 import com.example.cypher_events.data.repository.EventRepository;
 import com.example.cypher_events.util.Result;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ViewInvitedEntrantsService {
@@ -16,7 +17,12 @@ public class ViewInvitedEntrantsService {
 
     public List<Entrant> getInvitedEntrants(String eventId) {
         Result<Event> result = eventRepository.getEventById(eventId);
-        Event e = result.data;
-        return e != null ? e.getEvent_selectedEntrants() : List.of();
+        if (result == null || !result.isOk() || result.getData() == null) {
+            return Collections.emptyList();
+        }
+
+        Event event = result.getData();
+        List<Entrant> invited = event.getEvent_selectedEntrants();
+        return invited != null ? invited : Collections.emptyList();
     }
 }

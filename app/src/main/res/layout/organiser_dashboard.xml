@@ -1,89 +1,104 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FFFFFF"
-    android:padding="16dp">
+    android:padding="20dp"
+    android:background="@color/background">
 
-    <!-- Top bar -->
+    <!-- Top Bar -->
     <LinearLayout
-        android:id="@+id/topBar"
+        android:layout_marginTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginTop="40sp"
-        android:layout_marginBottom="16dp">
+        android:paddingVertical="8dp"
+        android:layout_marginBottom="24dp">
 
-        <!-- Title -->
         <TextView
             android:id="@+id/tvOrganizerTitle"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Organizer Dashboard"
+            android:layout_weight="1"
+            android:text="Organizer"
             android:textStyle="bold"
             android:textSize="28sp"
-            android:fontFamily="sans-serif-thin"
-            android:textColor="#000000"
-            android:gravity="center_vertical" />
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/text_primary"
+            android:letterSpacing="-0.02" />
 
-        <!-- Account Button -->
         <ImageButton
             android:id="@+id/btnAccount"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_button_secondary"
             android:src="@drawable/ic_account_circle"
-            android:contentDescription="Entrant Dashboard"
+            android:contentDescription="Account"
             android:scaleType="centerInside"
-            android:layout_marginStart="8dp" />
+            android:padding="10dp" />
     </LinearLayout>
 
-    <!-- Welcome message -->
-    <TextView
-        android:id="@+id/tvWelcomeName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Welcome,"
-        android:textSize="26sp"
-        android:textColor="#333333"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="100dp"
-        android:layout_marginBottom="40dp"
-        android:textAlignment="viewStart" />
-
-    <!-- Buttons row -->
-    <LinearLayout
+    <!-- Welcome Card -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="200dp"
-        android:padding="8dp">
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@color/surface"
+        app:strokeWidth="0dp">
 
-        <Button
-            android:id="@+id/btnCreateEvent"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Create Event"
-            android:textColor="#FFFFFF"
-            android:textAllCaps="false"
-            android:background="@drawable/rounded_button_minimal"
-            android:layout_marginEnd="10dp"
-            android:padding="10dp" />
+            android:orientation="vertical"
+            android:padding="24dp">
 
-        <Button
-            android:id="@+id/btnMyEvents"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="My Events"
-            android:textColor="#FFFFFF"
-            android:textAllCaps="false"
-            android:background="@drawable/rounded_button_minimal"
-            android:layout_marginStart="10dp"
-            android:padding="10dp" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tvWelcomeName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome back!"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Manage your events and reach more people"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="24dp" />
+
+            <Button
+                android:id="@+id/btnCreateEvent"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Create Event"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/rounded_button_minimal"
+                android:elevation="0dp"
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btnMyEvents"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="My Events"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/bg_button_secondary"
+                android:elevation="0dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
 </LinearLayout>

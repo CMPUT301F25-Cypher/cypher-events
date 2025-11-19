@@ -3,43 +3,44 @@ package com.example.cypher_events.domain.model;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import java.util.Collections;
+import java.util.List;
 
 /**
  * DummyData Seeder
  * Seeds one Entrant, one Organizer, and three Events (Open / Accepted / Declined)
  * into Firestore for testing and structure verification.
  */
-
 public class DummyData {
     private static final String TAG = "DummyData";
 
     public static void seed() {
         Firestore firestore = new Firestore();
 
-
-        // Create Entrant
+        // ───────────────────────────────────────────────
+        // Create Entrant (normal user)
+        // ───────────────────────────────────────────────
         Entrant entrant = new Entrant("John Doe", "john@example.com", "5551234");
         entrant.setEntrant_latitude(53.5461);
         entrant.setEntrant_longitude(-113.4938);
         entrant.setEntrant_notificationsEnabled(true);
-        entrant.setEntrant_status("DEVICE_ABC123"); // simulated device ID
+        entrant.setEntrant_status("DEVICE_ABC123"); // simulated device ID (also sets Entrant_id)
         entrant.updateAdminStatus("DEVICE_ABC123"); // marks admin if matches
         entrant.setEntrant_joinedEvents(new ArrayList<>());
         entrant.setEntrant_acceptedEvents(new ArrayList<>());
         entrant.setEntrant_declinedEvents(new ArrayList<>());
 
+        // ───────────────────────────────────────────────
         // Create Organizer (wrapping the Entrant)
+        // ───────────────────────────────────────────────
         Organizer organizer = new Organizer(entrant);
         organizer.setOrganizer_notificationsEnabled(true);
         organizer.setOrganizer_removalReason(null);
         organizer.setOrganizer_createdEvents(new ArrayList<>());
 
-
+        // ───────────────────────────────────────────────
         // Create Events (Open / Accepted / Declined)
+        // ───────────────────────────────────────────────
         long now = System.currentTimeMillis();
 
         Event openEvent = new Event(
@@ -84,14 +85,19 @@ public class DummyData {
         declinedEvent.setEvent_category("Hackathon");
         declinedEvent.setEvent_joinedEntrants(Collections.singletonList(entrant));
 
+        // ───────────────────────────────────────────────
+        // Waitlisted Entrant for the open event
+        // ───────────────────────────────────────────────
         Entrant waitlistedEntrant = new Entrant("Alice Waitlist", "alice@pending.com", "5559876");
-        waitlistedEntrant.setEntrant_status("DEVICE_XYZ123");
+        waitlistedEntrant.setEntrant_status("DEVICE_XYZ123"); // sets Entrant_id as well
 
         List<Entrant> waitlist = new ArrayList<>();
         waitlist.add(waitlistedEntrant);
         openEvent.setEvent_waitlistEntrants(waitlist);
 
+        // ───────────────────────────────────────────────
         // Reflect relationships both ways
+        // ───────────────────────────────────────────────
         List<Event> joinedEvents = entrant.getEntrant_joinedEvents();
         joinedEvents.add(openEvent);
         joinedEvents.add(acceptedEvent);
@@ -112,8 +118,9 @@ public class DummyData {
         createdEvents.add(declinedEvent);
         organizer.setOrganizer_createdEvents(createdEvents);
 
-
+        // ───────────────────────────────────────────────
         // Push to Firestore
+        // ───────────────────────────────────────────────
         try {
             firestore.push_DB("Entrants", waitlistedEntrant.getEntrant_id(), waitlistedEntrant.toMap());
             firestore.push_DB("Entrants", entrant.getEntrant_id(), entrant.toMap());
@@ -122,24 +129,22 @@ public class DummyData {
             firestore.push_DB("Events", acceptedEvent.getEvent_id(), acceptedEvent.toMap());
             firestore.push_DB("Events", declinedEvent.getEvent_id(), declinedEvent.toMap());
 
-            Log.d("DummyData", "Dummy Entrant, Organizer, and Events successfully seeded!");
+            Log.d(TAG, "Dummy Entrant, Organizer, and Events successfully seeded!");
         } catch (Exception e) {
-            Log.e("DummyData", "Error pushing dummy data: ", e);
+            Log.e(TAG, "Error pushing dummy data: ", e);
         }
     }
 
-
     public static void adminSeed(String key) {
-
         Firestore firestore = new Firestore();
 
-        // Create Entrant
+        // Create Entrant for admin
         Entrant entrant = new Entrant("Cypher", "cypher@yakuza.com", "666-6666");
         entrant.setEntrant_latitude(0.0); // null island
         entrant.setEntrant_longitude(0.0);
         entrant.setEntrant_notificationsEnabled(true);
-        entrant.setEntrant_status("041f46c418140a17"); // mjoshi3 device ID
-        entrant.updateAdminStatus(key); // false unless matches admin id
+        entrant.setEntrant_status("041f46c418140a17"); // device ID
+        entrant.updateAdminStatus(key); // true only if key matches this id
 
         // Create Admin
         Admin admin = new Admin(entrant);
@@ -163,7 +168,5 @@ public class DummyData {
         } catch (Exception e) {
             Log.e(TAG, "Cypher information push unsuccessful.", e);
         }
-
     }
-
 }

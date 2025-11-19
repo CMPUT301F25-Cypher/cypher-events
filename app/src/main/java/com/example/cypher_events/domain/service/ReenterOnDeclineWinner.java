@@ -3,47 +3,46 @@ package com.example.cypher_events.domain.service;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Given all entrants and the declined winner, notify everyone else.
- */
 public class ReenterOnDeclineWinner {
 
+    // Callback interface for notifying each user
     public interface ReentryHandler {
         void openReentryScreen(String userId);
     }
 
-    /**
-     * Use this if you already have the entrants list.
-     * @param entrantUserIds all entrants (including winner)
-     * @param winnerUserId   the user who declined
-     * @param handler        callback to "notify" each remaining user
-     * @return list of userIds that were notified
-     */
+    // Notify all entrants except the declining winner
     public List<String> reenterIfWinnerDeclines(
             List<String> entrantUserIds,
             String winnerUserId,
             ReentryHandler handler
     ) {
+
+        // List of notified userIds
         List<String> notified = new ArrayList<>();
+
+        // Validate entrant list
         if (entrantUserIds == null || entrantUserIds.isEmpty()) {
             return notified;
         }
 
-        // Build a list without the winner
-        List<String> remaining = new ArrayList<>();
+        // Loop through entrants and skip the winner
         for (String uid : entrantUserIds) {
-            if (uid != null && !uid.equals(winnerUserId)) {
-                remaining.add(uid);
-            }
-        }
 
-        // notify each remaining entrant
-        for (String uid : remaining) {
+            // Skip null ids and skip winner id
+            if (uid == null || uid.equals(winnerUserId)) {
+                continue;
+            }
+
+            // Add this user to the notified list
             notified.add(uid);
+
+            // Trigger callback for UI or test mock
             if (handler != null) {
                 handler.openReentryScreen(uid);
             }
         }
+
+        // Return list of notified users
         return notified;
     }
 }

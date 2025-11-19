@@ -5,10 +5,13 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.w3c.dom.Document;
-
 import java.util.Map;
 
+/**
+ * Simple Firestore wrapper for pushing and pulling data.
+ * This is intentionally lightweight since repositories/services
+ * will handle higher-level logic.
+ */
 public class Firestore {
 
     private final FirebaseFirestore database;
@@ -17,37 +20,54 @@ public class Firestore {
         this.database = FirebaseFirestore.getInstance();
     }
 
-    public void push_DB(String obj_name, String obj_id, Map<String,Object> db){
-        FirebaseFirestore database=FirebaseFirestore.getInstance();
-        database.collection(obj_name).document(obj_id).set(db);
-    }
-    public Task<DocumentSnapshot> pull_db(String obj_name, String obj_id){
-        FirebaseFirestore database=FirebaseFirestore.getInstance();
-        Task<DocumentSnapshot> db= database.collection(obj_name).document(obj_id).get();
-        return db;
+    /**
+     * Writes a document to Firestore under a given collection + ID.
+     */
+    public void push_DB(String collection, String documentId, Map<String, Object> data) {
+        if (collection == null || documentId == null || data == null) return;
+        database.collection(collection).document(documentId).set(data);
     }
 
-    public Task<QuerySnapshot> pullAll(String collectionName) {
-        return database.collection(collectionName).get();
+    /**
+     * Pulls a document (asynchronously) from Firestore by ID.
+     */
+    public Task<DocumentSnapshot> pull_db(String collection, String documentId) {
+        if (collection == null || documentId == null) return null;
+        return database.collection(collection).document(documentId).get();
     }
 
-    public Task<QuerySnapshot> pullFiltered(String collectionName, String fieldName, Object fieldValue) {
-        return database.collection(collectionName)
+    /**
+     * Pulls all documents in a collection.
+     */
+    public Task<QuerySnapshot> pullAll(String collection) {
+        if (collection == null) return null;
+        return database.collection(collection).get();
+    }
+
+    /**
+     * Pulls documents that match a single field value.
+     */
+    public Task<QuerySnapshot> pullFiltered(String collection, String fieldName, Object fieldValue) {
+        if (collection == null || fieldName == null) return null;
+        return database.collection(collection)
                 .whereEqualTo(fieldName, fieldValue)
                 .get();
     }
 
-    public Task<Object> pullField(String collectionName, String documentId, String fieldName) {
-        return database.collection(collectionName).document(documentId)
+    /**
+     * Pulls a specific field from a document.
+     */
+    public Task<Object> pullField(String collection, String documentId, String fieldName) {
+        if (collection == null || documentId == null || fieldName == null) return null;
+
+        return database.collection(collection)
+                .document(documentId)
                 .get()
                 .continueWith(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        DocumentSnapshot snapshot = task.getResult();
-                        return snapshot.get(fieldName);
-                    } else {
-                        return null;
+                        return task.getResult().get(fieldName);
                     }
-                }
-                );}
-
+                    return null;
+                });
+    }
 }

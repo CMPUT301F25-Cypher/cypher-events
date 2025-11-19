@@ -41,25 +41,43 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         Event event = eventList.get(position);
+        if (event == null) {
+            return;
+        }
 
-        String title = (event.getEvent_title() == null || event.getEvent_title().isEmpty())
-                ? "Untitled Event" : event.getEvent_title();
-        String loc = (event.getEvent_location() == null || event.getEvent_location().isEmpty())
-                ? "📍 Unknown Location" : "📍 " + event.getEvent_location();
-
+        // Title
+        String title = event.getEvent_title();
+        if (title == null || title.isEmpty()) {
+            title = "Untitled Event";
+        }
         holder.tvName.setText(title);
-        holder.tvLocation.setText(loc);
 
+        // Location
+        String loc = event.getEvent_location();
+        if (loc == null || loc.isEmpty()) {
+            holder.tvLocation.setText("📍 Unknown Location");
+        } else {
+            holder.tvLocation.setText("📍 " + loc);
+        }
+
+        // Date (from signup start time)
         long start = event.getEvent_signupStartUtc();
-        String dateString = (start > 0)
-                ? new java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
-                .format(new java.util.Date(start))
-                : "N/A";
+        String dateString;
+        if (start > 0) {
+            SimpleDateFormat fmt = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
+            dateString = fmt.format(new Date(start));
+        } else {
+            dateString = "N/A";
+        }
         holder.tvDate.setText("🗓 " + dateString);
 
-        holder.itemView.setOnClickListener(v -> listener.onEventClick(event.getEvent_id()));
+        // Click callback
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null && event.getEvent_id() != null) {
+                listener.onEventClick(event.getEvent_id());
+            }
+        });
     }
-
 
     @Override
     public int getItemCount() {
@@ -67,12 +85,18 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     }
 
     public void submit(List<Event> events) {
-        this.eventList = events;
+        if (events == null) {
+            this.eventList = new ArrayList<>();
+        } else {
+            this.eventList = new ArrayList<>(events); // defensive copy
+        }
         notifyDataSetChanged();
     }
 
     static class EventViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvLocation, tvDate;
+        TextView tvName;
+        TextView tvLocation;
+        TextView tvDate;
 
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);

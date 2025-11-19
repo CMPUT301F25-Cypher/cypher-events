@@ -1,15 +1,14 @@
 package com.example.cypher_events;
 
-import com.example.cypher_events.data.repository.*;
-import com.example.cypher_events.data.repository.fake.*;
-import com.example.cypher_events.domain.model.Entrant;
-import com.example.cypher_events.domain.service.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import com.example.cypher_events.data.repository.EntrantRepository;
+import com.example.cypher_events.data.repository.EventRepository;
+import com.example.cypher_events.data.repository.fake.FakeEntrantRepository;
+import com.example.cypher_events.data.repository.fake.FakeEventRepository;
+import com.example.cypher_events.domain.service.DefaultLotteryService;
+import com.example.cypher_events.domain.service.LotteryService;
 
 public final class AppContainer {
+
     private static AppContainer INSTANCE;
 
     public final EventRepository   eventRepository;
@@ -23,11 +22,9 @@ public final class AppContainer {
     }
 
     public static AppContainer get() {
-        if (INSTANCE == null) INSTANCE = new AppContainer();
+        if (INSTANCE == null) {
+            INSTANCE = new AppContainer();
+        }
         return INSTANCE;
     }
-
-
-
-
 }

@@ -27,26 +27,37 @@ public class UpdateProfileEntrantFragment extends Fragment {
     private FirebaseFirestore db;
     private String deviceId;
 
-    private EditText etFullName, etEmail, etPhone, etAddress;
-    private Button btnSave, btnDelete;
+    private EditText etFullName;
+    private EditText etEmail;
+    private EditText etPhone;
+    private EditText etAddress;
+    private Button btnSave;
+    private Button btnDelete;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState
+    ) {
         return inflater.inflate(R.layout.fragment_update_profile_entrant, container, false);
     }
 
     @SuppressLint("HardwareIds")
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(
+            @NonNull View view,
+            @Nullable Bundle savedInstanceState
+    ) {
         super.onViewCreated(view, savedInstanceState);
 
         db = FirebaseFirestore.getInstance();
-        deviceId = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        deviceId = Settings.Secure.getString(
+                requireContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID
+        );
 
-        // UI references
         etFullName = view.findViewById(R.id.etFullName);
         etEmail = view.findViewById(R.id.etEmail);
         etPhone = view.findViewById(R.id.etPhone);
@@ -61,42 +72,50 @@ public class UpdateProfileEntrantFragment extends Fragment {
                             .beginTransaction()
                             .setReorderingAllowed(true)
                             .replace(R.id.container, new EntrantDashboardFragment())
-                            .commit());
+                            .commit()
+            );
         }
 
-        // Fetch entrant data
         loadEntrantProfile();
 
-        // Save button
-        btnSave.setOnClickListener(v -> saveProfileChanges());
+        if (btnSave != null) {
+            btnSave.setOnClickListener(v -> saveProfileChanges());
+        }
 
-        // Delete button
-        btnDelete.setOnClickListener(v -> deleteEntrantProfile());
+        if (btnDelete != null) {
+            btnDelete.setOnClickListener(v -> deleteEntrantProfile());
+        }
     }
 
     private void loadEntrantProfile() {
         db.collection("Entrants").document(deviceId)
                 .get()
-                .addOnSuccessListener(doc -> {
-                    if (doc.exists()) {
-                        populateFields(doc);
-                    } else {
-                        Toast.makeText(getContext(), "Profile not found.", Toast.LENGTH_SHORT).show();
-                    }
-                })
+                .addOnSuccessListener(this::populateFields)
                 .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Failed to load profile: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        Toast.makeText(
+                                getContext(),
+                                "Failed to load profile: " + e.getMessage(),
+                                Toast.LENGTH_SHORT
+                        ).show()
+                );
     }
 
     private void populateFields(DocumentSnapshot doc) {
+        if (!doc.exists()) {
+            Toast.makeText(getContext(), "Profile not found.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String name = doc.getString("Entrant_name");
         String email = doc.getString("Entrant_email");
-        String phone = String.valueOf(doc.get("Entrant_phone"));
+        Object phoneObj = doc.get("Entrant_phone");
         String address = doc.getString("Entrant_address");
+
+        String phone = (phoneObj == null) ? "" : String.valueOf(phoneObj);
 
         etFullName.setText(name != null ? name : "");
         etEmail.setText(email != null ? email : "");
-        etPhone.setText(phone != null ? phone : "");
+        etPhone.setText(phone);
         etAddress.setText(address != null ? address : "");
     }
 
@@ -107,7 +126,11 @@ public class UpdateProfileEntrantFragment extends Fragment {
         String address = etAddress.getText().toString().trim();
 
         if (name.isEmpty() || email.isEmpty()) {
-            Toast.makeText(getContext(), "Please fill in required fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                    getContext(),
+                    "Please fill in required fields",
+                    Toast.LENGTH_SHORT
+            ).show();
             return;
         }
 
@@ -120,16 +143,30 @@ public class UpdateProfileEntrantFragment extends Fragment {
         db.collection("Entrants").document(deviceId)
                 .update(updatedData)
                 .addOnSuccessListener(a ->
-                        Toast.makeText(getContext(), "Profile updated successfully!", Toast.LENGTH_SHORT).show())
+                        Toast.makeText(
+                                getContext(),
+                                "Profile updated successfully!",
+                                Toast.LENGTH_SHORT
+                        ).show()
+                )
                 .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Failed to update profile: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        Toast.makeText(
+                                getContext(),
+                                "Failed to update profile: " + e.getMessage(),
+                                Toast.LENGTH_SHORT
+                        ).show()
+                );
     }
 
     private void deleteEntrantProfile() {
         db.collection("Entrants").document(deviceId)
                 .delete()
                 .addOnSuccessListener(a -> {
-                    Toast.makeText(getContext(), "Profile deleted successfully!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                            getContext(),
+                            "Profile deleted successfully!",
+                            Toast.LENGTH_SHORT
+                    ).show();
                     requireActivity().getSupportFragmentManager()
                             .beginTransaction()
                             .setReorderingAllowed(true)
@@ -137,6 +174,11 @@ public class UpdateProfileEntrantFragment extends Fragment {
                             .commit();
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Error deleting profile: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        Toast.makeText(
+                                getContext(),
+                                "Error deleting profile: " + e.getMessage(),
+                                Toast.LENGTH_SHORT
+                        ).show()
+                );
     }
 }

@@ -1,6 +1,10 @@
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <solid android:color="#6A4BBC"/> <!-- Subtle purple -->
-    <corners android:radius="25dp"/>
-    <padding android:left="12dp" android:right="12dp" android:top="8dp" android:bottom="8dp"/>
-</shape>
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#4F46E5">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#6366F1"/>
+            <corners android:radius="12dp"/>
+        </shape>
+    </item>
+</ripple>

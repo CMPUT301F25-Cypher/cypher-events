@@ -5,17 +5,36 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class RemoveImageService {
+
+    // In-memory mock image store for testing
     private final Map<String, String> imageStore = new HashMap<>();
 
-    // mock method to add images (for tests)
-    public void addImage(String id, String url) { imageStore.put(id, url); }
-
-    public Result<Boolean> removeImage(String id) {
-        if (id == null || id.isEmpty()) return Result.err(new Exception("Invalid ID"));
-        return imageStore.remove(id) != null
-                ? Result.ok(true)
-                : Result.err(new Exception("Image not found"));
+    // Add an image to the store (used by tests)
+    public void addImage(String id, String url) {
+        imageStore.put(id, url);
     }
 
-    public boolean hasImage(String id) { return imageStore.containsKey(id); }
+    // Remove an image by its ID
+    public Result<Boolean> removeImage(String id) {
+
+        // Validate image ID
+        if (id == null || id.trim().isEmpty()) {
+            return Result.err(new Exception("Invalid ID"));
+        }
+
+        // Attempt removal
+        boolean removed = (imageStore.remove(id) != null);
+
+        // Return success or error
+        if (removed) {
+            return Result.ok(true);
+        } else {
+            return Result.err(new Exception("Image not found"));
+        }
+    }
+
+    // Check if an image exists
+    public boolean hasImage(String id) {
+        return imageStore.containsKey(id);
+    }
 }

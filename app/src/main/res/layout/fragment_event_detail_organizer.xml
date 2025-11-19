@@ -1,13 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:padding="16dp"
+    android:padding="24dp"
     android:scrollbars="none">
 
     <LinearLayout
-        android:layout_marginTop="40sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -23,18 +23,21 @@
                 android:id="@+id/btnBack"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="@android:color/transparent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="6dp"
+                android:scaleType="centerInside"
                 android:src="@drawable/ic_back_button"
                 android:contentDescription="Back" />
 
             <TextView
                 android:id="@+id/tvEventTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="EV1"
                 android:textStyle="bold"
-                android:textSize="28sp"
-                android:fontFamily="sans-serif-thin"
+                android:textSize="24sp"
+                android:fontFamily="sans-serif-medium"
                 android:textColor="#000000"
                 android:layout_marginStart="8dp" />
         </LinearLayout>
@@ -54,18 +57,21 @@
             android:id="@+id/imgEventPoster"
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:layout_marginTop="16dp"
             android:scaleType="centerCrop"
-            android:layout_marginTop="12dp"
-            android:src="@drawable/ic_placeholder_image"
-            android:background="@drawable/ic_placeholder_image_event" />
+            android:src="@drawable/ic_placeholder_image_event"
+            android:background="@drawable/rounded_border_light"
+            android:contentDescription="Event poster" />
 
-        <!-- Organizer Info -->
+        <!-- Organizer Info Card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginTop="24dp"
-            android:padding="8dp">
+            android:padding="12dp"
+            android:background="#FAFAFA"
+            android:elevation="2dp">
 
             <TextView
                 android:id="@+id/tvOrganizerName"
@@ -100,7 +106,8 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#E0E0E0"
-            android:layout_marginVertical="24dp" />
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp" />
 
         <!-- Buttons Section -->
         <LinearLayout
@@ -158,5 +165,6 @@
                 android:textColor="#FFFFFF"
                 android:background="@drawable/rounded_button_minimal" />
         </LinearLayout>
+
     </LinearLayout>
 </ScrollView>

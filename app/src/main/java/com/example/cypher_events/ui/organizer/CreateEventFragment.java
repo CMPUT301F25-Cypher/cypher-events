@@ -38,21 +38,32 @@ public class CreateEventFragment extends Fragment {
     private String deviceId;
     private String organizerEmail = "unknown@example.com";
 
-    private TextInputEditText inputEventName, inputEventDescription,
-            inputEventLocation, inputEventCategory, inputEventCapacity;
-    private Button btnSignupStart, btnSignupEnd, btnUploadPoster, btnSubmit;
+    private TextInputEditText inputEventName;
+    private TextInputEditText inputEventDescription;
+    private TextInputEditText inputEventLocation;
+    private TextInputEditText inputEventCategory;
+    private TextInputEditText inputEventCapacity;
+    private Button btnSignupStart;
+    private Button btnSignupEnd;
+    private Button btnUploadPoster;
+    private Button btnSubmit;
     private ImageButton btnBack;
     private ImageView imgPosterPreview;
 
-    private String startDate = "", endDate = "";
+    private String startDate = "";
+    private String endDate = "";
+    private long signupStartUtc = 0L;
+    private long signupEndUtc = 0L;
+
     private Uri selectedImageUri = null;
 
-    // modern launcher for image selection
     private final ActivityResultLauncher<String> imagePickerLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
                     selectedImageUri = uri;
-                    imgPosterPreview.setImageURI(uri);
+                    if (imgPosterPreview != null) {
+                        imgPosterPreview.setImageURI(uri);
+                    }
                     Toast.makeText(getContext(), "Poster selected!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "No image selected.", Toast.LENGTH_SHORT).show();
@@ -61,21 +72,28 @@ public class CreateEventFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState
+    ) {
         return inflater.inflate(R.layout.fragment_create_event, container, false);
     }
 
     @SuppressLint("HardwareIds")
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(
+            @NonNull View view,
+            @Nullable Bundle savedInstanceState
+    ) {
         super.onViewCreated(view, savedInstanceState);
 
         db = FirebaseFirestore.getInstance();
-        deviceId = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        deviceId = Settings.Secure.getString(
+                requireContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID
+        );
 
-        // Bind views
         inputEventName = view.findViewById(R.id.inputEventName);
         inputEventDescription = view.findViewById(R.id.inputEventDescription);
         inputEventLocation = view.findViewById(R.id.inputEventLocation);
@@ -88,24 +106,28 @@ public class CreateEventFragment extends Fragment {
         btnSubmit = view.findViewById(R.id.btnCreateEventSubmit);
         btnBack = view.findViewById(R.id.btnBack);
 
-        // Back navigation
         if (btnBack != null) {
             btnBack.setOnClickListener(v ->
-                    requireActivity().getSupportFragmentManager().popBackStack());
+                    requireActivity().getSupportFragmentManager().popBackStack()
+            );
         }
 
-        // Pick start/end dates
-        btnSignupStart.setOnClickListener(v -> showDatePicker(true));
-        btnSignupEnd.setOnClickListener(v -> showDatePicker(false));
+        if (btnSignupStart != null) {
+            btnSignupStart.setOnClickListener(v -> showDatePicker(true));
+        }
+        if (btnSignupEnd != null) {
+            btnSignupEnd.setOnClickListener(v -> showDatePicker(false));
+        }
 
-        // Poster picker
-        btnUploadPoster.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
+        if (btnUploadPoster != null) {
+            btnUploadPoster.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
+        }
 
-        // Load or create organizer
         loadOrganizerInfo();
 
-        // Create event
-        btnSubmit.setOnClickListener(v -> createEvent());
+        if (btnSubmit != null) {
+            btnSubmit.setOnClickListener(v -> createEvent());
+        }
     }
 
     private void showDatePicker(boolean isStart) {
@@ -114,16 +136,34 @@ public class CreateEventFragment extends Fragment {
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
 
-        new DatePickerDialog(getContext(), (view, y, m, d) -> {
-            String date = d + "/" + (m + 1) + "/" + y;
-            if (isStart) {
-                startDate = date;
-                Toast.makeText(getContext(), "Signup Start: " + date, Toast.LENGTH_SHORT).show();
-            } else {
-                endDate = date;
-                Toast.makeText(getContext(), "Signup End: " + date, Toast.LENGTH_SHORT).show();
-            }
-        }, year, month, day).show();
+        new DatePickerDialog(
+                getContext(),
+                (view, y, m, d) -> {
+                    String date = d + "/" + (m + 1) + "/" + y;
+                    Calendar picked = Calendar.getInstance();
+                    picked.set(Calendar.YEAR, y);
+                    picked.set(Calendar.MONTH, m);
+                    picked.set(Calendar.DAY_OF_MONTH, d);
+                    picked.set(Calendar.HOUR_OF_DAY, 0);
+                    picked.set(Calendar.MINUTE, 0);
+                    picked.set(Calendar.SECOND, 0);
+                    picked.set(Calendar.MILLISECOND, 0);
+                    long millis = picked.getTimeInMillis();
+
+                    if (isStart) {
+                        startDate = date;
+                        signupStartUtc = millis;
+                        Toast.makeText(getContext(), "Signup Start: " + date, Toast.LENGTH_SHORT).show();
+                    } else {
+                        endDate = date;
+                        signupEndUtc = millis;
+                        Toast.makeText(getContext(), "Signup End: " + date, Toast.LENGTH_SHORT).show();
+                    }
+                },
+                year,
+                month,
+                day
+        ).show();
     }
 
     private void loadOrganizerInfo() {
@@ -135,11 +175,11 @@ public class CreateEventFragment extends Fragment {
                             organizerEmail = email;
                         }
                     } else {
-                        // Create organizer entry if not exists
                         Map<String, Object> org = new HashMap<>();
                         org.put("Organizer_id", deviceId);
                         org.put("Organizer_email", organizerEmail);
-                        db.collection("Organizers").document(deviceId)
+                        db.collection("Organizers")
+                                .document(deviceId)
                                 .set(org, SetOptions.merge());
                     }
                 });
@@ -174,11 +214,18 @@ public class CreateEventFragment extends Fragment {
         event.put("Event_location", loc);
         event.put("Event_category", cat);
         event.put("Event_capacity", cap);
+
         event.put("Event_startDate", startDate);
         event.put("Event_endDate", endDate);
+
+        event.put("Event_signupStartUtc", signupStartUtc);
+        event.put("Event_signupEndUtc", signupEndUtc);
+
         event.put("Event_posterUri", selectedImageUri != null ? selectedImageUri.toString() : "");
         event.put("Event_organizerEmail", organizerEmail);
-        event.put("Event_status", "Draft");
+        event.put("Event_status", "Open");
+        event.put("Event_isActive", true);
+        event.put("Event_isLotteryEnabled", true);
 
         WriteBatch batch = db.batch();
         batch.set(db.collection("Events").document(eventId), event);
@@ -187,17 +234,29 @@ public class CreateEventFragment extends Fragment {
         org.put("Organizer_id", deviceId);
         org.put("Organizer_email", organizerEmail);
         batch.set(db.collection("Organizers").document(deviceId), org, SetOptions.merge());
-        batch.update(db.collection("Organizers").document(deviceId),
-                "Organizer_createdEventIDs", FieldValue.arrayUnion(eventId));
+        batch.update(
+                db.collection("Organizers").document(deviceId),
+                "Organizer_createdEventIDs",
+                FieldValue.arrayUnion(eventId)
+        );
 
-        batch.commit().addOnSuccessListener(a -> {
-            Toast.makeText(getContext(), "Event created successfully!", Toast.LENGTH_SHORT).show();
-            requireActivity().getSupportFragmentManager().popBackStack();
-        }).addOnFailureListener(e ->
-                Toast.makeText(getContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        batch.commit()
+                .addOnSuccessListener(a -> {
+                    Toast.makeText(getContext(), "Event created successfully!", Toast.LENGTH_SHORT).show();
+                    requireActivity().getSupportFragmentManager().popBackStack();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(
+                                getContext(),
+                                "Failed: " + e.getMessage(),
+                                Toast.LENGTH_SHORT
+                        ).show()
+                );
     }
 
     private String safeText(EditText et) {
-        return et.getText() != null ? et.getText().toString().trim() : "";
+        return et != null && et.getText() != null
+                ? et.getText().toString().trim()
+                : "";
     }
 }

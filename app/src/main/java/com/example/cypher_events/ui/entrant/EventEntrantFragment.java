@@ -1,38 +1,49 @@
 package com.example.cypher_events.ui.entrant;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.*;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.cypher_events.R;
 import com.example.cypher_events.domain.model.Event;
-import com.google.firebase.firestore.*;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EventEntrantFragment extends Fragment {
+
+    private static final String ARG_EVENT_ID = "EventId";
 
     private RecyclerView recyclerView;
     private EventAdapter eventAdapter;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState
+    ) {
         return inflater.inflate(R.layout.fragment_event_entrant, container, false);
     }
 
-    @SuppressLint("HardwareIds")
     @Override
-    public void onViewCreated(@NonNull View view,
-                              @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(
+            @NonNull View view,
+            @Nullable Bundle savedInstanceState
+    ) {
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView = view.findViewById(R.id.recyclerEvents);
@@ -48,21 +59,21 @@ public class EventEntrantFragment extends Fragment {
                             .beginTransaction()
                             .setReorderingAllowed(true)
                             .replace(R.id.container, new EntrantDashboardFragment())
-                            .commit());
+                            .commit()
+            );
         }
 
-        // Load Firestore (manual mapping)
         loadEventsFromFirestore();
     }
 
+    // Load events for entrants from Firestore
     private void loadEventsFromFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Try "Events" first
         db.collection("Events").get()
                 .addOnSuccessListener(snap -> {
-                    if (snap.isEmpty()) {
-                        // Fallback: "events"
+                    if (snap == null || snap.isEmpty()) {
+                        // Fallback to lowercase collection name if needed
                         db.collection("events").get()
                                 .addOnSuccessListener(this::consumeSnapshot)
                                 .addOnFailureListener(e -> toast("Failed: " + e.getMessage()));
@@ -73,20 +84,32 @@ public class EventEntrantFragment extends Fragment {
                 .addOnFailureListener(e -> toast("Failed: " + e.getMessage()));
     }
 
+    // Convert Firestore snapshot into a list of Event objects
     private void consumeSnapshot(QuerySnapshot querySnapshot) {
+        if (querySnapshot == null) {
+            eventAdapter.submit(new ArrayList<>());
+            toast("No events available online.");
+            return;
+        }
+
         List<Event> events = new ArrayList<>();
         for (DocumentSnapshot doc : querySnapshot) {
             events.add(mapEvent(doc));
         }
+
         eventAdapter.submit(events);
-        if (events.isEmpty()) toast("No events available online.");
+
+        if (events.isEmpty()) {
+            toast("No events available online.");
+        }
     }
 
-    // Manual mapper: uses exact Firestore keys -> your Event fields
+    // Manual map from Firestore fields to Event model
     private Event mapEvent(DocumentSnapshot doc) {
         Event e = new Event();
 
-        e.setEvent_id(s(doc.getId())); // always keep Firestore doc id
+        // Always use Firestore document id as event id
+        e.setEvent_id(doc.getId());
 
         e.setEvent_title(s(doc.getString("Event_title")));
         e.setEvent_description(s(doc.getString("Event_description")));
@@ -95,7 +118,7 @@ public class EventEntrantFragment extends Fragment {
         e.setEvent_status(s(doc.getString("Event_status")));
 
         Long start = toLong(doc.get("Event_signupStartUtc"));
-        Long end   = toLong(doc.get("Event_signupEndUtc"));
+        Long end = toLong(doc.get("Event_signupEndUtc"));
         Integer cap = toInt(doc.get("Event_capacity"));
 
         e.setEvent_signupStartUtc(start != null ? start : 0L);
@@ -105,37 +128,40 @@ public class EventEntrantFragment extends Fragment {
         Boolean isActive = toBool(doc.get("Event_isActive"));
         Boolean isLottery = toBool(doc.get("Event_isLotteryEnabled"));
 
-        e.setEvent_isActive(isActive != null ? isActive : false);
-        e.setEvent_isLotteryEnabled(isLottery != null ? isLottery : false);
-
-        // Optional organizer email if you need it later:
-        // String orgEmail = doc.getString("Event_organizerEmail");
+        e.setEvent_isActive(isActive != null && isActive);
+        e.setEvent_isLotteryEnabled(isLottery != null && isLottery);
 
         return e;
     }
 
-    private static String s(String v) { return v == null ? "" : v; }
+    private static String s(String v) {
+        return v == null ? "" : v;
+    }
+
     private static Long toLong(Object v) {
         if (v instanceof Long) return (Long) v;
         if (v instanceof Double) return ((Double) v).longValue();
         if (v instanceof Integer) return ((Integer) v).longValue();
         return null;
     }
+
     private static Integer toInt(Object v) {
         if (v instanceof Integer) return (Integer) v;
         if (v instanceof Long) return ((Long) v).intValue();
         if (v instanceof Double) return ((Double) v).intValue();
         return null;
     }
+
     private static Boolean toBool(Object v) {
         if (v instanceof Boolean) return (Boolean) v;
         if (v instanceof String) return Boolean.parseBoolean((String) v);
         return null;
     }
 
+    // Open event detail screen for the selected event
     private void openEventDetail(String eventId) {
         Bundle b = new Bundle();
-        b.putString("EventId", eventId); // NOTE: use "EventId" consistently everywhere
+        b.putString(ARG_EVENT_ID, eventId);
 
         EventDetailEntrantFragment f = new EventDetailEntrantFragment();
         f.setArguments(b);
@@ -148,7 +174,7 @@ public class EventEntrantFragment extends Fragment {
                 .commit();
     }
 
-    private void toast(String m) {
-        Toast.makeText(getContext(), m, Toast.LENGTH_SHORT).show();
+    private void toast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

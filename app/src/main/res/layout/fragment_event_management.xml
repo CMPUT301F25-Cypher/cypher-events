@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutEventManagement"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="@color/background">
+
+    <!-- Top bar -->
+    <LinearLayout
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="8dp"
+        android:layout_marginBottom="16dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_button_secondary"
+            android:padding="10dp"
+            android:src="@drawable/ic_back_button"
+            android:contentDescription="@string/back"
+            android:scaleType="centerInside" />
+
+        <TextView
+            android:id="@+id/tvEventTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Manage Event"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/text_primary"
+            android:letterSpacing="-0.02"
+            android:layout_marginStart="12dp" />
+    </LinearLayout>
+
+    <!-- Spacer -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="16dp" />
+
+    <!-- Actions -->
+    <Button
+        android:id="@+id/btnDrawWinner"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Draw Winner"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/white"
+        android:background="@drawable/rounded_button_minimal"
+        android:elevation="0dp" />
+
+    <Button
+        android:id="@+id/btnDrawReplacement"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Draw Replacement"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/white"
+        android:background="@drawable/rounded_button_minimal"
+        android:elevation="0dp"
+        android:layout_marginTop="12dp" />
+
+    <!-- Future actions can be added here: View Entrants, Export CSV, etc. -->
+
+</LinearLayout>

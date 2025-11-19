@@ -22,7 +22,7 @@ public class ExportEntrantListServiceTest {
         ExportEntrantListService service = new ExportEntrantListService(repo);
         String csv = service.exportAsCSV("e1");
 
-        System.out.println("CSV OUTPUT:\n" + csv); // 🧠 Debug output
+        System.out.println("CSV OUTPUT:\n" + csv); //  Debug output
 
         assertNotNull(csv);
         assertTrue(csv.contains("Alice"));

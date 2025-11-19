@@ -1,18 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:scrollbars="none"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:scrollbars="none"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     android:padding="24dp"
-    android:layout_marginTop="40sp"
-    android:background="#FFFFFF">
+    tools:context=".ui.organizer.CreateEventFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Title -->
+        <!-- Top bar: back + title -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,16 +26,14 @@
             <!-- Back Button -->
             <ImageButton
                 android:id="@+id/btnBack"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="8dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_back_button"
-                android:contentDescription="Back"
-                />
+                android:contentDescription="Back" />
 
-            <!-- Spacer -->
             <Space
                 android:layout_width="8dp"
                 android:layout_height="wrap_content" />
@@ -43,23 +43,24 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Create Events"
+                android:text="Create Event"
                 android:textStyle="bold"
-                android:textSize="26sp"
-                android:fontFamily="sans-serif-thin"
-                android:textColor="#000000"
-                android:gravity="clip_horizontal" />
+                android:textSize="24sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#000000" />
         </LinearLayout>
 
         <!-- Event Name -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Event Name">
+            android:hint="Event name"
+            android:layout_marginTop="8dp">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputEventName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Description -->
@@ -68,12 +69,13 @@
             android:layout_height="wrap_content"
             android:hint="Description"
             android:layout_marginTop="12dp">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputEventDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
-                android:minLines="3"/>
+                android:minLines="3" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Location -->
@@ -82,10 +84,11 @@
             android:layout_height="wrap_content"
             android:hint="Location"
             android:layout_marginTop="12dp">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputEventLocation"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Category -->
@@ -94,10 +97,11 @@
             android:layout_height="wrap_content"
             android:hint="Category"
             android:layout_marginTop="12dp">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputEventCategory"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Signup Start Date -->
@@ -105,28 +109,28 @@
             android:id="@+id/btnSelectStartDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Select Signup Start Date"
+            android:text="Select signup start date"
             android:textAllCaps="false"
             android:background="@drawable/rounded_button_minimal"
             android:textColor="#FFFFFF"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp" />
 
         <!-- Signup End Date -->
         <Button
             android:id="@+id/btnSelectEndDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Select Signup End Date"
+            android:text="Select signup end date"
             android:textAllCaps="false"
             android:background="@drawable/rounded_button_minimal"
             android:textColor="#FFFFFF"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="10dp" />
 
         <!-- Capacity -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Event Capacity"
+            android:hint="Event capacity"
             android:layout_marginTop="12dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -141,19 +145,21 @@
             android:id="@+id/btnUploadPoster"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Upload Poster"
+            android:text="Upload poster"
             android:textAllCaps="false"
             android:background="@drawable/rounded_button_minimal"
             android:textColor="#FFFFFF"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp" />
 
+        <!-- Poster Preview -->
         <ImageView
             android:id="@+id/imgPosterPreview"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="180dp"
             android:layout_marginTop="12dp"
             android:scaleType="centerCrop"
             android:contentDescription="Poster preview"
+            android:background="#F2F2F7"
             android:src="@drawable/ic_image" />
 
         <!-- Submit -->
@@ -161,13 +167,12 @@
             android:id="@+id/btnCreateEventSubmit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Create Event"
+            android:text="Create event"
             android:textAllCaps="false"
-            android:backgroundTint="#6A4BBC"
+            android:background="@drawable/rounded_button_minimal"
             android:textColor="#FFFFFF"
-            android:layout_marginTop="32dp"
-            android:padding="12dp"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/rounded_button_minimal" />
+            android:layout_marginTop="24dp"
+            android:padding="12dp" />
+
     </LinearLayout>
 </ScrollView>

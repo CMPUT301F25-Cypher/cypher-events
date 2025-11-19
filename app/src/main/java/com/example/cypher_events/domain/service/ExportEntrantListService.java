@@ -1,34 +1,46 @@
 package com.example.cypher_events.domain.service;
 
-import com.example.cypher_events.domain.model.Event;
-import com.example.cypher_events.domain.model.Entrant;
 import com.example.cypher_events.data.repository.EventRepository;
+import com.example.cypher_events.domain.model.Entrant;
+import com.example.cypher_events.domain.model.Event;
 import com.example.cypher_events.util.Result;
 
-import java.io.*;
 import java.util.List;
 
 public class ExportEntrantListService {
+
     private final EventRepository eventRepository;
 
     public ExportEntrantListService(EventRepository repo) {
         this.eventRepository = repo;
     }
 
-    public String exportAsCSV(String eventId) throws IOException {
-        Result<Event> result = eventRepository.getEventById(eventId);
-        Event event = result.data;
-        if (event == null) return null;
+    /**
+     * Exports list of selected entrants for an event.
+     *
+     * @param eventId event identifier
+     * @return list of entrants or null if error
+     */
+    public List<Entrant> exportSelectedEntrants(String eventId) {
 
-        List<Entrant> entrants = event.getEvent_selectedEntrants();
-        if (entrants == null || entrants.isEmpty()) return null;
-
-        StringWriter writer = new StringWriter();
-        writer.append("Name,Email,Phone\n");
-        for (Entrant e : entrants) {
-            writer.append(String.format("%s,%s,%s\n",
-                    e.getEntrant_name(), e.getEntrant_email(), e.getEntrant_phone()));
+        if (eventId == null || eventId.trim().isEmpty()) {
+            return null;
         }
-        return writer.toString();
+
+        // Fetch event
+        Result<Event> result = eventRepository.getEventById(eventId);
+
+        // Validate result
+        if (result == null || !result.isOk() || result.getData() == null) {
+            return null;
+        }
+
+        Event event = result.getData();
+        if (event == null) {
+            return null;
+        }
+
+        // Return selected entrants list
+        return event.getEvent_selectedEntrants();
     }
 }

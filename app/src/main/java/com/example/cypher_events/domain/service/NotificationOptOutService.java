@@ -3,51 +3,52 @@ package com.example.cypher_events.domain.service;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * US 01.04.03: "As an entrant, I want to opt out of notifications".
- */
 public class NotificationOptOutService {
 
-    // demo mapping: deviceId -> userId
+    // deviceId -> userId
     private final Map<String, String> deviceToUser = new HashMap<>();
 
-    // userId -> notificationsEnabled (true/false)
+    // userId -> notificationsEnabled
     private final Map<String, Boolean> notificationsEnabled = new HashMap<>();
 
-    /** bind a device to a user */
+    // Bind device to user
     public void registerDeviceUser(String deviceId, String userId) {
         if (deviceId != null && userId != null) {
             deviceToUser.put(deviceId, userId);
         }
     }
 
-    /**
-     * Opt out: sets Entrant_notificationsEnabled = false for the device's user.
-     * @return short status message for UI.
-     */
+    // Disable notifications for the user mapped to this device
     public String optOut(String deviceId) {
+
+        // Check device validity
         if (deviceId == null || deviceId.isEmpty()) {
             return "Invalid device.";
         }
+
+        // Look up user
         String userId = deviceToUser.get(deviceId);
         if (userId == null) {
             return "No user for device.";
         }
 
+        // Get current value (default = true if missing)
         Boolean current = notificationsEnabled.get(userId);
-        // Default behavior: if unset, treat as enabled (true)
-        boolean enabledNow = (current == null) ? true : current.booleanValue();
+        boolean enabledNow = current == null || current;
 
+        // If already disabled
         if (!enabledNow) {
             return "Already disabled.";
         }
 
+        // Disable notifications
         notificationsEnabled.put(userId, false);
         return "Notifications disabled.";
     }
-    /** For tests check current flag */
+
+    // Query current state
     public boolean isNotificationsEnabled(String userId) {
-        Boolean v = notificationsEnabled.get(userId);
-        return (v == null) ? true : v.booleanValue();
+        Boolean value = notificationsEnabled.get(userId);
+        return value == null || value;
     }
 }
