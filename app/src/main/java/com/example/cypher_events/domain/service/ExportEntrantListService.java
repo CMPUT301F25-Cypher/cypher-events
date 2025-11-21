@@ -15,12 +15,7 @@ public class ExportEntrantListService {
         this.eventRepository = repo;
     }
 
-    /**
-     * Exports list of selected entrants for an event.
-     *
-     * @param eventId event identifier
-     * @return list of entrants or null if error
-     */
+
     public List<Entrant> exportSelectedEntrants(String eventId) {
 
         if (eventId == null || eventId.trim().isEmpty()) {

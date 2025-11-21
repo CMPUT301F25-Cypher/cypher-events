@@ -4,22 +4,26 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="#FFFFFF"
+    android:background="@color/background"
     android:gravity="top|center_horizontal">
 
     <!-- Top bar: Back + Title -->
     <LinearLayout
+        android:layout_marginTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_marginBottom="16dp">
 
         <ImageButton
             android:id="@+id/btnBackWinner"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="8dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_button_secondary"
+            android:padding="10dp"
             android:src="@drawable/ic_back_button"
             android:contentDescription="Back" />
 
@@ -29,11 +33,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Draw Winner"
-            android:textSize="22sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"
-            android:textColor="#000000"
-            android:paddingStart="8dp" />
+            android:textColor="@color/text_primary"
+            android:letterSpacing="-0.02"
+            android:paddingStart="12dp" />
     </LinearLayout>
 
     <!-- Small subtitle -->
@@ -41,30 +46,33 @@
         android:id="@+id/tvWinnerSubtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Choose a winner from the waitlist or draw at random."
+        android:text="Randomly select a winner from the waitlist."
         android:textSize="14sp"
-        android:textColor="#666666"
-        android:layout_marginTop="16dp" />
+        android:textColor="@color/text_secondary" />
 
     <!-- Draw Winner Button -->
     <Button
         android:id="@+id/btnGenerateWinner"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Select Winner"
+        android:layout_height="56dp"
+        android:text="Draw Winner"
         android:textAllCaps="false"
-        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/white"
         android:layout_marginTop="24dp"
-        android:background="@drawable/rounded_button_minimal" />
+        android:background="@drawable/rounded_button_minimal"
+        android:elevation="0dp" />
 
     <!-- Result display -->
     <TextView
         android:id="@+id/tvWinnerResult"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Winner: (not drawn yet)"
+        android:text="No winner drawn yet"
         android:layout_marginTop="24dp"
         android:textSize="16sp"
-        android:textColor="#333333" />
+        android:textColor="@color/text_primary" />
 
 </LinearLayout>
+

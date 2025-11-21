@@ -92,103 +92,77 @@ public class DrawReplacementFragment extends Fragment {
                 );
     }
 
-    @SuppressWarnings("unchecked")
     private void handleEventLoaded(DocumentSnapshot doc) {
         if (!doc.exists()) {
             Toast.makeText(getContext(), "Event not found.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        List<Map<String, Object>> waitlist =
-                (List<Map<String, Object>>) doc.get("Event_waitlistEntrants");
-        List<Map<String, Object>> selected =
-                (List<Map<String, Object>>) doc.get("Event_selectedEntrants");
-        List<Map<String, Object>> declined =
-                (List<Map<String, Object>>) doc.get("Event_declinedEntrants");
-
-        Map<String, Object> replacement = findFirstEligible(waitlist, selected, declined);
-
-        if (replacement == null) {
-            tvReplacementResult.setText("No replacement available.");
-            Toast.makeText(getContext(), "No eligible replacement found.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Move replacement from waitlist → selected in Firestore
-        WriteBatch batch = db.batch();
-        batch.update(
-                db.collection("Events").document(eventId),
-                "Event_waitlistEntrants", FieldValue.arrayRemove(replacement),
-                "Event_selectedEntrants", FieldValue.arrayUnion(replacement)
-        );
-
-        batch.commit()
-                .addOnSuccessListener(a -> {
-                    String name = (String) replacement.get("Entrant_name");
-                    String email = (String) replacement.get("Entrant_email");
-                    String label;
-                    if (name != null && !name.isEmpty()) {
-                        label = "Replacement: " + name;
-                    } else if (email != null && !email.isEmpty()) {
-                        label = "Replacement (email): " + email;
-                    } else {
-                        label = "Replacement drawn.";
+        db.collection("Entrants")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    java.util.ArrayList<String> waitlistIds = new java.util.ArrayList<>();
+                    
+                    for (DocumentSnapshot entrantDoc : querySnapshot.getDocuments()) {
+                        @SuppressWarnings("unchecked")
+                        List<String> joinedIds = (List<String>) entrantDoc.get("Entrant_joinedEventIDs");
+                        @SuppressWarnings("unchecked")
+                        List<String> selectedIds = (List<String>) entrantDoc.get("Entrant_selectedEventIDs");
+                        @SuppressWarnings("unchecked")
+                        List<String> acceptedIds = (List<String>) entrantDoc.get("Entrant_acceptedEventIDs");
+                        @SuppressWarnings("unchecked")
+                        List<String> declinedIds = (List<String>) entrantDoc.get("Entrant_declinedEventIDs");
+                        
+                        boolean hasJoined = joinedIds != null && joinedIds.contains(eventId);
+                        boolean isSelected = selectedIds != null && selectedIds.contains(eventId);
+                        boolean hasAccepted = acceptedIds != null && acceptedIds.contains(eventId);
+                        boolean hasDeclined = declinedIds != null && declinedIds.contains(eventId);
+                        
+                        if (hasJoined && !isSelected && !hasAccepted && !hasDeclined) {
+                            waitlistIds.add(entrantDoc.getId());
+                        }
                     }
-                    tvReplacementResult.setText(label);
-                    Toast.makeText(
-                            getContext(),
-                            "Replacement drawn successfully!",
-                            Toast.LENGTH_SHORT
-                    ).show();
+                    
+                    if (waitlistIds.isEmpty()) {
+                        tvReplacementResult.setText("No replacement available.");
+                        Toast.makeText(getContext(), "No eligible replacement found.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    
+                    String replacementId = waitlistIds.get(0);
+                    selectReplacement(replacementId);
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(
-                                getContext(),
-                                "Failed to update replacement: " + e.getMessage(),
-                                Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(getContext(), "Failed to load entrants: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show()
                 );
     }
 
-    private Map<String, Object> findFirstEligible(
-            List<Map<String, Object>> waitlist,
-            List<Map<String, Object>> selected,
-            List<Map<String, Object>> declined
-    ) {
-        if (waitlist == null || waitlist.isEmpty()) {
-            return null;
-        }
-        for (Map<String, Object> candidate : waitlist) {
-            if (candidate == null) continue;
-            if (!containsEntrant(selected, candidate) && !containsEntrant(declined, candidate)) {
-                return candidate;
-            }
-        }
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private boolean containsEntrant(List<Map<String, Object>> list, Map<String, Object> target) {
-        if (list == null || target == null) return false;
-
-        String targetEmail = safeString(target.get("Entrant_email"));
-        String targetId = safeString(target.get("Entrant_id"));
-
-        for (Map<String, Object> e : list) {
-            if (e == null) continue;
-            String email = safeString(e.get("Entrant_email"));
-            String id = safeString(e.get("Entrant_id"));
-            if (!targetEmail.isEmpty() && targetEmail.equals(email)) {
-                return true;
-            }
-            if (!targetId.isEmpty() && targetId.equals(id)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private String safeString(Object v) {
-        return v instanceof String ? (String) v : "";
+    private void selectReplacement(String replacementId) {
+        db.collection("Entrants").document(replacementId)
+                .update("Entrant_selectedEventIDs", FieldValue.arrayUnion(eventId))
+                .addOnSuccessListener(aVoid -> {
+                    db.collection("Entrants").document(replacementId).get()
+                            .addOnSuccessListener(doc -> {
+                                String name = doc.getString("Entrant_name");
+                                String email = doc.getString("Entrant_email");
+                                
+                                String label;
+                                if (name != null && !name.isEmpty()) {
+                                    label = "Replacement: " + name;
+                                } else if (email != null && !email.isEmpty()) {
+                                    label = "Replacement: " + email;
+                                } else {
+                                    label = "Replacement drawn successfully!";
+                                }
+                                
+                                tvReplacementResult.setText(label);
+                                Toast.makeText(getContext(), "Replacement drawn successfully!", Toast.LENGTH_SHORT).show();
+                            });
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Failed to select replacement: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show()
+                );
     }
 }

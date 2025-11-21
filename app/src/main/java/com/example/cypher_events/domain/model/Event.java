@@ -5,11 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Event class
- * Represents a single community event with lottery sign-ups and status tracking.
- * Each event may have an organizer, multiple entrants, and a final list of selected participants.
- */
+
 public class Event {
 
     private String event_id;
@@ -173,7 +169,7 @@ public class Event {
         }
     }
 
-    /** Convenience: list of invited entrants (alias for selected). */
+
     public List<Entrant> getInvitedEntrants() {
         return event_selectedEntrants;
     }

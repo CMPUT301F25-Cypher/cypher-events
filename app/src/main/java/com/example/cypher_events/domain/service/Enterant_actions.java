@@ -14,10 +14,10 @@ public class Enterant_actions {
             int phone,
             String event_name,
             ArrayList<String> history,
-            String Obj_id // currently unused but kept for compatibility
+            String Obj_id
     ) {
 
-        // Ensure lists are not null
+
         if (event == null) {
             event = new ArrayList<>();
         }

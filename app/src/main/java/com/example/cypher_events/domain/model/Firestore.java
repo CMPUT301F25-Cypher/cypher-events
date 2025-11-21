@@ -7,11 +7,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Map;
 
-/**
- * Simple Firestore wrapper for pushing and pulling data.
- * This is intentionally lightweight since repositories/services
- * will handle higher-level logic.
- */
+
 public class Firestore {
 
     private final FirebaseFirestore database;
@@ -20,33 +16,22 @@ public class Firestore {
         this.database = FirebaseFirestore.getInstance();
     }
 
-    /**
-     * Writes a document to Firestore under a given collection + ID.
-     */
     public void push_DB(String collection, String documentId, Map<String, Object> data) {
         if (collection == null || documentId == null || data == null) return;
         database.collection(collection).document(documentId).set(data);
     }
 
-    /**
-     * Pulls a document (asynchronously) from Firestore by ID.
-     */
+
     public Task<DocumentSnapshot> pull_db(String collection, String documentId) {
         if (collection == null || documentId == null) return null;
         return database.collection(collection).document(documentId).get();
     }
 
-    /**
-     * Pulls all documents in a collection.
-     */
     public Task<QuerySnapshot> pullAll(String collection) {
         if (collection == null) return null;
         return database.collection(collection).get();
     }
 
-    /**
-     * Pulls documents that match a single field value.
-     */
     public Task<QuerySnapshot> pullFiltered(String collection, String fieldName, Object fieldValue) {
         if (collection == null || fieldName == null) return null;
         return database.collection(collection)
@@ -54,9 +39,7 @@ public class Firestore {
                 .get();
     }
 
-    /**
-     * Pulls a specific field from a document.
-     */
+
     public Task<Object> pullField(String collection, String documentId, String fieldName) {
         if (collection == null || documentId == null || fieldName == null) return null;
 

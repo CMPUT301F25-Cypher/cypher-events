@@ -12,7 +12,6 @@ public class LimitEntrantsService {
         this.eventRepository = eventRepository;
     }
 
-    // Update the maximum number of entrants allowed for an event
     public boolean updateEventCapacity(String eventId, int newLimit) {
 
         // Validate input
@@ -20,32 +19,28 @@ public class LimitEntrantsService {
             return false;
         }
 
-        // Capacity must be positive
         if (newLimit <= 0) {
             return false;
         }
 
-        // Fetch event from repository
+        // Fetch event correctly using getter
         Result<Event> result = eventRepository.getEventById(eventId);
         if (result == null || !result.isOk() || result.getData() == null) {
             return false;
         }
 
         Event event = result.getData();
-        if (event == null) {
-            return false;
-        }
 
-        // Optional check: ensure waitlist is not larger than new capacity
+        // Check existing waitlist against new limit
         if (event.getEvent_waitlistEntrants() != null &&
                 event.getEvent_waitlistEntrants().size() > newLimit) {
             return false;
         }
 
-        // Update event capacity
+        // Apply update
         event.setEvent_capacity(newLimit);
 
-        // Persist changes
+        // Persist to repository
         eventRepository.updateEvent(event);
 
         return true;

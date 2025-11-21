@@ -44,14 +44,9 @@ public class EntrantDashboardFragment extends Fragment {
         Button btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
         ImageButton btnOrganizer = view.findViewById(R.id.btnOrganizer);
 
-        // QR button: placeholder behavior for now
+        // QR button: open scan/join event screen
         if (btnScanQr != null) {
-            btnScanQr.setOnClickListener(v ->
-                    Toast.makeText(requireContext(),
-                            "QR scanning coming soon 🚧",
-                            Toast.LENGTH_SHORT
-                    ).show()
-            );
+            btnScanQr.setOnClickListener(v -> open(new ScanQRFragment()));
         }
 
         // Go to list of events entrant can join

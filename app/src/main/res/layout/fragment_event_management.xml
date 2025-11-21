@@ -14,7 +14,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingVertical="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:layout_marginBottom="16dp">
 
         <ImageButton
@@ -48,6 +49,44 @@
 
     <!-- Actions -->
     <Button
+        android:id="@+id/btnGenerateQR"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Generate QR Code"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/white"
+        android:background="@drawable/rounded_button_minimal"
+        android:elevation="0dp" />
+
+    <Button
+        android:id="@+id/btnUpdateEvent"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Update Event"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/text_primary"
+        android:background="@drawable/bg_button_secondary"
+        android:elevation="0dp"
+        android:layout_marginTop="12dp" />
+
+    <Button
+        android:id="@+id/btnViewWaitingList"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="View Waiting List"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/text_primary"
+        android:background="@drawable/bg_button_secondary"
+        android:elevation="0dp"
+        android:layout_marginTop="12dp" />
+
+    <Button
         android:id="@+id/btnDrawWinner"
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -57,7 +96,8 @@
         android:fontFamily="sans-serif-medium"
         android:textColor="@color/white"
         android:background="@drawable/rounded_button_minimal"
-        android:elevation="0dp" />
+        android:elevation="0dp"
+        android:layout_marginTop="12dp" />
 
     <Button
         android:id="@+id/btnDrawReplacement"
@@ -72,6 +112,5 @@
         android:elevation="0dp"
         android:layout_marginTop="12dp" />
 
-    <!-- Future actions can be added here: View Entrants, Export CSV, etc. -->
-
 </LinearLayout>
+

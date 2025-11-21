@@ -52,73 +52,94 @@ public class HistoryFragmentEntrant extends Fragment {
     ) {
         super.onViewCreated(view, savedInstanceState);
 
-        db = FirebaseFirestore.getInstance();
-        deviceId = Settings.Secure.getString(
-                requireContext().getContentResolver(),
-                Settings.Secure.ANDROID_ID
-        );
-
-        recyclerView = view.findViewById(R.id.recyclerHistory);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        eventAdapter = new EventAdapter(this::openEventDetail);
-        recyclerView.setAdapter(eventAdapter);
-
-        ImageButton backButton = view.findViewById(R.id.btnBack);
-        if (backButton != null) {
-            backButton.setOnClickListener(v ->
-                    requireActivity().getSupportFragmentManager()
-                            .beginTransaction()
-                            .setReorderingAllowed(true)
-                            .replace(R.id.container, new EntrantDashboardFragment())
-                            .commit()
+        try {
+            db = FirebaseFirestore.getInstance();
+            deviceId = Settings.Secure.getString(
+                    requireContext().getContentResolver(),
+                    Settings.Secure.ANDROID_ID
             );
-        }
 
-        loadEntrantHistory();
+            recyclerView = view.findViewById(R.id.recyclerHistory);
+            if (recyclerView == null) {
+                toast("Error loading view");
+                return;
+            }
+            
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            eventAdapter = new EventAdapter(this::openEventDetail);
+            recyclerView.setAdapter(eventAdapter);
+
+            ImageButton backButton = view.findViewById(R.id.btnBack);
+            if (backButton != null) {
+                backButton.setOnClickListener(v ->
+                        requireActivity().getSupportFragmentManager()
+                                .beginTransaction()
+                                .setReorderingAllowed(true)
+                                .replace(R.id.container, new EntrantDashboardFragment())
+                                .commit()
+                );
+            }
+
+            loadEntrantHistory();
+        } catch (Exception e) {
+            toast("Error: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    // Load entrant's history (joined / accepted / declined event IDs)
     private void loadEntrantHistory() {
+        if (db == null || deviceId == null || deviceId.isEmpty()) {
+            toast("Error: Unable to load data");
+            return;
+        }
+
         db.collection("Entrants").document(deviceId).get()
                 .addOnSuccessListener(entrantDoc -> {
-                    if (!entrantDoc.exists()) {
-                        toast("No entrant data found");
-                        return;
-                    }
+                    try {
+                        if (!entrantDoc.exists()) {
+                            toast("No profile found. Please create a profile first.");
+                            eventAdapter.submit(new ArrayList<>());
+                            return;
+                        }
 
-                    @SuppressWarnings("unchecked")
-                    List<String> joinedIds =
-                            (List<String>) entrantDoc.get("Entrant_joinedEventIDs");
-                    @SuppressWarnings("unchecked")
-                    List<String> acceptedIds =
-                            (List<String>) entrantDoc.get("Entrant_acceptedEventIDs");
-                    @SuppressWarnings("unchecked")
-                    List<String> declinedIds =
-                            (List<String>) entrantDoc.get("Entrant_declinedEventIDs");
+                        @SuppressWarnings("unchecked")
+                        List<String> joinedIds =
+                                (List<String>) entrantDoc.get("Entrant_joinedEventIDs");
+                        @SuppressWarnings("unchecked")
+                        List<String> acceptedIds =
+                                (List<String>) entrantDoc.get("Entrant_acceptedEventIDs");
+                        @SuppressWarnings("unchecked")
+                        List<String> declinedIds =
+                                (List<String>) entrantDoc.get("Entrant_declinedEventIDs");
 
-                    // Use a set to avoid duplicate IDs
-                    Set<String> allEventIdsSet = new HashSet<>();
-                    if (joinedIds != null) {
-                        allEventIdsSet.addAll(joinedIds);
-                    }
-                    if (acceptedIds != null) {
-                        allEventIdsSet.addAll(acceptedIds);
-                    }
-                    if (declinedIds != null) {
-                        allEventIdsSet.addAll(declinedIds);
-                    }
+                        Set<String> allEventIdsSet = new HashSet<>();
+                        if (joinedIds != null) {
+                            allEventIdsSet.addAll(joinedIds);
+                        }
+                        if (acceptedIds != null) {
+                            allEventIdsSet.addAll(acceptedIds);
+                        }
+                        if (declinedIds != null) {
+                            allEventIdsSet.addAll(declinedIds);
+                        }
 
-                    if (allEventIdsSet.isEmpty()) {
-                        toast("No events to show.");
-                        return;
-                    }
+                        if (allEventIdsSet.isEmpty()) {
+                            toast("No events yet. Join some events to see them here!");
+                            eventAdapter.submit(new ArrayList<>());
+                            return;
+                        }
 
-                    fetchEventsByIds(new ArrayList<>(allEventIdsSet));
+                        fetchEventsByIds(new ArrayList<>(allEventIdsSet));
+                    } catch (Exception e) {
+                        toast("Error loading events: " + e.getMessage());
+                        e.printStackTrace();
+                    }
                 })
-                .addOnFailureListener(e ->
-                        toast("Failed to load entrant: " + e.getMessage())
-                );
+                .addOnFailureListener(e -> {
+                    toast("Failed to load: " + e.getMessage());
+                    e.printStackTrace();
+                });
     }
 
     // Fetch events matching the IDs in history

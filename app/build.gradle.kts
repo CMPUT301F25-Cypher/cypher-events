@@ -56,6 +56,10 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment:2.8.3")
     implementation("androidx.navigation:navigation-ui:2.8.3")
 
+    // ZXing for QR code scanning
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("com.google.zxing:core:3.5.2")
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

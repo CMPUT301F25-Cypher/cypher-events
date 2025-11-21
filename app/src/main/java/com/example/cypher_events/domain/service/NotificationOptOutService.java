@@ -5,13 +5,12 @@ import java.util.Map;
 
 public class NotificationOptOutService {
 
-    // deviceId -> userId
+
     private final Map<String, String> deviceToUser = new HashMap<>();
 
-    // userId -> notificationsEnabled
     private final Map<String, Boolean> notificationsEnabled = new HashMap<>();
 
-    // Bind device to user
+
     public void registerDeviceUser(String deviceId, String userId) {
         if (deviceId != null && userId != null) {
             deviceToUser.put(deviceId, userId);

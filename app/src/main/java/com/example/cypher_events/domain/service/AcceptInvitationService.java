@@ -57,9 +57,7 @@ public class AcceptInvitationService {
         return eventsForUser != null && Boolean.TRUE.equals(eventsForUser.get(eventId));
     }
 
-    // ───────────────────────────────────────────────────────────────
-    // Replacement draw logic (for organizer side)
-    // ───────────────────────────────────────────────────────────────
+
     public static class DrawReplacementService {
 
         private final EventRepository eventRepository;
@@ -68,10 +66,7 @@ public class AcceptInvitationService {
             this.eventRepository = eventRepository;
         }
 
-        /**
-         * Draw a replacement entrant for a given eventId.
-         * Returns the chosen Entrant or null if none can be drawn.
-         */
+
         public Entrant drawReplacement(String eventId) {
             if (eventId == null || eventId.isEmpty()) {
                 return null;

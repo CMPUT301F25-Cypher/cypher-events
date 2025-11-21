@@ -2,14 +2,15 @@ package com.example.cypher_events.ui.entrant;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,15 +18,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.cypher_events.R;
-import com.example.cypher_events.domain.model.Entrant;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.WriteBatch;
 
-import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
 public class EventDetailEntrantFragment extends Fragment {
 
@@ -35,29 +34,31 @@ public class EventDetailEntrantFragment extends Fragment {
     private String eventId;
     private String deviceId;
 
+    private TextView tvEventTitle;
+    private TextView tvEventDescription;
+    private TextView tvEventLocation;
+    private TextView tvSignupStart;
+    private TextView tvSignupEnd;
+    private TextView tvEventStatus;
+    private TextView tvOrganizerName;
+    private TextView tvOrganizerPhone;
+    private TextView tvOrganizerEmail;
+    private ImageView imgEventPoster;
     private Button btnJoinWaitlist;
     private Button btnAccept;
     private Button btnDecline;
     private LinearLayout layoutAcceptDecline;
 
-    private Entrant currentEntrant;
-
     @Nullable
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState
-    ) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_event_detail_entrant, container, false);
     }
 
     @SuppressLint("HardwareIds")
     @Override
-    public void onViewCreated(
-            @NonNull View view,
-            @Nullable Bundle savedInstanceState
-    ) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         db = FirebaseFirestore.getInstance();
@@ -66,294 +67,216 @@ public class EventDetailEntrantFragment extends Fragment {
                 Settings.Secure.ANDROID_ID
         );
 
+        tvEventTitle = view.findViewById(R.id.tvEventTitle);
+        tvEventDescription = view.findViewById(R.id.tvEventDescription);
+        tvEventLocation = view.findViewById(R.id.tvEventLocation);
+        tvSignupStart = view.findViewById(R.id.tvSignupStart);
+        tvSignupEnd = view.findViewById(R.id.tvSignupEnd);
+        tvEventStatus = view.findViewById(R.id.tvEventStatus);
+        tvOrganizerName = view.findViewById(R.id.tvOrganizerName);
+        tvOrganizerPhone = view.findViewById(R.id.tvOrganizerPhone);
+        tvOrganizerEmail = view.findViewById(R.id.tvOrganizerEmail);
+        imgEventPoster = view.findViewById(R.id.imgEventPoster);
+        btnJoinWaitlist = view.findViewById(R.id.btnJoinWaitlist);
+        btnAccept = view.findViewById(R.id.btnAccept);
+        btnDecline = view.findViewById(R.id.btnDecline);
+        layoutAcceptDecline = view.findViewById(R.id.layoutAcceptDecline);
+
+        ImageButton btnBack = view.findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
+        }
+
         Bundle args = getArguments();
         eventId = (args != null) ? args.getString(ARG_EVENT_ID) : null;
 
-        btnJoinWaitlist = view.findViewById(R.id.btnJoinWaitlist);
-        layoutAcceptDecline = view.findViewById(R.id.layoutAcceptDecline);
-        btnAccept = view.findViewById(R.id.btnAccept);
-        btnDecline = view.findViewById(R.id.btnDecline);
-
-        if (btnJoinWaitlist != null) {
-            btnJoinWaitlist.setVisibility(View.GONE);
-        }
-        if (layoutAcceptDecline != null) {
-            layoutAcceptDecline.setVisibility(View.GONE);
-        }
-
-        ImageButton backButton = view.findViewById(R.id.btnBack);
-        if (backButton != null) {
-            backButton.setOnClickListener(v ->
-                    requireActivity().getSupportFragmentManager()
-                            .beginTransaction()
-                            .setReorderingAllowed(true)
-                            .replace(R.id.container, new EntrantDashboardFragment())
-                            .commit()
-            );
-        }
-
         if (eventId == null || eventId.trim().isEmpty()) {
-            Toast.makeText(getContext(), "Invalid Event ID", Toast.LENGTH_SHORT).show();
+            toast("No event selected");
+            requireActivity().getSupportFragmentManager().popBackStack();
             return;
         }
 
-        // Load entrant profile first
-        db.collection("Entrants").document(deviceId).get()
-                .addOnSuccessListener(this::onEntrantLoaded)
-                .addOnFailureListener(e ->
-                        Toast.makeText(
-                                getContext(),
-                                "Failed to load entrant: " + e.getMessage(),
-                                Toast.LENGTH_SHORT
-                        ).show()
-                );
+        loadEventDetails();
+        setupButtons();
     }
 
-    private void onEntrantLoaded(DocumentSnapshot doc) {
-        if (!doc.exists()) {
-            Toast.makeText(getContext(), "Entrant not registered", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        currentEntrant = doc.toObject(Entrant.class);
-        if (currentEntrant == null) {
-            Toast.makeText(getContext(), "Entrant parse error", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        loadEventAndConfigureUI();
-    }
-
-    private void loadEventAndConfigureUI() {
+    private void loadEventDetails() {
         db.collection("Events").document(eventId).get()
-                .addOnSuccessListener(this::handleEventLoaded)
-                .addOnFailureListener(e ->
-                        Toast.makeText(
-                                getContext(),
-                                "Failed to load event: " + e.getMessage(),
-                                Toast.LENGTH_SHORT
-                        ).show()
-                );
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) {
+                        toast("Event not found");
+                        return;
+                    }
+                    
+                    String organizerEmail = doc.getString("Event_organizerEmail");
+                    checkIfUserIsOrganizer(organizerEmail, () -> displayEventData(doc));
+                })
+                .addOnFailureListener(e -> toast("Failed to load event: " + e.getMessage()));
     }
 
-    private void handleEventLoaded(DocumentSnapshot doc) {
+    private void checkIfUserIsOrganizer(String eventOrganizerEmail, Runnable onNotOrganizer) {
+        db.collection("Organizers").document(deviceId).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        String userEmail = doc.getString("Organizer_email");
+                        if (userEmail != null && userEmail.equals(eventOrganizerEmail)) {
+                            btnJoinWaitlist.setEnabled(false);
+                            btnJoinWaitlist.setText("Cannot Join Own Event");
+                            toast("You cannot join your own event");
+                        }
+                    }
+                    onNotOrganizer.run();
+                })
+                .addOnFailureListener(e -> onNotOrganizer.run());
+    }
+
+    private void displayEventData(DocumentSnapshot doc) {
         if (!doc.exists()) {
-            Toast.makeText(getContext(), "Event not found", Toast.LENGTH_SHORT).show();
+            toast("Event not found");
             return;
         }
 
-        boolean inWaitlist = isEntrantInList(doc, "Event_waitlistEntrants");
-        boolean inJoined = isEntrantInList(doc, "Event_joinedEntrants");
-        boolean inDeclined = isEntrantInList(doc, "Event_declinedEntrants");
+        String title = doc.getString("Event_title");
+        String description = doc.getString("Event_description");
+        String location = doc.getString("Event_location");
+        String status = doc.getString("Event_status");
+        Long signupStart = doc.getLong("Event_signupStartUtc");
+        Long signupEnd = doc.getLong("Event_signupEndUtc");
+        String organizerEmail = doc.getString("Event_organizerEmail");
 
-        if (btnJoinWaitlist == null || layoutAcceptDecline == null) {
-            return;
+        tvEventTitle.setText(title != null ? title : "Event Details");
+        tvEventDescription.setText(description != null ? description : "No description available");
+        tvEventLocation.setText("Location: " + (location != null ? location : "TBA"));
+        tvEventStatus.setText("Status: " + (status != null ? status : "Unknown"));
+
+        if (signupStart != null) {
+            tvSignupStart.setText("Signup Starts: " + formatDate(signupStart));
+        }
+        if (signupEnd != null) {
+            tvSignupEnd.setText("Signup Ends: " + formatDate(signupEnd));
         }
 
-        if (!inWaitlist && !inJoined && !inDeclined) {
-            // Not in any list yet
-            btnJoinWaitlist.setVisibility(View.VISIBLE);
-            layoutAcceptDecline.setVisibility(View.GONE);
-            btnJoinWaitlist.setOnClickListener(v -> onJoinWaitlistClicked());
-        } else if (inWaitlist) {
-            // Invited state (waiting to accept/decline)
-            btnJoinWaitlist.setVisibility(View.GONE);
-            layoutAcceptDecline.setVisibility(View.VISIBLE);
-
-            if (btnAccept != null) {
-                btnAccept.setVisibility(View.VISIBLE);
-                btnAccept.setOnClickListener(v -> handleAccept());
-            }
-            if (btnDecline != null) {
-                btnDecline.setVisibility(View.VISIBLE);
-                btnDecline.setOnClickListener(v -> handleDecline());
-            }
-        } else if (inJoined) {
-            // Already accepted; can still decline
-            btnJoinWaitlist.setVisibility(View.GONE);
-            layoutAcceptDecline.setVisibility(View.VISIBLE);
-
-            if (btnAccept != null) {
-                btnAccept.setVisibility(View.GONE);
-            }
-            if (btnDecline != null) {
-                btnDecline.setVisibility(View.VISIBLE);
-                btnDecline.setOnClickListener(v -> handleDecline());
-            }
-        } else if (inDeclined) {
-            btnJoinWaitlist.setVisibility(View.GONE);
-            layoutAcceptDecline.setVisibility(View.GONE);
-            Toast.makeText(getContext(), "You declined this event.", Toast.LENGTH_SHORT).show();
+        if (organizerEmail != null) {
+            loadOrganizerInfo(organizerEmail);
         }
+
+        checkEntrantStatus();
     }
 
-    @SuppressWarnings("unchecked")
-    private boolean isEntrantInList(DocumentSnapshot doc, String fieldName) {
-        Object raw = doc.get(fieldName);
-        if (!(raw instanceof List)) {
-            return false;
-        }
-        List<Map<String, Object>> entrants = (List<Map<String, Object>>) raw;
-        if (entrants == null) {
-            return false;
-        }
-        for (Map<String, Object> e : entrants) {
-            if (e == null) continue;
-            Object id = e.get("Entrant_id");
-            Object status = e.get("Entrant_status");
-            if ((id instanceof String && deviceId.equals(id))
-                    || (status instanceof String && deviceId.equals(status))) {
-                return true;
-            }
-        }
-        return false;
-    }
+    private void loadOrganizerInfo(String email) {
+        db.collection("Organizers")
+                .whereEqualTo("Organizer_email", email)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
+                        String name = doc.getString("Organizer_name");
+                        String phone = doc.getString("Organizer_phone");
+                        String orgEmail = doc.getString("Organizer_email");
 
-    // Join waitlist
-    private void onJoinWaitlistClicked() {
-        Toast.makeText(getContext(), "Joining waitlist...", Toast.LENGTH_SHORT).show();
-
-        Map<String, Object> entrantMap = createEntrantMap();
-        WriteBatch batch = db.batch();
-
-        batch.update(
-                db.collection("Events").document(eventId),
-                "Event_waitlistEntrants", FieldValue.arrayUnion(entrantMap)
-        );
-        batch.update(
-                db.collection("Entrants").document(deviceId),
-                "Entrant_joinedEventIDs", FieldValue.arrayUnion(eventId)
-        );
-
-        batch.commit()
-                .addOnSuccessListener(a -> {
-                    Toast.makeText(getContext(), "Joined waitlist!", Toast.LENGTH_SHORT).show();
-                    simulateInvite();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(
-                                getContext(),
-                                "Failed: " + e.getMessage(),
-                                Toast.LENGTH_SHORT
-                        ).show()
-                );
-    }
-
-    // Simulate invite for demo purposes
-    private void simulateInvite() {
-        new Handler().postDelayed(() -> {
-            Toast.makeText(getContext(), "You have been invited!", Toast.LENGTH_SHORT).show();
-            if (btnJoinWaitlist != null) {
-                btnJoinWaitlist.setVisibility(View.GONE);
-            }
-            if (layoutAcceptDecline != null) {
-                layoutAcceptDecline.setVisibility(View.VISIBLE);
-            }
-            if (btnAccept != null) {
-                btnAccept.setVisibility(View.VISIBLE);
-                btnAccept.setOnClickListener(v -> handleAccept());
-            }
-            if (btnDecline != null) {
-                btnDecline.setVisibility(View.VISIBLE);
-                btnDecline.setOnClickListener(v -> handleDecline());
-            }
-        }, 1000);
-    }
-
-    // Accept invitation
-    private void handleAccept() {
-        Map<String, Object> entrantMap = createEntrantMap();
-        WriteBatch batch = db.batch();
-
-        batch.update(
-                db.collection("Events").document(eventId),
-                "Event_waitlistEntrants", FieldValue.arrayRemove(entrantMap),
-                "Event_joinedEntrants", FieldValue.arrayUnion(entrantMap)
-        );
-
-        batch.update(
-                db.collection("Entrants").document(deviceId),
-                "Entrant_joinedEventIDs", FieldValue.arrayRemove(eventId),
-                "Entrant_acceptedEventIDs", FieldValue.arrayUnion(eventId)
-        );
-
-        batch.commit()
-                .addOnSuccessListener(a -> {
-                    Toast.makeText(getContext(), "Invitation accepted!", Toast.LENGTH_SHORT).show();
-                    if (btnAccept != null) {
-                        btnAccept.setVisibility(View.GONE);
+                        tvOrganizerName.setText("Organizer: " + (name != null ? name : "Unknown"));
+                        tvOrganizerPhone.setText("Phone: " + (phone != null ? phone : "N/A"));
+                        tvOrganizerEmail.setText("Email: " + (orgEmail != null ? orgEmail : "N/A"));
                     }
-                    if (btnDecline != null) {
-                        btnDecline.setVisibility(View.VISIBLE);
-                    }
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(
-                                getContext(),
-                                "Failed to accept: " + e.getMessage(),
-                                Toast.LENGTH_SHORT
-                        ).show()
-                );
+                });
     }
 
-    // Decline invitation
-    private void handleDecline() {
-        Map<String, Object> entrantMap = createEntrantMap();
-        WriteBatch batch = db.batch();
+    private void checkEntrantStatus() {
+        db.collection("Entrants").document(deviceId).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) {
+                        btnJoinWaitlist.setVisibility(View.VISIBLE);
+                        layoutAcceptDecline.setVisibility(View.GONE);
+                        return;
+                    }
 
-        batch.update(
-                db.collection("Events").document(eventId),
-                "Event_waitlistEntrants", FieldValue.arrayRemove(entrantMap),
-                "Event_joinedEntrants", FieldValue.arrayRemove(entrantMap),
-                "Event_declinedEntrants", FieldValue.arrayUnion(entrantMap)
-        );
+                    @SuppressWarnings("unchecked")
+                    List<String> joinedIds = (List<String>) doc.get("Entrant_joinedEventIDs");
+                    @SuppressWarnings("unchecked")
+                    List<String> selectedIds = (List<String>) doc.get("Entrant_selectedEventIDs");
+                    @SuppressWarnings("unchecked")
+                    List<String> acceptedIds = (List<String>) doc.get("Entrant_acceptedEventIDs");
 
-        batch.update(
-                db.collection("Entrants").document(deviceId),
-                "Entrant_joinedEventIDs", FieldValue.arrayRemove(eventId),
-                "Entrant_acceptedEventIDs", FieldValue.arrayRemove(eventId),
-                "Entrant_declinedEventIDs", FieldValue.arrayUnion(eventId)
-        );
+                    boolean hasJoined = joinedIds != null && joinedIds.contains(eventId);
+                    boolean isSelected = selectedIds != null && selectedIds.contains(eventId);
+                    boolean hasAccepted = acceptedIds != null && acceptedIds.contains(eventId);
 
-        batch.commit()
-                .addOnSuccessListener(a -> {
-                    Toast.makeText(getContext(), "Invitation declined.", Toast.LENGTH_SHORT).show();
-                    if (layoutAcceptDecline != null) {
+                    if (hasAccepted) {
+                        btnJoinWaitlist.setText("Already Accepted");
+                        btnJoinWaitlist.setEnabled(false);
+                        layoutAcceptDecline.setVisibility(View.GONE);
+                    } else if (isSelected) {
+                        btnJoinWaitlist.setVisibility(View.GONE);
+                        layoutAcceptDecline.setVisibility(View.VISIBLE);
+                    } else if (hasJoined) {
+                        btnJoinWaitlist.setText("Already on Waitlist");
+                        btnJoinWaitlist.setEnabled(false);
+                        layoutAcceptDecline.setVisibility(View.GONE);
+                    } else {
+                        btnJoinWaitlist.setVisibility(View.VISIBLE);
                         layoutAcceptDecline.setVisibility(View.GONE);
                     }
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(
-                                getContext(),
-                                "Failed to decline: " + e.getMessage(),
-                                Toast.LENGTH_SHORT
-                        ).show()
-                );
+                });
     }
 
-    // Build a map representing this entrant for embedding in Event docs
-    private Map<String, Object> createEntrantMap() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("Entrant_id", deviceId);
-        map.put(
-                "Entrant_name",
-                (currentEntrant != null && currentEntrant.getEntrant_name() != null)
-                        ? currentEntrant.getEntrant_name()
-                        : "Unknown"
-        );
-        map.put(
-                "Entrant_email",
-                (currentEntrant != null && currentEntrant.getEntrant_email() != null)
-                        ? currentEntrant.getEntrant_email()
-                        : "unknown@example.com"
-        );
-        map.put(
-                "Entrant_phone",
-                (currentEntrant != null && currentEntrant.getEntrant_phone() != null)
-                        ? currentEntrant.getEntrant_phone()
-                        : "N/A"
-        );
-        map.put("Entrant_status", deviceId);
-        return map;
+    private void setupButtons() {
+        btnJoinWaitlist.setOnClickListener(v -> joinWaitlist());
+        btnAccept.setOnClickListener(v -> acceptInvitation());
+        btnDecline.setOnClickListener(v -> declineInvitation());
+    }
+
+    private void joinWaitlist() {
+        db.collection("Entrants").document(deviceId).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) {
+                        toast("Please create a profile first");
+                        return;
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    List<String> joinedIds = (List<String>) doc.get("Entrant_joinedEventIDs");
+                    if (joinedIds != null && joinedIds.contains(eventId)) {
+                        toast("Already on waitlist");
+                        return;
+                    }
+
+                    db.collection("Entrants").document(deviceId)
+                            .update("Entrant_joinedEventIDs", com.google.firebase.firestore.FieldValue.arrayUnion(eventId))
+                            .addOnSuccessListener(aVoid -> {
+                                toast("Joined waitlist successfully");
+                                checkEntrantStatus();
+                            })
+                            .addOnFailureListener(e -> toast("Failed to join: " + e.getMessage()));
+                });
+    }
+
+    private void acceptInvitation() {
+        db.collection("Entrants").document(deviceId)
+                .update("Entrant_acceptedEventIDs", com.google.firebase.firestore.FieldValue.arrayUnion(eventId))
+                .addOnSuccessListener(aVoid -> {
+                    toast("Invitation accepted");
+                    checkEntrantStatus();
+                })
+                .addOnFailureListener(e -> toast("Failed to accept: " + e.getMessage()));
+    }
+
+    private void declineInvitation() {
+        db.collection("Entrants").document(deviceId)
+                .update("Entrant_declinedEventIDs", com.google.firebase.firestore.FieldValue.arrayUnion(eventId))
+                .addOnSuccessListener(aVoid -> {
+                    toast("Invitation declined");
+                    requireActivity().getSupportFragmentManager().popBackStack();
+                })
+                .addOnFailureListener(e -> toast("Failed to decline: " + e.getMessage()));
+    }
+
+    private String formatDate(long timestamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
+        return sdf.format(new Date(timestamp));
+    }
+
+    private void toast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

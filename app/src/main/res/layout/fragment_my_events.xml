@@ -14,7 +14,8 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingVertical="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:layout_marginBottom="16dp">
 
         <ImageButton
@@ -53,3 +54,4 @@
         android:scrollbars="none" />
 
 </LinearLayout>
+

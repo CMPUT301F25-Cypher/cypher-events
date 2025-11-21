@@ -22,6 +22,9 @@ public class EventManagementFragment extends Fragment {
     private static final String ARG_EVENT_ID = "EventId";
 
     private TextView tvEventTitle;
+    private Button btnGenerateQR;
+    private Button btnUpdateEvent;
+    private Button btnViewWaitingList;
     private Button btnDrawWinner;
     private Button btnDrawReplacement;
     private ImageButton btnBack;
@@ -49,6 +52,9 @@ public class EventManagementFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
 
         tvEventTitle = view.findViewById(R.id.tvEventTitle);
+        btnGenerateQR = view.findViewById(R.id.btnGenerateQR);
+        btnUpdateEvent = view.findViewById(R.id.btnUpdateEvent);
+        btnViewWaitingList = view.findViewById(R.id.btnViewWaitingList);
         btnDrawWinner = view.findViewById(R.id.btnDrawWinner);
         btnDrawReplacement = view.findViewById(R.id.btnDrawReplacement);
         btnBack = view.findViewById(R.id.btnBack);
@@ -72,6 +78,18 @@ public class EventManagementFragment extends Fragment {
                             .replace(R.id.container, new MyEventsFragment())
                             .commit()
             );
+        }
+
+        if (btnGenerateQR != null) {
+            btnGenerateQR.setOnClickListener(v -> openGenerateQR());
+        }
+
+        if (btnUpdateEvent != null) {
+            btnUpdateEvent.setOnClickListener(v -> openUpdateEvent());
+        }
+
+        if (btnViewWaitingList != null) {
+            btnViewWaitingList.setOnClickListener(v -> viewWaitingList());
         }
 
         if (btnDrawWinner != null) {
@@ -134,5 +152,68 @@ public class EventManagementFragment extends Fragment {
                 .replace(R.id.container, f)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    private void openGenerateQR() {
+        Bundle b = new Bundle();
+        b.putString(ARG_EVENT_ID, eventId);
+
+        GenerateQRFragment f = new GenerateQRFragment();
+        f.setArguments(b);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.container, f)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void openUpdateEvent() {
+        Bundle b = new Bundle();
+        b.putString(ARG_EVENT_ID, eventId);
+
+        UpdateEventFragment f = new UpdateEventFragment();
+        f.setArguments(b);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.container, f)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void viewWaitingList() {
+        db.collection("Entrants")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    StringBuilder waitlist = new StringBuilder("Waiting List:\n\n");
+                    int count = 0;
+
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        @SuppressWarnings("unchecked")
+                        java.util.List<String> joinedIds = (java.util.List<String>) doc.get("Entrant_joinedEventIDs");
+                        
+                        if (joinedIds != null && joinedIds.contains(eventId)) {
+                            String name = doc.getString("Entrant_name");
+                            String email = doc.getString("Entrant_email");
+                            count++;
+                            waitlist.append(count).append(". ")
+                                    .append(name != null ? name : "Unknown")
+                                    .append(" (").append(email != null ? email : "No email").append(")\n");
+                        }
+                    }
+
+                    if (count == 0) {
+                        waitlist.append("No entrants on waiting list yet.");
+                    }
+
+                    Toast.makeText(getContext(), waitlist.toString(), Toast.LENGTH_LONG).show();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Failed to load waiting list: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show()
+                );
     }
 }

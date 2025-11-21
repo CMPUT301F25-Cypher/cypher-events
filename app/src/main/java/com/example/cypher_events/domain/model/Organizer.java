@@ -5,11 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Organizer class
- * Each Organizer wraps one Entrant object (its own user identity)
- * and adds Organizer-specific fields like event management & notifications.
- */
+
 public class Organizer {
 
     // The Entrant profile representing this Organizer
@@ -139,9 +135,7 @@ public class Organizer {
         this.Organizer_removalReason = organizer_removalReason;
     }
 
-    /* ------------------------------------------------------------------
-     * Helper methods
-     * ------------------------------------------------------------------ */
+
 
     public void addCreatedEvent(Event event) {
         if (event != null && !Organizer_createdEvents.contains(event)) {

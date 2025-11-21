@@ -94,76 +94,84 @@ public class DrawWinnerFragment extends Fragment {
                 );
     }
 
-    @SuppressWarnings("unchecked")
     private void handleEventLoaded(DocumentSnapshot doc) {
         if (!doc.exists()) {
             Toast.makeText(getContext(), "Event not found.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        List<Map<String, Object>> waitlist =
-                (List<Map<String, Object>>) doc.get("Event_waitlistEntrants");
-        List<Map<String, Object>> selected =
-                (List<Map<String, Object>>) doc.get("Event_selectedEntrants");
-
-        if (waitlist == null || waitlist.isEmpty()) {
-            tvWinnerResult.setText("No entrants in waitlist.");
-            Toast.makeText(getContext(), "No entrants available to draw.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Map<String, Object> winner = pickRandom(waitlist);
-        if (winner == null) {
-            tvWinnerResult.setText("No valid entrants.");
-            Toast.makeText(getContext(), "No valid entrant found.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        WriteBatch batch = db.batch();
-        batch.update(
-                db.collection("Events").document(eventId),
-                "Event_waitlistEntrants", FieldValue.arrayRemove(winner),
-                "Event_selectedEntrants", FieldValue.arrayUnion(winner)
-        );
-
-        batch.commit()
-                .addOnSuccessListener(a -> {
-                    String name = safeString(winner.get("Entrant_name"));
-                    String email = safeString(winner.get("Entrant_email"));
-
-                    String label;
-                    if (!name.isEmpty()) {
-                        label = "Winner: " + name;
-                    } else if (!email.isEmpty()) {
-                        label = "Winner (email): " + email;
-                    } else {
-                        label = "Winner drawn.";
+        db.collection("Entrants")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    java.util.ArrayList<String> waitlistIds = new java.util.ArrayList<>();
+                    
+                    for (DocumentSnapshot entrantDoc : querySnapshot.getDocuments()) {
+                        @SuppressWarnings("unchecked")
+                        List<String> joinedIds = (List<String>) entrantDoc.get("Entrant_joinedEventIDs");
+                        @SuppressWarnings("unchecked")
+                        List<String> selectedIds = (List<String>) entrantDoc.get("Entrant_selectedEventIDs");
+                        @SuppressWarnings("unchecked")
+                        List<String> acceptedIds = (List<String>) entrantDoc.get("Entrant_acceptedEventIDs");
+                        @SuppressWarnings("unchecked")
+                        List<String> declinedIds = (List<String>) entrantDoc.get("Entrant_declinedEventIDs");
+                        
+                        boolean hasJoined = joinedIds != null && joinedIds.contains(eventId);
+                        boolean isSelected = selectedIds != null && selectedIds.contains(eventId);
+                        boolean hasAccepted = acceptedIds != null && acceptedIds.contains(eventId);
+                        boolean hasDeclined = declinedIds != null && declinedIds.contains(eventId);
+                        
+                        if (hasJoined && !isSelected && !hasAccepted && !hasDeclined) {
+                            waitlistIds.add(entrantDoc.getId());
+                        }
                     }
-
-                    tvWinnerResult.setText(label);
-                    Toast.makeText(
-                            getContext(),
-                            "Winner drawn successfully!",
-                            Toast.LENGTH_SHORT
-                    ).show();
+                    
+                    if (waitlistIds.isEmpty()) {
+                        tvWinnerResult.setText("No entrants in waitlist.");
+                        Toast.makeText(getContext(), "No entrants available to draw.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    
+                    String winnerId = pickRandom(waitlistIds);
+                    selectWinner(winnerId);
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(
-                                getContext(),
-                                "Failed to update winner: " + e.getMessage(),
-                                Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(getContext(), "Failed to load entrants: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show()
                 );
     }
 
-    private Map<String, Object> pickRandom(List<Map<String, Object>> waitlist) {
-        if (waitlist == null || waitlist.isEmpty()) return null;
+    private String pickRandom(java.util.ArrayList<String> list) {
+        if (list == null || list.isEmpty()) return null;
         Random rnd = new Random();
-        int index = rnd.nextInt(waitlist.size());
-        return waitlist.get(index);
+        int index = rnd.nextInt(list.size());
+        return list.get(index);
     }
 
-    private String safeString(Object v) {
-        return (v instanceof String) ? (String) v : "";
+    private void selectWinner(String winnerId) {
+        db.collection("Entrants").document(winnerId)
+                .update("Entrant_selectedEventIDs", FieldValue.arrayUnion(eventId))
+                .addOnSuccessListener(aVoid -> {
+                    db.collection("Entrants").document(winnerId).get()
+                            .addOnSuccessListener(doc -> {
+                                String name = doc.getString("Entrant_name");
+                                String email = doc.getString("Entrant_email");
+                                
+                                String label;
+                                if (name != null && !name.isEmpty()) {
+                                    label = "Winner: " + name;
+                                } else if (email != null && !email.isEmpty()) {
+                                    label = "Winner: " + email;
+                                } else {
+                                    label = "Winner drawn successfully!";
+                                }
+                                
+                                tvWinnerResult.setText(label);
+                                Toast.makeText(getContext(), "Winner drawn successfully!", Toast.LENGTH_SHORT).show();
+                            });
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Failed to select winner: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show()
+                );
     }
 }

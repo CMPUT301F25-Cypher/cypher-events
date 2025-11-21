@@ -5,11 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Admin class
- * Each Admin wraps one Entrant object (representing the base user)
- * and adds Admin-specific fields for system control and moderation.
- */
+
 public class Admin {
 
     // Core identity — the Entrant representing this Admin

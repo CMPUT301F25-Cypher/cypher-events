@@ -6,11 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * DummyData Seeder
- * Seeds one Entrant, one Organizer, and three Events (Open / Accepted / Declined)
- * into Firestore for testing and structure verification.
- */
+
 public class DummyData {
     private static final String TAG = "DummyData";
 
