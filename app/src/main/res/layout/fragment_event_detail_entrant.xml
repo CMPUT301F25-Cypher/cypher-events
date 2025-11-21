@@ -166,6 +166,20 @@
             android:gravity="center_horizontal"
             android:layout_marginTop="8dp">
 
+            <!-- Selection Criteria -->
+            <Button
+                android:id="@+id/btnViewLotteryRules"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="Lottery Selection Criteria"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/text_primary"
+                android:background="@drawable/bg_button_secondary"
+                android:elevation="0dp"
+                android:layout_marginBottom="12dp" />
+
             <!-- Join Waiting List -->
             <Button
                 android:id="@+id/btnJoinWaitlist"

@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import com.example.cypher_events.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import androidx.appcompat.app.AlertDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -82,6 +83,11 @@ public class EventDetailEntrantFragment extends Fragment {
         btnDecline = view.findViewById(R.id.btnDecline);
         layoutAcceptDecline = view.findViewById(R.id.layoutAcceptDecline);
 
+        Button btnViewLotteryRules = view.findViewById(R.id.btnViewLotteryRules);
+        if (btnViewLotteryRules != null) {
+            btnViewLotteryRules.setOnClickListener(v -> showLotteryRulesDialog());
+        }
+
         ImageButton btnBack = view.findViewById(R.id.btnBack);
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
@@ -107,7 +113,7 @@ public class EventDetailEntrantFragment extends Fragment {
                         toast("Event not found");
                         return;
                     }
-                    
+
                     String organizerEmail = doc.getString("Event_organizerEmail");
                     checkIfUserIsOrganizer(organizerEmail, () -> displayEventData(doc));
                 })
@@ -224,6 +230,7 @@ public class EventDetailEntrantFragment extends Fragment {
         btnJoinWaitlist.setOnClickListener(v -> joinWaitlist());
         btnAccept.setOnClickListener(v -> acceptInvitation());
         btnDecline.setOnClickListener(v -> declineInvitation());
+
     }
 
     private void joinWaitlist() {
@@ -271,6 +278,36 @@ public class EventDetailEntrantFragment extends Fragment {
                 .addOnFailureListener(e -> toast("Failed to decline: " + e.getMessage()));
     }
 
+    private void showLotteryRulesDialog() {
+        String lotteryRules = "LOTTERY SELECTION CRITERIA\n\n" +
+                "How are entrants selected?\n\n" +
+                "1. RANDOM DRAW\n" +
+                "   • All entrants on the waiting list are entered into a random draw\n" +
+                "   • Each entrant has an equal chance of being selected\n" +
+                "   • No favoritism or bias\n\n" +
+                "2. EQUAL OPPORTUNITY\n" +
+                "   • First come, first served on the waiting list\n" +
+                "   • But selection is random, not based on join time\n\n" +
+                "3. REPLACEMENT DRAWING\n" +
+                "   • If a selected entrant declines, another random entrant is selected\n" +
+                "   • You get a second chance if someone cancels\n\n" +
+                "4. NOTIFICATION\n" +
+                "   • You will be notified immediately if selected\n" +
+                "   • You have time to accept or decline the invitation\n\n" +
+                "5. FAIRNESS\n" +
+                "   • Everyone waiting has the same probability of selection\n" +
+                "   • Results are transparent and verified\n\n" +
+                "Questions? Contact the event organizer.";
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Lottery Selection Guidelines")
+                .setMessage(lotteryRules)
+                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                .setNegativeButton("Share", (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .show();
+    }
     private String formatDate(long timestamp) {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
         return sdf.format(new Date(timestamp));
