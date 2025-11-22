@@ -47,4 +47,20 @@
     <color name="nav_background">#FFFFFF</color>
     <color name="nav_item_active">#6366F1</color>
     <color name="nav_item_inactive">#94A3B8</color>
+
+    <color name="colorPrimary">#5B5BF7</color>
+    <color name="colorPrimaryDark">#2E2E78</color>
+    <color name="colorOnPrimary">#FFFFFFFF</color>
+
+    <color name="colorSuccess">#22C55E</color>
+    <color name="colorSuccessBackground">#DCFCE7</color>
+
+    <color name="colorBackground">#F5F6FA</color>
+    <color name="colorCardBackground">#F4F3FF</color>
+
+    <color name="colorTextPrimary">#111827</color>
+    <color name="colorTextSecondary">#6B7280</color>
+
+
+
 </resources>

@@ -241,9 +241,17 @@ public class CreateEventFragment extends Fragment {
         );
 
         batch.commit()
-                .addOnSuccessListener(a -> {
+                .addOnSuccessListener(result -> {
                     Toast.makeText(getContext(), "Event created successfully!", Toast.LENGTH_SHORT).show();
-                    requireActivity().getSupportFragmentManager().popBackStack();
+
+                    // go to "event created" screen with this eventId
+                    EventCreatedFragment eventCreatedFragment = EventCreatedFragment.newInstance(eventId);
+
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.container, eventCreatedFragment)
+                            .addToBackStack(null)
+                            .commit();
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(
@@ -252,6 +260,7 @@ public class CreateEventFragment extends Fragment {
                                 Toast.LENGTH_SHORT
                         ).show()
                 );
+
     }
 
     private String safeText(EditText et) {
