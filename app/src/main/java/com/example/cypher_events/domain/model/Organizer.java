@@ -18,7 +18,7 @@ public class Organizer {
     private List<Event> Organizer_completedEvents = new ArrayList<>();
 
     private boolean Organizer_notificationsEnabled;
-    private List<String> Organizer_sentNotifications = new ArrayList<>();
+    private List<NotificationLog> Organizer_sentNotifications = new ArrayList<>();
     private String Organizer_removalReason;
 
     // Constructors
@@ -118,11 +118,10 @@ public class Organizer {
         this.Organizer_notificationsEnabled = organizer_notificationsEnabled;
     }
 
-    public List<String> getOrganizer_sentNotifications() {
+    public List<NotificationLog> getOrganizer_sentNotifications() {
         return Organizer_sentNotifications;
     }
-
-    public void setOrganizer_sentNotifications(List<String> organizer_sentNotifications) {
+    public void setOrganizer_sentNotifications(List<NotificationLog> organizer_sentNotifications) {
         this.Organizer_sentNotifications =
                 organizer_sentNotifications != null ? organizer_sentNotifications : new ArrayList<>();
     }
@@ -134,9 +133,11 @@ public class Organizer {
     public void setOrganizer_removalReason(String organizer_removalReason) {
         this.Organizer_removalReason = organizer_removalReason;
     }
-
-
-
+    public void addSentNotification(NotificationLog log) {
+        if (log == null) return;
+        if (Organizer_sentNotifications == null) Organizer_sentNotifications = new ArrayList<>();
+        Organizer_sentNotifications.add(log);
+    }
     public void addCreatedEvent(Event event) {
         if (event != null && !Organizer_createdEvents.contains(event)) {
             Organizer_createdEvents.add(event);
@@ -180,7 +181,15 @@ public class Organizer {
         map.put("Organizer_activeEventIDs",    extractEventIds(Organizer_activeEvents));
         map.put("Organizer_completedEventIDs", extractEventIds(Organizer_completedEvents));
 
-        map.put("Organizer_sentNotifications", Organizer_sentNotifications);
+        List<Map<String, Object>> notifMaps = new ArrayList<>();
+        if (Organizer_sentNotifications != null) {
+            for (NotificationLog n : Organizer_sentNotifications) {
+                if (n != null) notifMaps.add(n.toMap());
+            }
+        }
+        map.put("Organizer_sentNotifications", notifMaps);
+
+
         return map;
     }
 }

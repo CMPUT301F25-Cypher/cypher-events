@@ -59,6 +59,10 @@ public class AdminDashboardFragment extends Fragment {
                     open(new AdminManageOrganizersFragment())
             );
         }
+        View btnManageNotifications = view.findViewById(R.id.btnAdminNotifications);
+        if (btnManageNotifications != null) {
+            btnManageNotifications.setOnClickListener(v -> open(new AdminManageNotificationsFragment()));
+        }
 
         btnProfile.setOnClickListener(v ->
                 requireActivity().getSupportFragmentManager()
