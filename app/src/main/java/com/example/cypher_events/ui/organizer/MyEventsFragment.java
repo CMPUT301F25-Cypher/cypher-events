@@ -143,7 +143,7 @@ public class MyEventsFragment extends Fragment {
         return e;
     }
 
-    private void openEventManagementScreen(String eventId) {
+    public void openEventManagementScreen(String eventId) {
         Bundle b = new Bundle();
         b.putString(ARG_EVENT_ID, eventId);
 

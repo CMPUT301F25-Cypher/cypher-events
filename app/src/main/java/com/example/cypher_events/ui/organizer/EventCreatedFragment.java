@@ -16,6 +16,8 @@ import com.example.cypher_events.R;
 import com.example.cypher_events.util.QRCodeHelper;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.cypher_events.ui.organizer.EventManagementFragment;
+import com.example.cypher_events.ui.organizer.MyEventsFragment;
 
 /**
  * Screen shown after an event is created.
@@ -86,8 +88,9 @@ public class EventCreatedFragment extends Fragment {
 
         //listeners for buttons
         seeDetailsButton.setOnClickListener(view -> {
-            Toast.makeText(getContext(), "Not created yet", Toast.LENGTH_SHORT).show();
+            openEventManagementScreen(eventId);
         });
+
 
         backToDashboardButton.setOnClickListener(view -> {
             OrganizerDashboardFragment dashboardFragment = new OrganizerDashboardFragment();
@@ -132,4 +135,25 @@ public class EventCreatedFragment extends Fragment {
             Toast.makeText(getContext(), "QR code generation not successful.", Toast.LENGTH_SHORT).show();
         }
     }
+    private void openEventManagementScreen(String eventId) {
+        if (eventId == null || eventId.trim().isEmpty()) {
+            Toast.makeText(getContext(), "No event ID.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Bundle b = new Bundle();
+        b.putString("EventId", eventId); // must match ARG_EVENT_ID in EventManagementFragment
+
+        EventManagementFragment f = new EventManagementFragment();
+        f.setArguments(b);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.container, f)
+                .addToBackStack(null)
+                .commit();
+    }
+
 }
+
