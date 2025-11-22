@@ -97,7 +97,7 @@
             android:backgroundTint="@color/black"
             android:fontFamily="sans-serif-medium"
             android:padding="12dp"
-            android:text="View event details"
+            android:text="Manage Event"
             android:textAllCaps="false"
             android:textColor="@color/colorOnPrimary"
             android:textSize="15sp" />
