@@ -81,7 +81,7 @@ public class EventManagementFragment extends Fragment {
         }
 
         if (btnGenerateQR != null) {
-            btnGenerateQR.setOnClickListener(v -> openGenerateQR());
+            btnGenerateQR.setOnClickListener(v -> openEventCreatedScreen());
         }
 
         if (btnUpdateEvent != null) {
@@ -215,5 +215,21 @@ public class EventManagementFragment extends Fragment {
                         Toast.makeText(getContext(), "Failed to load waiting list: " + e.getMessage(),
                                 Toast.LENGTH_SHORT).show()
                 );
+    }
+    private void openEventCreatedScreen() {
+        if (eventId == null || eventId.trim().isEmpty()) {
+            Toast.makeText(getContext(), "No event selected.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Reuse the same flow as CreateEventFragment after submit
+        EventCreatedFragment eventCreatedFragment = EventCreatedFragment.newInstance(eventId);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.container, eventCreatedFragment)
+                .addToBackStack(null)
+                .commit();
     }
 }
