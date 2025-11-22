@@ -104,6 +104,17 @@
                 app:iconPadding="8dp"
                 app:iconGravity="textStart" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAdminNotifications"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Notification Logs"
+                android:textAllCaps="false"
+                app:iconPadding="8dp"
+                app:iconGravity="textStart" />
+
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
