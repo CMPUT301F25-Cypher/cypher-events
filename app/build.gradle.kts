@@ -46,6 +46,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
 
+    implementation("com.google.firebase:firebase-storage:20.3.0")
+
     // Add the specific SDKs you will use.
     //implementation("com.google.firebase:firebase-analytics")
     //implementation("com.google.firebase:firebase-auth")

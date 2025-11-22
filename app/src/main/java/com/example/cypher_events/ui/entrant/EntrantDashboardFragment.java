@@ -1,6 +1,7 @@
 package com.example.cypher_events.ui.entrant;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,12 @@ import com.example.cypher_events.ui.entrant.HistoryFragmentEntrant;
 import com.example.cypher_events.ui.entrant.UpdateProfileEntrantFragment;
 import com.example.cypher_events.ui.entrant.EventEntrantFragment;
 import com.example.cypher_events.ui.organizer.OrganizerDashboardFragment;
+import com.example.cypher_events.ui.admin.AdminDashboardFragment;
+
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentSnapshot;
+import android.provider.Settings;
+
 
 public class EntrantDashboardFragment extends Fragment {
 
@@ -43,6 +50,40 @@ public class EntrantDashboardFragment extends Fragment {
         Button btnShowHistory   = view.findViewById(R.id.btnShowHistory);
         Button btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
         ImageButton btnOrganizer = view.findViewById(R.id.btnOrganizer);
+        ImageButton btnAdmin = view.findViewById(R.id.btnAdmin);
+
+        String deviceId = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        Toast.makeText(requireContext(), "DeviceID: " + deviceId, Toast.LENGTH_LONG).show();
+        android.util.Log.d("ADMIN_CHECK", "DeviceID = " + deviceId);
+
+        FirebaseFirestore.getInstance()
+                .collection("Entrants")
+                .document(deviceId)   // Entrant_id is stored as document id
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) {
+                        Log.d("ADMIN_CHECK", "Entrant doc does not exist for this device.");
+                        return;
+                    }
+
+                    Boolean isAdmin = doc.getBoolean("Entrant_isAdmin");
+
+                    Log.d("ADMIN_CHECK", "Entrant_isAdmin = " + isAdmin);
+
+                    if (Boolean.TRUE.equals(isAdmin)) {
+                        btnAdmin.setVisibility(View.VISIBLE);
+                        btnAdmin.setOnClickListener(v ->
+                                requireActivity().getSupportFragmentManager()
+                                        .beginTransaction()
+                                        .replace(R.id.container, new AdminDashboardFragment())
+                                        .addToBackStack(null)
+                                        .commit()
+                        );
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("ADMIN_CHECK", "Error loading entrant", e));
+
 
         // QR button: open scan/join event screen
         if (btnScanQr != null) {
