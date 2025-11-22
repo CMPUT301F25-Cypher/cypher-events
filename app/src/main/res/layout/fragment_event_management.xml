@@ -52,7 +52,7 @@
         android:id="@+id/btnGenerateQR"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="Generate QR Code"
+        android:text="See QR Code"
         android:textAllCaps="false"
         android:textSize="16sp"
         android:fontFamily="sans-serif-medium"
