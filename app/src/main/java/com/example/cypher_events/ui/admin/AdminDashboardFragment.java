@@ -35,6 +35,7 @@ public class AdminDashboardFragment extends Fragment {
         View btnManageEvents   = view.findViewById(R.id.btnAdminEvents);
         View btnManageProfiles = view.findViewById(R.id.btnAdminProfiles);
         View btnManageImages   = view.findViewById(R.id.btnAdminImages);
+        View btnManageOrganizers = view.findViewById(R.id.btnAdminOrganizers);
         ImageButton btnProfile = view.findViewById(R.id.btnAdminProfile);
 
         // Navigate to Manage Events screen
@@ -51,6 +52,13 @@ public class AdminDashboardFragment extends Fragment {
         btnManageImages.setOnClickListener(v ->
                 open(new AdminManageImagesFragment())
         );
+
+        // Navigate to Manage Organizers screen
+        if (btnManageOrganizers != null) {
+            btnManageOrganizers.setOnClickListener(v ->
+                    open(new AdminManageOrganizersFragment())
+            );
+        }
 
         btnProfile.setOnClickListener(v ->
                 requireActivity().getSupportFragmentManager()
