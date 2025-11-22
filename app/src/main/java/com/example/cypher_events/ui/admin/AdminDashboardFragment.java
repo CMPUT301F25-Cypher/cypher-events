@@ -1,4 +1,75 @@
 package com.example.cypher_events.ui.admin;
 
-public class AdminDashboardFragment {
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.cypher_events.R;
+
+public class AdminDashboardFragment extends Fragment {
+
+    @Nullable
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState
+    ) {
+        return inflater.inflate(R.layout.admin_dashboard, container, false);
+    }
+
+    @Override
+    public void onViewCreated(
+            @NonNull View view,
+            @Nullable Bundle savedInstanceState
+    ) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Buttons from XML
+        View btnManageEvents   = view.findViewById(R.id.btnAdminEvents);
+        View btnManageProfiles = view.findViewById(R.id.btnAdminProfiles);
+        View btnManageImages   = view.findViewById(R.id.btnAdminImages);
+        ImageButton btnProfile = view.findViewById(R.id.btnAdminProfile);
+
+        // Navigate to Manage Events screen
+        btnManageEvents.setOnClickListener(v ->
+                open(new AdminManageEventsFragment())
+        );
+
+        // Navigate to Manage Profiles screen
+        btnManageProfiles.setOnClickListener(v ->
+                open(new AdminManageProfilesFragment())
+        );
+
+        // Navigate to Manage Images screen
+        btnManageImages.setOnClickListener(v ->
+                open(new AdminManageImagesFragment())
+        );
+
+        btnProfile.setOnClickListener(v ->
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true)
+                        .replace(R.id.container,
+                                new com.example.cypher_events.ui.entrant.EntrantDashboardFragment())
+                        .addToBackStack(null)
+                        .commit()
+        );
+
+    }
+
+    private void open(Fragment fragment) {
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
 }
