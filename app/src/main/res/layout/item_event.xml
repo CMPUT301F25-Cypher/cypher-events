@@ -21,18 +21,28 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvEventName"
-            android:layout_width="wrap_content"
+        <!-- TITLE ROW + CIRCLE SELECTOR -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Event Name"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="@color/text_primary"
-            android:fontFamily="sans-serif-medium"
-            android:letterSpacing="-0.01"
-            android:layout_marginBottom="8dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
 
+            <TextView
+                android:id="@+id/tvEventName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Event Name"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:fontFamily="sans-serif-medium" />
+
+        </LinearLayout>
+
+        <!-- LOCATION ROW -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -57,6 +67,7 @@
                 android:textColor="@color/text_secondary" />
         </LinearLayout>
 
+        <!-- DATE ROW -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -78,8 +89,20 @@
                 android:text="Date"
                 android:textSize="14sp"
                 android:textColor="@color/text_secondary" />
+
+            <RadioButton
+                android:id="@+id/rbSelect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:visibility="gone"/>
+
         </LinearLayout>
+
+
     </LinearLayout>
 
-</com.google.android.material.card.MaterialCardView>
 
+
+</com.google.android.material.card.MaterialCardView>
