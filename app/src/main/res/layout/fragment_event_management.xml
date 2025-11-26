@@ -42,6 +42,27 @@
             android:layout_marginStart="12dp" />
     </LinearLayout>
 
+    <!-- Event description -->
+    <TextView
+        android:id="@+id/tvEventDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="This event is about..."
+        android:textSize="15sp"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Poster preview -->
+    <ImageView
+        android:id="@+id/imgEventPoster"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="16dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_placeholder_image_event"
+        android:background="@drawable/rounded_border_light"
+        android:contentDescription="Event poster" />
+
     <!-- Spacer -->
     <View
         android:layout_width="match_parent"

@@ -134,38 +134,25 @@ public class ScanQRFragment extends Fragment {
                     }
 
                     String eventTitle = doc.getString("Event_title");
-                    
-                    db.collection("Entrants").document(deviceId).get()
-                            .addOnSuccessListener(entrantDoc -> {
-                                if (!entrantDoc.exists()) {
-                                    toast("Please create a profile first");
-                                    return;
-                                }
 
-                                db.collection("Entrants").document(deviceId)
-                                        .update("Entrant_joinedEventIDs", 
-                                                com.google.firebase.firestore.FieldValue.arrayUnion(eventId))
-                                        .addOnSuccessListener(aVoid -> {
-                                            toast("Joined: " + (eventTitle != null ? eventTitle : "Event"));
-                                            
-                                            Bundle b = new Bundle();
-                                            b.putString(ARG_EVENT_ID, eventId);
-                                            EventDetailEntrantFragment f = new EventDetailEntrantFragment();
-                                            f.setArguments(b);
-                                            
-                                            requireActivity().getSupportFragmentManager()
-                                                    .beginTransaction()
-                                                    .replace(R.id.container, f)
-                                                    .addToBackStack(null)
-                                                    .commit();
-                                        })
-                                        .addOnFailureListener(e -> 
-                                            toast("Failed to join: " + e.getMessage())
-                                        );
-                            });
+                    //toast to confirm event was found
+                    toast("Opening: " + (eventTitle != null ? eventTitle : "Event"));
+
+                    //go straight to the event detail screen, but doesnt add to waitlist
+                    Bundle b = new Bundle();
+                    b.putString(ARG_EVENT_ID, eventId);
+                    EventDetailEntrantFragment fragment = new EventDetailEntrantFragment();
+                    fragment.setArguments(b);
+
+                    requireActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.container, fragment)
+                            .addToBackStack(null)
+                            .commit();
                 })
                 .addOnFailureListener(e -> toast("Error: " + e.getMessage()));
     }
+
 
     private void toast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
