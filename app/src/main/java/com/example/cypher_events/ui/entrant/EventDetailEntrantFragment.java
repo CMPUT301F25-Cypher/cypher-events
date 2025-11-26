@@ -1,6 +1,7 @@
 package com.example.cypher_events.ui.entrant;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.cypher_events.R;
+import com.example.cypher_events.util.ImageProcessor; //helper for base64 to bitmap
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import androidx.appcompat.app.AlertDialog;
@@ -149,6 +151,22 @@ public class EventDetailEntrantFragment extends Fragment {
         Long signupStart = doc.getLong("Event_signupStartUtc");
         Long signupEnd = doc.getLong("Event_signupEndUtc");
         String organizerEmail = doc.getString("Event_organizerEmail");
+
+        // load ans how poster from base64
+        // read the poster base64 string that we saved when creating and updating the event
+        String posterBase64 = doc.getString("Event_posterBase64");
+
+        if (posterBase64 != null && !posterBase64.isEmpty()) {
+            //convert base64 text back into a bitmap using helper ImageProcessor class
+            Bitmap posterBitmap = ImageProcessor.base64ToBitmap(posterBase64);
+
+            if (posterBitmap != null && imgEventPoster != null) {
+                //if decoding worked, show the decoded bitmap in the image view
+                imgEventPoster.setImageBitmap(posterBitmap);
+            }
+            //if posterBitmap is null, just keep the placeholder image
+        }
+        // if posterBase64 is null/empty,also just keep placeholder image defined in fragment_event_detail_entrant.xml
 
         tvEventTitle.setText(title != null ? title : "Event Details");
         tvEventDescription.setText(description != null ? description : "No description available");
