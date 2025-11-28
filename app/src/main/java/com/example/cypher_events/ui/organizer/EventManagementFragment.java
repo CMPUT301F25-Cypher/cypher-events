@@ -228,30 +228,58 @@ public class EventManagementFragment extends Fragment {
                     int count = 0;
 
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                        @SuppressWarnings("unchecked")
-                        java.util.List<String> joinedIds = (java.util.List<String>) doc.get("Entrant_joinedEventIDs");
+                        Object raw = doc.get("Entrant_joinedEventIDs");
 
-                        if (joinedIds != null && joinedIds.contains(eventId)) {
-                            String name = doc.getString("Entrant_name");
-                            String email = doc.getString("Entrant_email");
-                            count++;
-                            waitlist.append(count).append(". ")
-                                    .append(name != null ? name : "Unknown")
-                                    .append(" (").append(email != null ? email : "No email").append(")\n");
+
+                        if (raw == null) {
+                            continue;
                         }
+
+                        java.util.List<String> joinedIds = new java.util.ArrayList<>();
+
+                        if (raw instanceof java.util.List<?>) {
+                            // Normal case is an array field
+                            for (Object o : (java.util.List<?>) raw) {
+                                if (o != null) {
+                                    joinedIds.add(o.toString());
+                                }
+                            }
+                        } else {
+                            //added in just in case some old test has a single string or sth, could cause crash
+                            joinedIds.add(raw.toString());
+                        }
+
+                        if (!joinedIds.contains(eventId)) {
+                            continue;
+                        }
+
+                        String name = doc.getString("Entrant_name");
+                        String email = doc.getString("Entrant_email");
+                        count++;
+                        waitlist.append(count).append(". ")
+                                .append(name != null ? name : "Unknown")
+                                .append(" (").append(email != null ? email : "No email").append(")\n");
                     }
 
                     if (count == 0) {
                         waitlist.append("No entrants on waiting list yet.");
                     }
 
-                    Toast.makeText(getContext(), waitlist.toString(), Toast.LENGTH_LONG).show();
+                    if (getContext() != null) {
+                        Toast.makeText(getContext(), waitlist.toString(), Toast.LENGTH_LONG).show();
+                    }
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Failed to load waiting list: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show()
-                );
+                .addOnFailureListener(e -> {
+                    if (getContext() != null) {
+                        Toast.makeText(
+                                getContext(),
+                                "Failed to load waiting list: " + e.getMessage(),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                });
     }
+
     private void openEventCreatedScreen() {
         if (eventId == null || eventId.trim().isEmpty()) {
             Toast.makeText(getContext(), "No event selected.", Toast.LENGTH_SHORT).show();
