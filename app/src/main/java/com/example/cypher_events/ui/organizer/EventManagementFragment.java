@@ -226,19 +226,15 @@ public class EventManagementFragment extends Fragment {
                 .addOnSuccessListener(querySnapshot -> {
                     StringBuilder waitlist = new StringBuilder("Waiting List:\n\n");
                     int count = 0;
-
                     for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                         Object raw = doc.get("Entrant_joinedEventIDs");
-
-
                         if (raw == null) {
                             continue;
                         }
-
                         java.util.List<String> joinedIds = new java.util.ArrayList<>();
 
                         if (raw instanceof java.util.List<?>) {
-                            // Normal case is an array field
+                            //the normal case is an array field
                             for (Object o : (java.util.List<?>) raw) {
                                 if (o != null) {
                                     joinedIds.add(o.toString());
@@ -246,13 +242,12 @@ public class EventManagementFragment extends Fragment {
                             }
                         } else {
                             //added in just in case some old test has a single string or sth, could cause crash
+                            //jsut because of how its stored in Firestore
                             joinedIds.add(raw.toString());
                         }
-
                         if (!joinedIds.contains(eventId)) {
                             continue;
                         }
-
                         String name = doc.getString("Entrant_name");
                         String email = doc.getString("Entrant_email");
                         count++;
