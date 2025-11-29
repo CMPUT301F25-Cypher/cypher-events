@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.example.cypher_events.util.ImageProcessor;
+
 public class CreateEventFragment extends Fragment {
 
     private FirebaseFirestore db;
@@ -57,19 +59,42 @@ public class CreateEventFragment extends Fragment {
 
     private Uri selectedImageUri = null;
 
+    // will hold the compressed base64 poster string that we save to firestore
+    private String posterBase64 = "";
+
+
+    //opens the system gallery gallery/file picker
     private final ActivityResultLauncher<String> imagePickerLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
+                    //remember the original uri to show a quick preview
                     selectedImageUri = uri;
+
+                    //show the picked image in the preview box so the user can see it immediately
                     if (imgPosterPreview != null) {
                         imgPosterPreview.setImageURI(uri);
                     }
-                    Toast.makeText(getContext(), "Poster selected!", Toast.LENGTH_SHORT).show();
+
+                    //now also turn this image into a compressed base64 string
+                    //this uses the ImageProcessor helper class
+                    String resultBase64 = ImageProcessor.uriToBase64(requireContext(), uri);
+
+                    if (resultBase64 != null && !resultBase64.isEmpty()) {
+                        //keep this string to save it with the event in Firestore
+                        posterBase64 = resultBase64;
+
+                        Toast.makeText(getContext(), "Poster selected and processed!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //if something went wrong while processing the image, still keep the local preview
+                        //but does not save a poster
+                        posterBase64 = "";
+                        Toast.makeText(getContext(), "Poster selected, but could not process image.", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
+                    //user backed out without selecting and image from the gallery
                     Toast.makeText(getContext(), "No image selected.", Toast.LENGTH_SHORT).show();
                 }
             });
-
     @Nullable
     @Override
     public View onCreateView(
@@ -221,7 +246,10 @@ public class CreateEventFragment extends Fragment {
         event.put("Event_signupStartUtc", signupStartUtc);
         event.put("Event_signupEndUtc", signupEndUtc);
 
-        event.put("Event_posterUri", selectedImageUri != null ? selectedImageUri.toString() : "");
+        //store the base64 poster string instead of the local uri
+        //if posterBase64 is empty, just means there was no poster uploaded
+        event.put("Event_posterBase64", posterBase64);
+
         event.put("Event_organizerEmail", organizerEmail);
         event.put("Event_status", "Open");
         event.put("Event_isActive", true);
@@ -262,7 +290,6 @@ public class CreateEventFragment extends Fragment {
                 );
 
     }
-
     private String safeText(EditText et) {
         return et != null && et.getText() != null
                 ? et.getText().toString().trim()

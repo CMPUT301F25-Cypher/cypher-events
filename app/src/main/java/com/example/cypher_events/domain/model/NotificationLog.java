@@ -68,4 +68,3 @@ public class NotificationLog {
         return n;
     }
 }
-

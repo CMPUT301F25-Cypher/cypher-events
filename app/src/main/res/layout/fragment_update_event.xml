@@ -96,12 +96,33 @@
                 android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!--Poster preview for the existing or updated image-->
+        <ImageView
+            android:id="@+id/imgPosterPreviewUpdate"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_marginTop="16dp"
+            android:background="#F2F2F7"
+            android:scaleType="centerCrop"
+            android:contentDescription="Event poster preview" />
+
+        <!--Button to let user choose a new poster image-->
         <!-- Save button -->
+        <Button
+            android:id="@+id/btnChangePoster"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/rounded_button_minimal"
+            android:text="Update Poster"
+            android:textAllCaps="false"
+            android:textColor="#0F0F0F" />
+
         <Button
             android:id="@+id/btnSaveChanges"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="80dp"
             android:text="Save Changes"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
