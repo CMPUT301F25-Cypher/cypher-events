@@ -185,36 +185,18 @@ public class EventManagementFragment extends Fragment {
     }
 
     private void viewWaitingList() {
-        db.collection("Entrants")
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    StringBuilder waitlist = new StringBuilder("Waiting List:\n\n");
-                    int count = 0;
+        Bundle b = new Bundle();
+        b.putString(ARG_EVENT_ID, eventId);
 
-                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                        @SuppressWarnings("unchecked")
-                        java.util.List<String> joinedIds = (java.util.List<String>) doc.get("Entrant_joinedEventIDs");
-                        
-                        if (joinedIds != null && joinedIds.contains(eventId)) {
-                            String name = doc.getString("Entrant_name");
-                            String email = doc.getString("Entrant_email");
-                            count++;
-                            waitlist.append(count).append(". ")
-                                    .append(name != null ? name : "Unknown")
-                                    .append(" (").append(email != null ? email : "No email").append(")\n");
-                        }
-                    }
+        WaitlistFragment f = new WaitlistFragment();
+        f.setArguments(b);
 
-                    if (count == 0) {
-                        waitlist.append("No entrants on waiting list yet.");
-                    }
-
-                    Toast.makeText(getContext(), waitlist.toString(), Toast.LENGTH_LONG).show();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Failed to load waiting list: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show()
-                );
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.container, f)
+                .addToBackStack(null)
+                .commit();
     }
     private void openEventCreatedScreen() {
         if (eventId == null || eventId.trim().isEmpty()) {
