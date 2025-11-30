@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.container, new EntrantDashboardFragment())
+                    .replace(R.id.container, new HomeContainerFragment())
                     .commit();
         }
     }

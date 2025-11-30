@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -65,8 +66,9 @@ public class HistoryFragmentEntrant extends Fragment {
                 return;
             }
             
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
+            recyclerView = view.findViewById(R.id.recyclerHistory);
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+            recyclerView.setHasFixedSize(true);
             eventAdapter = new EventAdapter(this::openEventDetail);
             recyclerView.setAdapter(eventAdapter);
 

@@ -5,6 +5,8 @@
     android:id="@+id/homeRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="24dp"
+    android:paddingBottom="8dp"
     android:background="@color/background"
     android:fitsSystemWindows="true">
 

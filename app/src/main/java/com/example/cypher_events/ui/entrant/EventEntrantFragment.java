@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,7 +50,8 @@ public class EventEntrantFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerEvents);
         ImageButton backButton = view.findViewById(R.id.btnBack);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        recyclerView.setHasFixedSize(true);
         eventAdapter = new EventAdapter(this::openEventDetail);
         recyclerView.setAdapter(eventAdapter);
 
@@ -74,7 +76,7 @@ public class EventEntrantFragment extends Fragment {
                 .addOnSuccessListener(snap -> {
                     if (snap == null || snap.isEmpty()) {
                         // Fallback to lowercase collection name if needed
-                        db.collection("events").get()
+                        db.collection("events").orderBy("Event_signupStartUtc").get()
                                 .addOnSuccessListener(this::consumeSnapshot)
                                 .addOnFailureListener(e -> toast("Failed: " + e.getMessage()));
                     } else {
