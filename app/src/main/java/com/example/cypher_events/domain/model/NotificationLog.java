@@ -60,6 +60,7 @@ public class NotificationLog {
      * @param m map containing notification data
      * @return NotificationLog instance from map, or null
      */
+
     @SuppressWarnings("unchecked")
     public static NotificationLog fromMap(Map<String, Object> m) {
         if (m == null) return null;
