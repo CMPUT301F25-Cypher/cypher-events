@@ -1,4 +1,4 @@
 package com.example.cypher_events.ui.admin;
 
-public class AdminManageEventsFragment {
+public class AdminImagesListAdapter {
 }
