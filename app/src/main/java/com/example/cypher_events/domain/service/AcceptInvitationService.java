@@ -18,6 +18,10 @@ public class AcceptInvitationService {
     private final Map<String, Map<String, Boolean>> accepted = new HashMap<>();
 
     // register a device to a user
+    /**
+     * @param deviceId device identifier
+     * @param userId user identifier
+     */
     public void registerDeviceUser(String deviceId, String userId) {
         if (deviceId == null || userId == null) {
             return;
@@ -26,6 +30,11 @@ public class AcceptInvitationService {
     }
 
     // accept an invitation for the user associated with this device
+    /**
+     * @param deviceId device identifier
+     * @param eventId event identifier
+     * @return status message describing the accept result
+     */
     public String acceptInvitation(String deviceId, String eventId) {
         if (deviceId == null || deviceId.isEmpty()
                 || eventId == null || eventId.isEmpty()) {
@@ -52,6 +61,11 @@ public class AcceptInvitationService {
     }
 
     // check if user has accepted an event
+    /**
+     * @param userId user identifier
+     * @param eventId event identifier
+     * @return true if accepted, false otherwise
+     */
     public boolean isAccepted(String userId, String eventId) {
         Map<String, Boolean> eventsForUser = accepted.get(userId);
         return eventsForUser != null && Boolean.TRUE.equals(eventsForUser.get(eventId));
@@ -67,6 +81,10 @@ public class AcceptInvitationService {
         }
 
 
+        /**
+         * @param eventId event identifier
+         * @return replacement entrant drawn from waitlist, or null
+         */
         public Entrant drawReplacement(String eventId) {
             if (eventId == null || eventId.isEmpty()) {
                 return null;

@@ -52,12 +52,24 @@ public class EventDetailEntrantFragment extends Fragment {
     private Button btnDecline;
     private LinearLayout layoutAcceptDecline;
 
+    /**
+     * @param inflater layout inflater
+     * @param container parent view container
+     * @param savedInstanceState saved state bundle
+     * @return the inflated view
+     */
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_event_detail_entrant, container, false);
     }
+
+    /**
+     * @param view the created view
+     * @param savedInstanceState saved state bundle
+     */
 
     @SuppressLint("HardwareIds")
     @Override

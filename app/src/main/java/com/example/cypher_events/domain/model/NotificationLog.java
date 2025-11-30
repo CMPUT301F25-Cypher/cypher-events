@@ -12,6 +12,13 @@ public class NotificationLog {
     private long timestampUtc;
 
     public NotificationLog() {}
+    /**
+     * @param notificationId notification identifier
+     * @param recipientEmail email of recipient
+     * @param message notification message text
+     * @param eventId associated event identifier
+     * @param timestampUtc timestamp in UTC milliseconds
+     */
 
     public NotificationLog(String notificationId,
                            String recipientEmail,
@@ -49,7 +56,10 @@ public class NotificationLog {
         m.put("timestampUtc", timestampUtc);
         return m;
     }
-
+    /**
+     * @param m map containing notification data
+     * @return NotificationLog instance from map, or null
+     */
     @SuppressWarnings("unchecked")
     public static NotificationLog fromMap(Map<String, Object> m) {
         if (m == null) return null;

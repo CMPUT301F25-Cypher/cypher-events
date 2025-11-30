@@ -11,6 +11,13 @@ public final class UpdateProfileUseCase {
             String email,
             String phone
     ) {
+        /**
+         * @param entrantMap mutable entrant profile map
+         * @param name optional name to set
+         * @param email optional email to set
+         * @param phone optional phone to set
+         * @return status message indicating result
+         */
 
 
         if (entrantMap == null) {
@@ -51,6 +58,10 @@ public final class UpdateProfileUseCase {
 
 
     private static boolean basicEmail(String s) {
+        /**
+         * @param s email string to validate
+         * @return true if looks like a basic email
+         */
         int at = s.indexOf('@');
         int dot = s.lastIndexOf('.');
         return at > 0 && dot > at + 1 && dot < s.length() - 1;
