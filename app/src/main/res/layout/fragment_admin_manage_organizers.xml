@@ -4,11 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="20dp"
     tools:context=".ui.admin.AdminManageOrganizersFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_marginTop="15dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
@@ -16,11 +17,11 @@
 
         <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_back_button"
+            android:layout_width="51dp"
+            android:layout_height="52dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Back"
-            android:background="?attr/selectableItemBackgroundBorderless" />
+            android:src="@drawable/ic_back_button" />
 
         <TextView
             android:layout_width="0dp"
