@@ -38,6 +38,20 @@
             android:layout_marginStart="12dp" />
     </LinearLayout>
 
+    <!-- Search Bar -->
+    <EditText
+        android:id="@+id/etSearchEvents"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="12dp"
+        android:hint="Search events"
+        android:inputType="text"
+        android:background="@drawable/bg_button_secondary"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:drawableStart="@android:drawable/ic_menu_search"
+        android:drawablePadding="8dp" />
+
     <!-- Events list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerEvents"
@@ -49,4 +63,3 @@
         android:paddingBottom="4dp" />
 
 </LinearLayout>
-

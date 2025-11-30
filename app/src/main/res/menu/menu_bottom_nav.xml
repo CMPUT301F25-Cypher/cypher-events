@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_browse"
+        android:title="Browse"
+        android:icon="@drawable/ic_browse" />
+
+    <item
+        android:id="@+id/nav_joined"
+        android:title="Joined"
+        android:icon="@drawable/ic_joined" />
+
+    <item
+        android:id="@+id/nav_my_events"
+        android:title="My Events"
+        android:icon="@drawable/ic_calendar" />
+
+    <item
+        android:id="@+id/nav_notifications"
+        android:title="Notifications"
+        android:icon="@drawable/ic_notifications" />
+
+    <item
+        android:id="@+id/nav_profile"
+        android:title="Profile"
+        android:icon="@drawable/ic_profile" />
+
+</menu>
