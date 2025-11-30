@@ -1,13 +1,11 @@
 package com.example.cypher_events.ui.organizer;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cypher_events.R;
-import com.example.cypher_events.util.ImageProcessor;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -31,9 +28,6 @@ public class EventManagementFragment extends Fragment {
     private static final String ARG_EVENT_ID = "EventId";
 
     private TextView tvEventTitle;
-    private TextView tvEventDescription;
-    private ImageView imgEventPoster;
-
     private Button btnGenerateQR;
     private Button btnUpdateEvent;
     private Button btnDrawWinner;
@@ -63,9 +57,6 @@ public class EventManagementFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
 
         tvEventTitle = view.findViewById(R.id.tvEventTitle);
-        tvEventDescription = view.findViewById(R.id.tvEventDescription);
-        imgEventPoster = view.findViewById(R.id.imgEventPoster);
-
         btnGenerateQR = view.findViewById(R.id.btnGenerateQR);
         btnUpdateEvent = view.findViewById(R.id.btnUpdateEvent);
         btnDrawWinner = view.findViewById(R.id.btnDrawWinner);
@@ -87,8 +78,7 @@ public class EventManagementFragment extends Fragment {
             return;
         }
 
-        loadEventDetails();
-        loadWaitingList();
+        loadEventTitle();
 
         btnBack.setOnClickListener(v -> requireActivity()
                 .getSupportFragmentManager()
@@ -102,7 +92,7 @@ public class EventManagementFragment extends Fragment {
         btnDrawReplacement.setOnClickListener(v -> openDrawReplacement());
     }
 
-    private void loadEventDetails() {
+    private void loadEventTitle() {
         db.collection("Events").document(eventId).get()
                 .addOnSuccessListener(this::handleEventLoaded)
                 .addOnFailureListener(e ->
@@ -116,21 +106,9 @@ public class EventManagementFragment extends Fragment {
             Toast.makeText(getContext(), "Event not found.", Toast.LENGTH_SHORT).show();
             return;
         }
-
         String title = doc.getString("Event_title");
-        String description = doc.getString("Event_description");
-        String posterBase64 = doc.getString("Event_posterBase64");
-
-        tvEventTitle.setText(title != null ? title : "Event");
-
-        tvEventDescription.setText(
-                description != null && !description.isEmpty()
-                        ? description : "No description available."
-        );
-
-        if (posterBase64 != null && !posterBase64.isEmpty()) {
-            Bitmap bmp = ImageProcessor.base64ToBitmap(posterBase64);
-            if (bmp != null) imgEventPoster.setImageBitmap(bmp);
+        if (tvEventTitle != null) {
+            tvEventTitle.setText(title != null ? title : "Event");
         }
     }
 
@@ -182,26 +160,24 @@ public class EventManagementFragment extends Fragment {
                 .commit();
     }
 
-    private void loadWaitingList() {
-        db.collection("Entrants").get()
-                .addOnSuccessListener(query -> {
-                    List<WaitingListAdapter.EntrantItem> result = new ArrayList<>();
+    private void viewWaitingList() {
+        db.collection("Entrants")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    StringBuilder waitlist = new StringBuilder("Waiting List:\n\n");
+                    int count = 0;
 
-                    for (DocumentSnapshot doc : query.getDocuments()) {
-
-                        Object raw = doc.get("Entrant_joinedEventIDs");
-                        List<String> joined = new ArrayList<>();
-
-                        if (raw instanceof List<?>) {
-                            for (Object o : (List<?>) raw) {
-                                if (o != null) joined.add(o.toString());
-                            }
-                        } else if (raw instanceof Map<?, ?>) {
-                            Map<?, ?> map = (Map<?, ?>) raw;
-                            for (Object key : map.keySet()) {
-                                Object value = map.get(key);
-                                if (value != null) joined.add(value.toString());
-                            }
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        @SuppressWarnings("unchecked")
+                        java.util.List<String> joinedIds = (java.util.List<String>) doc.get("Entrant_joinedEventIDs");
+                        
+                        if (joinedIds != null && joinedIds.contains(eventId)) {
+                            String name = doc.getString("Entrant_name");
+                            String email = doc.getString("Entrant_email");
+                            count++;
+                            waitlist.append(count).append(". ")
+                                    .append(name != null ? name : "Unknown")
+                                    .append(" (").append(email != null ? email : "No email").append(")\n");
                         }
 
                         if (joined.contains(eventId)) {
@@ -223,8 +199,24 @@ public class EventManagementFragment extends Fragment {
                     }
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(getContext(),
-                                "Failed to load waitlist: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show());
+                        Toast.makeText(getContext(), "Failed to load waiting list: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show()
+                );
+    }
+    private void openEventCreatedScreen() {
+        if (eventId == null || eventId.trim().isEmpty()) {
+            Toast.makeText(getContext(), "No event selected.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Reuse the same flow as CreateEventFragment after submit
+        EventCreatedFragment eventCreatedFragment = EventCreatedFragment.newInstance(eventId);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.container, eventCreatedFragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

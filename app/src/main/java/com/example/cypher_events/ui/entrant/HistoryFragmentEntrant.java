@@ -105,15 +105,29 @@ public class HistoryFragmentEntrant extends Fragment {
                             return;
                         }
 
-                        @SuppressWarnings("unchecked")
-                        List<String> joinedIds =
-                                (List<String>) entrantDoc.get("Entrant_joinedEventIDs");
-                        @SuppressWarnings("unchecked")
-                        List<String> acceptedIds =
-                                (List<String>) entrantDoc.get("Entrant_acceptedEventIDs");
-                        @SuppressWarnings("unchecked")
-                        List<String> declinedIds =
-                                (List<String>) entrantDoc.get("Entrant_declinedEventIDs");
+                        List<String> joinedIds = new ArrayList<>();
+                        Object joinedObj = entrantDoc.get("Entrant_joinedEventIDs");
+                        if (joinedObj instanceof List) {
+                            joinedIds = (List<String>) joinedObj;
+                        } else if (joinedObj instanceof java.util.Map) {
+                            joinedIds.addAll(((java.util.Map<String, Object>) joinedObj).keySet());
+                        }
+
+                        List<String> acceptedIds = new ArrayList<>();
+                        Object acceptedObj = entrantDoc.get("Entrant_acceptedEventIDs");
+                        if (acceptedObj instanceof List) {
+                            acceptedIds = (List<String>) acceptedObj;
+                        } else if (acceptedObj instanceof java.util.Map) {
+                            acceptedIds.addAll(((java.util.Map<String, Object>) acceptedObj).keySet());
+                        }
+
+                        List<String> declinedIds = new ArrayList<>();
+                        Object declinedObj = entrantDoc.get("Entrant_declinedEventIDs");
+                        if (declinedObj instanceof List) {
+                            declinedIds = (List<String>) declinedObj;
+                        } else if (declinedObj instanceof java.util.Map) {
+                            declinedIds.addAll(((java.util.Map<String, Object>) declinedObj).keySet());
+                        }
 
                         Set<String> allEventIdsSet = new HashSet<>();
                         if (joinedIds != null) {
