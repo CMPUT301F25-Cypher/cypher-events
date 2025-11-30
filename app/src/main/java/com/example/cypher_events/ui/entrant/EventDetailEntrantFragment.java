@@ -24,9 +24,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class EventDetailEntrantFragment extends Fragment {
 
@@ -209,12 +211,29 @@ public class EventDetailEntrantFragment extends Fragment {
                         return;
                     }
 
-                    @SuppressWarnings("unchecked")
-                    List<String> joinedIds = (List<String>) doc.get("Entrant_joinedEventIDs");
-                    @SuppressWarnings("unchecked")
-                    List<String> selectedIds = (List<String>) doc.get("Entrant_selectedEventIDs");
-                    @SuppressWarnings("unchecked")
-                    List<String> acceptedIds = (List<String>) doc.get("Entrant_acceptedEventIDs");
+                    List<String> joinedIds = new ArrayList<>();
+                    Object joinedObj = doc.get("Entrant_joinedEventIDs");
+                    if (joinedObj instanceof List) {
+                        joinedIds = (List<String>) joinedObj;
+                    } else if (joinedObj instanceof Map) {
+                        joinedIds.addAll(((Map<String, Object>) joinedObj).keySet());
+                    }
+
+                    List<String> selectedIds = new ArrayList<>();
+                    Object selectedObj = doc.get("Entrant_selectedEventIDs");
+                    if (selectedObj instanceof List) {
+                        selectedIds = (List<String>) selectedObj;
+                    } else if (selectedObj instanceof Map) {
+                        selectedIds.addAll(((Map<String, Object>) selectedObj).keySet());
+                    }
+
+                    List<String> acceptedIds = new ArrayList<>();
+                    Object acceptedObj = doc.get("Entrant_acceptedEventIDs");
+                    if (acceptedObj instanceof List) {
+                        acceptedIds = (List<String>) acceptedObj;
+                    } else if (acceptedObj instanceof Map) {
+                        acceptedIds.addAll(((Map<String, Object>) acceptedObj).keySet());
+                    }
 
                     boolean hasJoined = joinedIds != null && joinedIds.contains(eventId);
                     boolean isSelected = selectedIds != null && selectedIds.contains(eventId);
@@ -252,8 +271,14 @@ public class EventDetailEntrantFragment extends Fragment {
                         return;
                     }
 
-                    @SuppressWarnings("unchecked")
-                    List<String> joinedIds = (List<String>) doc.get("Entrant_joinedEventIDs");
+                    List<String> joinedIds = new ArrayList<>();
+                    Object joinedObj = doc.get("Entrant_joinedEventIDs");
+                    if (joinedObj instanceof List) {
+                        joinedIds = (List<String>) joinedObj;
+                    } else if (joinedObj instanceof Map) {
+                        joinedIds.addAll(((Map<String, Object>) joinedObj).keySet());
+                    }
+                    
                     if (joinedIds != null && joinedIds.contains(eventId)) {
                         toast("Already on waitlist");
                         return;

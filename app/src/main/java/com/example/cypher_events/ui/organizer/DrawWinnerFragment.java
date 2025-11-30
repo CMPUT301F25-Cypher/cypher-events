@@ -100,30 +100,88 @@ public class DrawWinnerFragment extends Fragment {
             return;
         }
 
+        // Get the Event_id field from the document (e.g., "EVTB6E40")
+        String actualEventId = doc.getString("Event_id");
+        if (actualEventId == null || actualEventId.isEmpty()) {
+            actualEventId = eventId; // Fallback to document ID
+        }
+        
+        final String searchEventId = actualEventId;
+
         db.collection("Entrants")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     java.util.ArrayList<String> waitlistIds = new java.util.ArrayList<>();
                     
+                    android.util.Log.d("DrawWinner", "Looking for eventId (doc): " + eventId);
+                    android.util.Log.d("DrawWinner", "Looking for eventId (field): " + searchEventId);
+                    android.util.Log.d("DrawWinner", "Total entrants: " + querySnapshot.size());
+                    
                     for (DocumentSnapshot entrantDoc : querySnapshot.getDocuments()) {
-                        @SuppressWarnings("unchecked")
-                        List<String> joinedIds = (List<String>) entrantDoc.get("Entrant_joinedEventIDs");
-                        @SuppressWarnings("unchecked")
-                        List<String> selectedIds = (List<String>) entrantDoc.get("Entrant_selectedEventIDs");
-                        @SuppressWarnings("unchecked")
-                        List<String> acceptedIds = (List<String>) entrantDoc.get("Entrant_acceptedEventIDs");
-                        @SuppressWarnings("unchecked")
-                        List<String> declinedIds = (List<String>) entrantDoc.get("Entrant_declinedEventIDs");
+                        List<String> joinedIds = new java.util.ArrayList<>();
+                        Object joinedObj = entrantDoc.get("Entrant_joinedEventIDs");
+                        if (joinedObj instanceof List) {
+                            List<?> tempList = (List<?>) joinedObj;
+                            for (Object item : tempList) {
+                                if (item != null) joinedIds.add(item.toString());
+                            }
+                        } else if (joinedObj instanceof Map) {
+                            joinedIds.addAll(((Map<String, Object>) joinedObj).keySet());
+                        }
+
+                        List<String> selectedIds = new java.util.ArrayList<>();
+                        Object selectedObj = entrantDoc.get("Entrant_selectedEventIDs");
+                        if (selectedObj instanceof List) {
+                            List<?> tempList = (List<?>) selectedObj;
+                            for (Object item : tempList) {
+                                if (item != null) selectedIds.add(item.toString());
+                            }
+                        } else if (selectedObj instanceof Map) {
+                            selectedIds.addAll(((Map<String, Object>) selectedObj).keySet());
+                        }
+
+                        List<String> acceptedIds = new java.util.ArrayList<>();
+                        Object acceptedObj = entrantDoc.get("Entrant_acceptedEventIDs");
+                        if (acceptedObj instanceof List) {
+                            List<?> tempList = (List<?>) acceptedObj;
+                            for (Object item : tempList) {
+                                if (item != null) acceptedIds.add(item.toString());
+                            }
+                        } else if (acceptedObj instanceof Map) {
+                            acceptedIds.addAll(((Map<String, Object>) acceptedObj).keySet());
+                        }
+
+                        List<String> declinedIds = new java.util.ArrayList<>();
+                        Object declinedObj = entrantDoc.get("Entrant_declinedEventIDs");
+                        if (declinedObj instanceof List) {
+                            List<?> tempList = (List<?>) declinedObj;
+                            for (Object item : tempList) {
+                                if (item != null) declinedIds.add(item.toString());
+                            }
+                        } else if (declinedObj instanceof Map) {
+                            declinedIds.addAll(((Map<String, Object>) declinedObj).keySet());
+                        }
                         
-                        boolean hasJoined = joinedIds != null && joinedIds.contains(eventId);
-                        boolean isSelected = selectedIds != null && selectedIds.contains(eventId);
-                        boolean hasAccepted = acceptedIds != null && acceptedIds.contains(eventId);
-                        boolean hasDeclined = declinedIds != null && declinedIds.contains(eventId);
+                        android.util.Log.d("DrawWinner", "Entrant: " + entrantDoc.getId());
+                        android.util.Log.d("DrawWinner", "  joinedIds: " + joinedIds);
+                        android.util.Log.d("DrawWinner", "  selectedIds: " + selectedIds);
+                        android.util.Log.d("DrawWinner", "  acceptedIds: " + acceptedIds);
+                        android.util.Log.d("DrawWinner", "  declinedIds: " + declinedIds);
+                        
+                        boolean hasJoined = !joinedIds.isEmpty() && (joinedIds.contains(eventId) || joinedIds.contains(searchEventId));
+                        boolean isSelected = !selectedIds.isEmpty() && (selectedIds.contains(eventId) || selectedIds.contains(searchEventId));
+                        boolean hasAccepted = !acceptedIds.isEmpty() && (acceptedIds.contains(eventId) || acceptedIds.contains(searchEventId));
+                        boolean hasDeclined = !declinedIds.isEmpty() && (declinedIds.contains(eventId) || declinedIds.contains(searchEventId));
+                        
+                        android.util.Log.d("DrawWinner", "  hasJoined: " + hasJoined + ", isSelected: " + isSelected + ", hasAccepted: " + hasAccepted + ", hasDeclined: " + hasDeclined);
                         
                         if (hasJoined && !isSelected && !hasAccepted && !hasDeclined) {
                             waitlistIds.add(entrantDoc.getId());
+                            android.util.Log.d("DrawWinner", "  -> ADDED TO WAITLIST");
                         }
                     }
+                    
+                    android.util.Log.d("DrawWinner", "Final waitlist size: " + waitlistIds.size());
                     
                     if (waitlistIds.isEmpty()) {
                         tvWinnerResult.setText("No entrants in waitlist.");

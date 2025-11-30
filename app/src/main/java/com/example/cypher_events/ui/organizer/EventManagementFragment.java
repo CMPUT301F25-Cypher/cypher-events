@@ -1,13 +1,11 @@
 package com.example.cypher_events.ui.organizer;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.cypher_events.R;
-import com.example.cypher_events.util.ImageProcessor;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -25,9 +22,6 @@ public class EventManagementFragment extends Fragment {
     private static final String ARG_EVENT_ID = "EventId";
 
     private TextView tvEventTitle;
-    private TextView tvEventDescription;   // NEW: description at top
-    private ImageView imgEventPoster;      // NEW: poster preview
-
     private Button btnGenerateQR;
     private Button btnUpdateEvent;
     private Button btnViewWaitingList;
@@ -58,9 +52,6 @@ public class EventManagementFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
 
         tvEventTitle = view.findViewById(R.id.tvEventTitle);
-        tvEventDescription = view.findViewById(R.id.tvEventDescription); // NEW
-        imgEventPoster = view.findViewById(R.id.imgEventPoster);         // NEW
-
         btnGenerateQR = view.findViewById(R.id.btnGenerateQR);
         btnUpdateEvent = view.findViewById(R.id.btnUpdateEvent);
         btnViewWaitingList = view.findViewById(R.id.btnViewWaitingList);
@@ -77,8 +68,7 @@ public class EventManagementFragment extends Fragment {
             return;
         }
 
-        // now loads title + description + poster
-        loadEventDetails();
+        loadEventTitle();
 
         if (btnBack != null) {
             btnBack.setOnClickListener(v ->
@@ -111,10 +101,7 @@ public class EventManagementFragment extends Fragment {
         }
     }
 
-    /**
-     * Load event data to show, title, description and poster (from Event_posterBase64)
-     */
-    private void loadEventDetails() {
+    private void loadEventTitle() {
         db.collection("Events").document(eventId).get()
                 .addOnSuccessListener(this::handleEventLoaded)
                 .addOnFailureListener(e ->
@@ -131,32 +118,9 @@ public class EventManagementFragment extends Fragment {
             Toast.makeText(getContext(), "Event not found.", Toast.LENGTH_SHORT).show();
             return;
         }
-
         String title = doc.getString("Event_title");
-        String description = doc.getString("Event_description");
-        String posterBase64 = doc.getString("Event_posterBase64");
-
-        // title
         if (tvEventTitle != null) {
             tvEventTitle.setText(title != null ? title : "Event");
-        }
-
-        // description
-        if (tvEventDescription != null) {
-            tvEventDescription.setText(
-                    description != null && !description.isEmpty()
-                            ? description
-                            : "No description available."
-            );
-        }
-
-        // poster
-        if (posterBase64 != null && !posterBase64.isEmpty() && imgEventPoster != null) {
-            Bitmap posterBitmap = ImageProcessor.base64ToBitmap(posterBase64);
-            if (posterBitmap != null) {
-                imgEventPoster.setImageBitmap(posterBitmap);
-            }
-            // if decoding fails, the XML placeholder stays
         }
     }
 
@@ -226,61 +190,39 @@ public class EventManagementFragment extends Fragment {
                 .addOnSuccessListener(querySnapshot -> {
                     StringBuilder waitlist = new StringBuilder("Waiting List:\n\n");
                     int count = 0;
-                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                        Object raw = doc.get("Entrant_joinedEventIDs");
-                        if (raw == null) {
-                            continue;
-                        }
-                        java.util.List<String> joinedIds = new java.util.ArrayList<>();
 
-                        if (raw instanceof java.util.List<?>) {
-                            //the normal case is an array field
-                            for (Object o : (java.util.List<?>) raw) {
-                                if (o != null) {
-                                    joinedIds.add(o.toString());
-                                }
-                            }
-                        } else {
-                            //added in just in case some old test has a single string or sth, could cause crash
-                            //jsut because of how its stored in Firestore
-                            joinedIds.add(raw.toString());
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        @SuppressWarnings("unchecked")
+                        java.util.List<String> joinedIds = (java.util.List<String>) doc.get("Entrant_joinedEventIDs");
+                        
+                        if (joinedIds != null && joinedIds.contains(eventId)) {
+                            String name = doc.getString("Entrant_name");
+                            String email = doc.getString("Entrant_email");
+                            count++;
+                            waitlist.append(count).append(". ")
+                                    .append(name != null ? name : "Unknown")
+                                    .append(" (").append(email != null ? email : "No email").append(")\n");
                         }
-                        if (!joinedIds.contains(eventId)) {
-                            continue;
-                        }
-                        String name = doc.getString("Entrant_name");
-                        String email = doc.getString("Entrant_email");
-                        count++;
-                        waitlist.append(count).append(". ")
-                                .append(name != null ? name : "Unknown")
-                                .append(" (").append(email != null ? email : "No email").append(")\n");
                     }
 
                     if (count == 0) {
                         waitlist.append("No entrants on waiting list yet.");
                     }
 
-                    if (getContext() != null) {
-                        Toast.makeText(getContext(), waitlist.toString(), Toast.LENGTH_LONG).show();
-                    }
+                    Toast.makeText(getContext(), waitlist.toString(), Toast.LENGTH_LONG).show();
                 })
-                .addOnFailureListener(e -> {
-                    if (getContext() != null) {
-                        Toast.makeText(
-                                getContext(),
-                                "Failed to load waiting list: " + e.getMessage(),
-                                Toast.LENGTH_SHORT
-                        ).show();
-                    }
-                });
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Failed to load waiting list: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show()
+                );
     }
-
     private void openEventCreatedScreen() {
         if (eventId == null || eventId.trim().isEmpty()) {
             Toast.makeText(getContext(), "No event selected.", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Reuse the same flow as CreateEventFragment after submit
         EventCreatedFragment eventCreatedFragment = EventCreatedFragment.newInstance(eventId);
 
         requireActivity().getSupportFragmentManager()
@@ -291,4 +233,3 @@ public class EventManagementFragment extends Fragment {
                 .commit();
     }
 }
-
