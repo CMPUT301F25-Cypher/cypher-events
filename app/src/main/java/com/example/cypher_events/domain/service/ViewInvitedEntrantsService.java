@@ -14,6 +14,14 @@ public class ViewInvitedEntrantsService {
     public ViewInvitedEntrantsService(EventRepository repo) {
         this.eventRepository = repo;
     }
+    /**
+     * Get the list of invited entrants for an event.
+     *
+     * @param eventId identifier of the event to query
+     * @return list of invited entrants, or an empty list if none exist or the event cannot be loaded
+     *
+     * returns selected/invited entrants
+     */
 
     public List<Entrant> getInvitedEntrants(String eventId) {
         Result<Event> result = eventRepository.getEventById(eventId);

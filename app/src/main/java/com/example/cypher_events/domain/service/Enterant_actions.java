@@ -6,7 +6,20 @@ import java.util.Map;
 
 public class Enterant_actions {
 
-    // Add an entrant to the event list and update their history
+    /**
+     * Helps an entrant join a waiting list
+     *
+
+     * @param event        The list of event entrants
+     * @param name         The entrant's name.
+     * @param email        The entrant's email address.
+     * @param phone        The entrant's phone number.
+     * @param event_name   The name of the event the entrant is joining.
+     * @param history      The entrant's event participation history.
+     *
+     * @return An ArrayList containing elements of format[entrant_history Array,event entrant list] for each event
+ */
+
     public ArrayList<Object> add_enterant_to_event_array(
             ArrayList<Map<String, Object>> event,
             String name,
@@ -44,7 +57,19 @@ public class Enterant_actions {
 
         return ret;
     }
+    /**
+     * Helps an entrant leave a waiting list
+     *
 
+     * @param event        The list of event entrants
+     * @param name         The entrant's name.
+     * @param email        The entrant's email address.
+     * @param phone        The entrant's phone number.
+     * @param event_name   The name of the event the entrant is joining.
+     * @param history      The entrant's event participation history.
+     *
+     * @return An ArrayList containing elements of format[entrant_history Array,event entrant list] for each event
+     */
     // Remove an entrant from the event list and update their history
     public ArrayList<Object> remove_enterant_to_event_array(
             ArrayList<Map<String, Object>> event,

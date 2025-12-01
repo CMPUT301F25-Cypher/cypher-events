@@ -23,6 +23,14 @@ public class NotificationOptOutService {
      * Set the Entrant_notificationsEnabled flag for the entrant with given Entrant_id.
      * Finds the Firestore document where field "Entrant_id" == entrantId and updates it
      */
+    /**
+     * Enable or disable notification alerts for an entrant.
+     *
+     * @param entrantId the Entrant_id used to locate the entrant document
+     * @param enabled   true to enable notifications, false to disable them
+     *
+     * Updates the firestore feild to save that entrant has opted ouy of notification service
+     */
     public void setEnabled(String entrantId, boolean enabled) {
         if (entrantId == null) return;
         Query q = db.collection("entrants").whereEqualTo("Entrant_id", entrantId).limit(1);
