@@ -333,7 +333,12 @@ public class CreateEventFragment extends Fragment {
         batch.commit()
                 .addOnSuccessListener(r -> {
                     Toast.makeText(getContext(), "Event created!", Toast.LENGTH_SHORT).show();
-                    getParentFragmentManager().popBackStack();
+
+                    // >>> Go to My Events screen
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.homeContentContainer, new MyEventsFragment())
+                            .commit();
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show()

@@ -44,13 +44,6 @@ public class DrawReplacementFragment extends Fragment {
         btnGenerateReplacement = view.findViewById(R.id.btnGenerateReplacement);
         tvReplacementResult = view.findViewById(R.id.tvReplacementResult);
 
-        ImageButton backButton = view.findViewById(R.id.btnBackReplacement);
-        if (backButton != null) {
-            backButton.setOnClickListener(v ->
-                    requireActivity().getSupportFragmentManager().popBackStack()
-            );
-        }
-
         return view;
     }
 

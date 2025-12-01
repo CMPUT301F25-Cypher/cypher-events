@@ -47,13 +47,6 @@ public class DrawWinnerFragment extends Fragment {
 
         btnGenerateWinner = view.findViewById(R.id.btnGenerateWinner);
         tvWinnerResult = view.findViewById(R.id.tvWinnerResult);
-        backButton = view.findViewById(R.id.btnBackWinner);
-
-        if (backButton != null) {
-            backButton.setOnClickListener(v ->
-                    requireActivity().getSupportFragmentManager().popBackStack()
-            );
-        }
 
         return view;
     }
@@ -98,26 +91,13 @@ public class DrawWinnerFragment extends Fragment {
             return;
         }
 
-        // Get the Event_id field and capacity
+        // Get the Event_id field from the document (e.g., "EVTB6E40")
         String actualEventId = doc.getString("Event_id");
         if (actualEventId == null || actualEventId.isEmpty()) {
             actualEventId = eventId; // Fallback to document ID
         }
 
-        // Get event capacity - this is the number of winners to draw
-        Object capacityObj = doc.get("Event_capacity");
-        int capacity = 0;
-        if (capacityObj instanceof Number) {
-            capacity = ((Number) capacityObj).intValue();
-        }
-        
-        if (capacity <= 0) {
-            Toast.makeText(getContext(), "Event has no capacity set", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         final String searchEventId = actualEventId;
-        final int numberOfWinners = capacity;
 
         db.collection("Entrants")
                 .get()
@@ -200,12 +180,8 @@ public class DrawWinnerFragment extends Fragment {
                         return;
                     }
 
-                    // Determine how many winners to select
-                    int winnersToSelect = Math.min(numberOfWinners, waitlistIds.size());
-                    
-                    // Select multiple winners
-                    java.util.ArrayList<String> selectedWinners = pickMultipleRandom(waitlistIds, winnersToSelect);
-                    selectMultipleWinners(selectedWinners, winnersToSelect, waitlistIds.size());
+                    String winnerId = pickRandom(waitlistIds);
+                    selectWinner(winnerId);
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Failed to load entrants: " + e.getMessage(),
@@ -213,60 +189,51 @@ public class DrawWinnerFragment extends Fragment {
                 );
     }
 
-    private java.util.ArrayList<String> pickMultipleRandom(java.util.ArrayList<String> list, int count) {
-        if (list == null || list.isEmpty()) return new java.util.ArrayList<>();
-        
-        java.util.ArrayList<String> shuffled = new java.util.ArrayList<>(list);
-        java.util.Collections.shuffle(shuffled);
-        
-        int actualCount = Math.min(count, shuffled.size());
-        return new java.util.ArrayList<>(shuffled.subList(0, actualCount));
+    private String pickRandom(java.util.ArrayList<String> list) {
+        if (list == null || list.isEmpty()) return null;
+        Random rnd = new Random();
+        int index = rnd.nextInt(list.size());
+        return list.get(index);
     }
 
-    private void selectMultipleWinners(java.util.ArrayList<String> winnerIds, int selected, int totalWaitlist) {
-        if (winnerIds == null || winnerIds.isEmpty()) {
-            Toast.makeText(getContext(), "No winners could be selected.", Toast.LENGTH_SHORT).show();
+    private void selectWinner(String winnerId) {
+        if (winnerId == null) {
+            Toast.makeText(getContext(), "No winner could be selected.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        WriteBatch batch = db.batch();
-        
-        // Mark all selected entrants as winners
-        for (String winnerId : winnerIds) {
-            batch.update(
-                db.collection("Entrants").document(winnerId),
-                "Entrant_selectedEventIDs", 
-                FieldValue.arrayUnion(eventId)
-            );
-        }
-
-        batch.commit()
+        // Mark this entrant as selected for the event
+        db.collection("Entrants").document(winnerId)
+                .update("Entrant_selectedEventIDs", FieldValue.arrayUnion(eventId))
                 .addOnSuccessListener(aVoid -> {
-                    // Show result
-                    String resultText = "Drew " + selected + " winner(s) from " + totalWaitlist + " entrants";
-                    tvWinnerResult.setText(resultText);
-                    Toast.makeText(getContext(), resultText, Toast.LENGTH_LONG).show();
+                    // Fetch the entrant doc so we can show their name/email AND send a notification
+                    db.collection("Entrants").document(winnerId).get()
+                            .addOnSuccessListener(doc -> {
+                                String name = doc.getString("Entrant_name");
+                                String email = doc.getString("Entrant_email");
+                                Boolean enabledObj = doc.getBoolean("Entrant_notificationsEnabled");
+                                boolean notificationsEnabled = (enabledObj == null) || enabledObj;
 
-                    // Send notifications to all winners
-                    for (String winnerId : winnerIds) {
-                        sendWinnerNotificationToEntrant(winnerId);
-                    }
+                                String label;
+                                if (name != null && !name.isEmpty()) {
+                                    label = "Winner: " + name;
+                                } else if (email != null && !email.isEmpty()) {
+                                    label = "Winner: " + email;
+                                } else {
+                                    label = "Winner drawn successfully!";
+                                }
+
+                                tvWinnerResult.setText(label);
+                                Toast.makeText(getContext(), "Winner drawn successfully!", Toast.LENGTH_SHORT).show();
+
+                                // NEW: send a winner notification to this entrant
+                                sendWinnerNotification(winnerId, email, notificationsEnabled);
+                            });
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Failed to select winners: " + e.getMessage(),
+                        Toast.makeText(getContext(), "Failed to select winner: " + e.getMessage(),
                                 Toast.LENGTH_SHORT).show()
                 );
-    }
-
-    private void sendWinnerNotificationToEntrant(String winnerId) {
-        db.collection("Entrants").document(winnerId).get()
-                .addOnSuccessListener(doc -> {
-                    String email = doc.getString("Entrant_email");
-                    Boolean enabledObj = doc.getBoolean("Entrant_notificationsEnabled");
-                    boolean notificationsEnabled = (enabledObj == null) || enabledObj;
-                    
-                    sendWinnerNotification(winnerId, email, notificationsEnabled);
-                });
     }
 
     /**
