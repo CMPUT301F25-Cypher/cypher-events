@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.SwitchCompat;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -31,6 +33,7 @@ public class UpdateProfileEntrantFragment extends Fragment {
     private EditText etEmail;
     private EditText etPhone;
     private EditText etAddress;
+    private SwitchCompat switchNotifications;
     private Button btnSave;
     private Button btnDelete;
 
@@ -62,6 +65,7 @@ public class UpdateProfileEntrantFragment extends Fragment {
         etEmail = view.findViewById(R.id.etEmail);
         etPhone = view.findViewById(R.id.etPhone);
         etAddress = view.findViewById(R.id.etAddress);
+        switchNotifications = view.findViewById(R.id.switchNotifications);
         btnSave = view.findViewById(R.id.btnSaveProfile);
         btnDelete = view.findViewById(R.id.btnDeleteProfile);
 
@@ -110,6 +114,7 @@ public class UpdateProfileEntrantFragment extends Fragment {
         String email = doc.getString("Entrant_email");
         Object phoneObj = doc.get("Entrant_phone");
         String address = doc.getString("Entrant_address");
+        Boolean notificationsEnabled = doc.getBoolean("Entrant_notificationsEnabled");
 
         String phone = (phoneObj == null) ? "" : String.valueOf(phoneObj);
 
@@ -117,6 +122,11 @@ public class UpdateProfileEntrantFragment extends Fragment {
         etEmail.setText(email != null ? email : "");
         etPhone.setText(phone);
         etAddress.setText(address != null ? address : "");
+        
+        // Set notification switch (default to true if not set)
+        if (switchNotifications != null) {
+            switchNotifications.setChecked(notificationsEnabled != null ? notificationsEnabled : true);
+        }
     }
 
     private void saveProfileChanges() {
@@ -124,6 +134,7 @@ public class UpdateProfileEntrantFragment extends Fragment {
         String email = etEmail.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
         String address = etAddress.getText().toString().trim();
+        boolean notificationsEnabled = switchNotifications != null && switchNotifications.isChecked();
 
         if (name.isEmpty() || email.isEmpty()) {
             Toast.makeText(
@@ -139,16 +150,16 @@ public class UpdateProfileEntrantFragment extends Fragment {
         updatedData.put("Entrant_email", email);
         updatedData.put("Entrant_phone", phone);
         updatedData.put("Entrant_address", address);
+        updatedData.put("Entrant_notificationsEnabled", notificationsEnabled);
 
         db.collection("Entrants").document(deviceId)
                 .update(updatedData)
-                .addOnSuccessListener(a ->
-                        Toast.makeText(
-                                getContext(),
-                                "Profile updated successfully!",
-                                Toast.LENGTH_SHORT
-                        ).show()
-                )
+                .addOnSuccessListener(a -> {
+                    String message = notificationsEnabled 
+                        ? "Profile updated! Notifications enabled." 
+                        : "Profile updated! Notifications disabled.";
+                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                })
                 .addOnFailureListener(e ->
                         Toast.makeText(
                                 getContext(),
