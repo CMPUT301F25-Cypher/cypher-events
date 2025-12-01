@@ -72,11 +72,17 @@ public class EventEntrantFragment extends Fragment {
     private void loadEventsFromFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("Events").get()
+        // Only load active events to reduce data transfer
+        db.collection("Events")
+                .whereEqualTo("Event_isActive", true)
+                .get()
                 .addOnSuccessListener(snap -> {
                     if (snap == null || snap.isEmpty()) {
                         // Fallback to lowercase collection name if needed
-                        db.collection("events").orderBy("Event_signupStartUtc").get()
+                        db.collection("events")
+                                .whereEqualTo("Event_isActive", true)
+                                .orderBy("Event_signupStartUtc")
+                                .get()
                                 .addOnSuccessListener(this::consumeSnapshot)
                                 .addOnFailureListener(e -> toast("Failed: " + e.getMessage()));
                     } else {

@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -57,10 +58,27 @@ public class CreateEventFragment extends Fragment {
     private long signupStartUtc = 0L;
     private long signupEndUtc = 0L;
 
+    private double selectedLat = 0;
+    private double selectedLng = 0;
+
     private Uri selectedImageUri = null;
 
     // will hold the compressed base64 poster string that we save to firestore
     private String posterBase64 = "";
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        View bar = requireActivity().findViewById(R.id.layoutSearchRow);
+        if (bar != null) bar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        View bar = requireActivity().findViewById(R.id.layoutSearchRow);
+        if (bar != null) bar.setVisibility(View.VISIBLE);
+    }
 
 
     //opens the system gallery gallery/file picker
@@ -118,6 +136,9 @@ public class CreateEventFragment extends Fragment {
                 requireContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID
         );
+
+        View mapPicker = view.findViewById(R.id.layoutMapPicker);
+        TextView tvMapLocationSummary = view.findViewById(R.id.tvMapLocationSummary);
 
         inputEventName = view.findViewById(R.id.inputEventName);
         inputEventDescription = view.findViewById(R.id.inputEventDescription);

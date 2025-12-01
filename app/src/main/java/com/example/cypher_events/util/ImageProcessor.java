@@ -31,8 +31,8 @@ public class ImageProcessor{
      *
      * These values control the maximum width and height (in pixels) of the image
      * that we will store as Base64 and anything larger will be scaled down. */
-    private static final int maxWidth = 1080;
-    private static final int maxHeight = 1080;
+    private static final int maxWidth = 800;
+    private static final int maxHeight = 800;
 
     /**
      *compress the bitmap to JPEG, choose a quality between 0 and 100.
@@ -91,15 +91,68 @@ public class ImageProcessor{
             // No base64 string to decode
             return null;
         }
+        
+        // Safety check: if base64 string is too large, reject it
+        // A reasonable image should be under 5MB base64 encoded
+        if (base64String.length() > 5 * 1024 * 1024) {
+            android.util.Log.e("ImageProcessor", "Base64 string too large: " + base64String.length() + " chars");
+            return null;
+        }
+        
         try {
             //convert Base64 text back into raw bytes.
             byte[] imageBytes = Base64.decode(base64String, android.util.Base64.DEFAULT);
+            
+            // Check decoded size
+            if (imageBytes.length > 10 * 1024 * 1024) { // 10MB limit
+                android.util.Log.e("ImageProcessor", "Decoded image too large: " + imageBytes.length + " bytes");
+                return null;
+            }
 
-            //turn the raw bytes into a Bitmap so it can be displayed by Android
-            return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+            // First decode with inJustDecodeBounds to check size
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
+            
+            int width = options.outWidth;
+            int height = options.outHeight;
+            
+            // Reject absurdly large images
+            if (width > 10000 || height > 10000) {
+                android.util.Log.e("ImageProcessor", "Image dimensions too large: " + width + "x" + height);
+                return null;
+            }
+            
+            // Calculate sample size to avoid huge bitmaps
+            options.inSampleSize = calculateSampleSize(width, height, maxWidth, maxHeight);
+            
+            // Additional safety: use at least 2x downsampling for large images
+            if (width > 2000 || height > 2000) {
+                options.inSampleSize = Math.max(options.inSampleSize, 4);
+            }
+            
+            // Now decode with sample size
+            options.inJustDecodeBounds = false;
+            options.inPreferredConfig = Bitmap.Config.RGB_565; // Use less memory
+            Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
+            
+            // Additional safety: if still too large, scale it down
+            if (bitmap != null && (bitmap.getWidth() > maxWidth || bitmap.getHeight() > maxHeight)) {
+                Bitmap scaled = scaleBitmap(bitmap, maxWidth, maxHeight);
+                if (scaled != bitmap) {
+                    bitmap.recycle();
+                }
+                return scaled;
+            }
+            
+            return bitmap;
 
         } catch (IllegalArgumentException error) {
             //if the Base64 string is not valid
+            error.printStackTrace();
+            return null;
+        } catch (OutOfMemoryError error) {
+            // Handle out of memory errors
             error.printStackTrace();
             return null;
         }
