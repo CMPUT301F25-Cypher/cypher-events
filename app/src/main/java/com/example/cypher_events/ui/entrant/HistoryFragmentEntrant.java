@@ -162,8 +162,14 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
             eventAdapter = new EventAdapter(this::openEventDetail);
             recyclerView.setAdapter(eventAdapter);
 
-            ImageButton backButton = view.findViewById(R.id.btnBack);
+
+
+
+                ImageButton backButton = view.findViewById(R.id.btnBack);
             if (backButton != null) {
+
+                Fragment parent = getParentFragment();
+
                 backButton.setOnClickListener(v ->
                         requireActivity().getSupportFragmentManager()
                                 .beginTransaction()
