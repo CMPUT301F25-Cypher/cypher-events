@@ -2,6 +2,9 @@
 
 Welcome to **Cypher Events**, an event lottery and registration management Android application built for **CMPUT 301**.
 
+## Demo Video
+See the app demo video here: https://drive.google.com/file/d/1LMb1xuzJu_-0XWFalKRklBulQogOy52t/view?usp=drive_link
+
 ## FireBase Google Service
 
 Get the file from [here](https://drive.google.com/file/d/1-ztT4kKQxFihKGCTTafSvvB78TkCu-hz/view?usp=sharing) then place it in `app/google-services.json`
