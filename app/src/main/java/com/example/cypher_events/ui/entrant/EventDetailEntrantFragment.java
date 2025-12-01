@@ -248,7 +248,7 @@ public class EventDetailEntrantFragment extends Fragment implements OnMapReadyCa
         String status = doc.getString("Event_status");
         Long signupStart = doc.getLong("Event_signupStartUtc");
         Long signupEnd = doc.getLong("Event_signupEndUtc");
-        String organizerEmail = doc.getString("Event_organizerEmail");
+
 
         // load ans how poster from base64
         // read the poster base64 string that we saved when creating and updating the event
@@ -277,6 +277,15 @@ public class EventDetailEntrantFragment extends Fragment implements OnMapReadyCa
         tvEventLocation.setText("Location: " + (location != null ? location : "TBA"));
         tvEventStatus.setText("Status: " + (status != null ? status : "Unknown"));
 
+
+        String organizerEmail = doc.getString("Event_organizerEmail");
+        String organizerName = doc.getString("Event_organizerName");
+        String OrganizerPhone = doc.getString("Event_organizerPhone");
+
+        tvOrganizerName.setText("Organizer: " + (organizerName != null ? organizerName : "Unknown"));
+        tvOrganizerPhone.setText("Phone: " + (OrganizerPhone != null ? OrganizerPhone : "N/A"));
+        tvOrganizerEmail.setText("Email: " + (organizerEmail != null ? organizerEmail : "N/A"));
+
         if (signupStart != null) {
             tvSignupStart.setText("Signup Starts: " + formatDate(signupStart));
         }
@@ -287,6 +296,7 @@ public class EventDetailEntrantFragment extends Fragment implements OnMapReadyCa
         if (organizerEmail != null) {
             loadOrganizerInfo(organizerEmail);
         }
+
 
         // Load coordinates for map
         Object latObj = doc.get("Event_lat");
@@ -474,6 +484,7 @@ public class EventDetailEntrantFragment extends Fragment implements OnMapReadyCa
     }
 
     private void toast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        if (!isAdded() || getContext() == null) return;
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

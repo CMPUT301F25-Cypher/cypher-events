@@ -55,6 +55,10 @@ public class EventManagementFragment extends Fragment {
 
     private RecyclerView rvWaitingList;
     private TextView tvNoWaitingList;
+
+    private TextView tvOrganizerName;
+    private TextView tvOrganizerPhone;
+    private TextView tvOrganizerEmail;
     private WaitingListAdapter waitingListAdapter;
 
     private FirebaseFirestore db;
@@ -85,6 +89,10 @@ public class EventManagementFragment extends Fragment {
         btnDrawReplacement = view.findViewById(R.id.btnDrawReplacement);
         btnExportCSV = view.findViewById(R.id.btnExportCSV);
         btnBack = view.findViewById(R.id.btnBack);
+
+        tvOrganizerName = view.findViewById(R.id.tvOrganizerName);
+        tvOrganizerPhone = view.findViewById(R.id.tvOrganizerPhone);
+        tvOrganizerEmail = view.findViewById(R.id.tvOrganizerEmail);
 
         rvWaitingList = view.findViewById(R.id.rvWaitingList);
         tvNoWaitingList = view.findViewById(R.id.tvNoWaitingList);
@@ -129,6 +137,14 @@ public class EventManagementFragment extends Fragment {
         String title = doc.getString("Event_title");
         String description = doc.getString("Event_description");
         String posterBase64 = doc.getString("Event_posterBase64");
+
+        String organizerEmail = doc.getString("Event_organizerEmail");
+        String organizerName = doc.getString("Event_organizerName");
+        String OrganizerPhone = doc.getString("Event_organizerPhone");
+
+        tvOrganizerName.setText("Organizer: " + (organizerName != null ? organizerName : "Unknown"));
+        tvOrganizerPhone.setText("Phone: " + (OrganizerPhone != null ? OrganizerPhone : "N/A"));
+        tvOrganizerEmail.setText("Email: " + (organizerEmail != null ? organizerEmail : "N/A"));
 
         tvEventTitle.setText(title != null ? title : "Event");
 

@@ -26,6 +26,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import android.location.Address;
 import android.location.Geocoder;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import com.google.firebase.firestore.FieldValue;
@@ -186,29 +187,61 @@ public class CreateEventFragment extends Fragment {
     }
 
     // LOAD ORGANIZER INFO
-
     private void loadOrganizerInfo() {
-        db.collection("Organizers").document(deviceId).get()
-                .addOnSuccessListener(doc -> {
 
-                    if (doc.exists()) {
-                        organizerEmail = safe(doc.getString("Organizer_email"));
-                        organizerName = safe(doc.getString("Organizer_name"));
-                        organizerPhone = safe(doc.getString("Organizer_phone"));
-                    } else {
+        // Holder for Entrant values so they can be used in lambdas
+        class Holder {
+            String email = "";
+            String name = "";
+            String phone = "";
+        }
 
-                        Map<String, Object> org = new HashMap<>();
-                        org.put("Organizer_id", deviceId);
-                        org.put("Organizer_email", "");
-                        org.put("Organizer_name", "");
-                        org.put("Organizer_phone", "");
+        Holder h = new Holder();
 
-                        db.collection("Organizers")
-                                .document(deviceId)
-                                .set(org, SetOptions.merge());
-                    }
+        // STEP 1 — Get Entrant profile first
+        db.collection("Entrants").document(deviceId).get()
+                .addOnSuccessListener(entrantDoc -> {
+
+                    h.email = safe(entrantDoc.getString("Entrant_email"));
+                    h.name  = safe(entrantDoc.getString("Entrant_name"));
+                    h.phone = safe(entrantDoc.getString("Entrant_phone"));
+
+                    // STEP 2 — Check if Organizer exists
+                    db.collection("Organizers").document(deviceId).get()
+                            .addOnSuccessListener(orgDoc -> {
+
+                                if (orgDoc.exists()) {
+                                    organizerEmail = safe(orgDoc.getString("Organizer_email"));
+                                    organizerName  = safe(orgDoc.getString("Organizer_name"));
+                                    organizerPhone = safe(orgDoc.getString("Organizer_phone"));
+                                    return;
+                                }
+
+                                // STEP 3 — Organizer missing → create it from Entrant
+                                Map<String, Object> org = new HashMap<>();
+                                org.put("Organizer_id", deviceId);
+                                org.put("Organizer_email", h.email);
+                                org.put("Organizer_name",  h.name);
+                                org.put("Organizer_phone", h.phone);
+                                org.put("Organizer_notificationsEnabled", true);
+                                org.put("Organizer_createdEventIDs", new ArrayList<String>());
+
+                                db.collection("Organizers")
+                                        .document(deviceId)
+                                        .set(org)
+                                        .addOnSuccessListener(v -> {
+                                            organizerEmail = h.email;
+                                            organizerName  = h.name;
+                                            organizerPhone = h.phone;
+                                        });
+                            });
                 });
     }
+
+
+
+
+
 
     // CREATE EVENT
 
@@ -257,6 +290,7 @@ public class CreateEventFragment extends Fragment {
     private String safe(String s) {
         return s == null ? "" : s;
     }
+
 
     private String safeText(EditText et) {
         return et.getText() != null ? et.getText().toString().trim() : "";

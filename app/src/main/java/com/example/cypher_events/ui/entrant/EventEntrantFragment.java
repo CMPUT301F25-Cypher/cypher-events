@@ -274,6 +274,8 @@ public class EventEntrantFragment extends Fragment implements SearchableFragment
 
 
     private void toast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        if (!isAdded() || getContext() == null) return;
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
+
 }
