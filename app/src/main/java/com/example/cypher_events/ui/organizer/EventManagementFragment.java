@@ -42,7 +42,6 @@ import com.example.cypher_events.R;
 import com.example.cypher_events.util.ImageProcessor;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.example.cypher_events.util.ImageProcessor;
 
 import java.io.File;
 import java.io.FileWriter;

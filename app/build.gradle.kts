@@ -77,3 +77,34 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     testImplementation("junit:junit:4.13.2")
 }
+
+// Javadoc generation task - generates docs for domain models only (pure Java classes)
+tasks.register<Javadoc>("generateJavadoc") {
+    source = fileTree("src/main/java") {
+        include("**/domain/model/Event.java")
+        include("**/domain/model/Entrant.java")
+        include("**/domain/model/Organizer.java")
+        include("**/domain/model/Admin.java")
+        include("**/domain/model/Notification.java")
+        include("**/domain/model/NotificationLog.java")
+        include("**/util/Result.java")
+    }
+    
+    // Set destination directory
+    setDestinationDir(file("${project.rootDir}/docs"))
+    
+    // Configure options
+    options {
+        this as StandardJavadocDocletOptions
+        encoding = "UTF-8"
+        charSet = "UTF-8"
+        memberLevel = JavadocMemberLevel.PRIVATE
+        links("https://docs.oracle.com/javase/8/docs/api/")
+        
+        // Suppress warnings
+        addStringOption("Xdoclint:none", "-quiet")
+    }
+    
+    // Handle failures gracefully
+    isFailOnError = false
+}

@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.example.cypher_events.domain.model"},{"l":"com.example.cypher_events.util"}];updateSearchResults();
