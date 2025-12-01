@@ -10,7 +10,9 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:layout_marginTop="20dp"
+        >
 
         <ImageButton
             android:id="@+id/btnBack"
