@@ -261,15 +261,16 @@ public class CreateEventFragment extends Fragment {
                 .addOnSuccessListener(r -> {
 
                     Toast.makeText(getContext(), "Event created!", Toast.LENGTH_SHORT).show();
+                    getParentFragmentManager().popBackStack();
 
-                    Fragment f = EventCreatedFragment.newInstance(eventId);
+                    /**Fragment f = EventCreatedFragment.newInstance(eventId);
 
                     // ALWAYS LEAVE NAV BAR VISIBLE
                     getParentFragmentManager()
                             .beginTransaction()
                             .replace(R.id.homeContentContainer, f)
                             .addToBackStack(null)
-                            .commit();
+                            .commit();*/
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
