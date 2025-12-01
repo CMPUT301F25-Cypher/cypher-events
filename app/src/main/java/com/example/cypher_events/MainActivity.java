@@ -11,6 +11,7 @@ import com.example.cypher_events.domain.model.DummyData;
 import com.example.cypher_events.ui.auth.SignupFragment;
 import com.example.cypher_events.ui.entrant.HomeContainerFragment;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -51,6 +52,26 @@ public class MainActivity extends AppCompatActivity {
     public Task<DocumentSnapshot> pull_db(String collectionName, String documentId) {
         return db.collection(collectionName).document(documentId).get();
     }
+
+    public void openNotificationsTab() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, new HomeContainerFragment())
+                .commit();
+
+        // Delay is needed so BottomNav exists
+        new android.os.Handler().postDelayed(() -> {
+            HomeContainerFragment f =
+                    (HomeContainerFragment) getSupportFragmentManager()
+                            .findFragmentById(R.id.container);
+
+            if (f != null && f.getView() != null) {
+                BottomNavigationView nav = f.getView().findViewById(R.id.bottomNav);
+                if (nav != null) nav.setSelectedItemId(R.id.nav_notifications);
+            }
+        }, 50);
+    }
+
 
     /** CHECK IF ENTRANT EXISTS OR SHOW SIGNUP SCREEN */
     private void checkEntrantStatus(String deviceId) {
