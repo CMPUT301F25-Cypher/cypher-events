@@ -129,6 +129,12 @@ public class Event {
         this.event_waitlistEntrants = waitlistEntrants;
     }
 
+    public double getLat() { return lat; }
+    public void setLat(double lat) { this.lat = lat; }
+
+    public double getLng() { return lng; }
+    public void setLng(double lng) { this.lng = lng; }
+
     /* ----------------------------------------------------------------------
      * NEW HELPER METHODS (for your user stories)
      * ------------------------------------------------------------------- */
@@ -216,6 +222,8 @@ public class Event {
         map.put("Event_capacity", event_capacity);
         map.put("Event_isLotteryEnabled", event_isLotteryEnabled);
         map.put("Event_isActive", event_isActive);
+        map.put("Event_lat", lat);
+        map.put("Event_lng", lng);
 
         map.put("Event_organizerEmail",
                 event_organizer != null ? event_organizer.getEmail() : null);

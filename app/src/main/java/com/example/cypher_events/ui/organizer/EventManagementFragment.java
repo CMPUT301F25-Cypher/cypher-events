@@ -22,9 +22,19 @@ import com.example.cypher_events.util.ImageProcessor;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
+import androidx.core.content.FileProvider;
 
 public class EventManagementFragment extends Fragment {
 
@@ -38,7 +48,10 @@ public class EventManagementFragment extends Fragment {
     private Button btnUpdateEvent;
     private Button btnDrawWinner;
     private Button btnDrawReplacement;
+    private Button btnExportCSV;
     private ImageButton btnBack;
+    
+    private List<WaitingListAdapter.EntrantItem> currentEntrantList = new ArrayList<>();
 
     private RecyclerView rvWaitingList;
     private TextView tvNoWaitingList;
@@ -70,6 +83,7 @@ public class EventManagementFragment extends Fragment {
         btnUpdateEvent = view.findViewById(R.id.btnUpdateEvent);
         btnDrawWinner = view.findViewById(R.id.btnDrawWinner);
         btnDrawReplacement = view.findViewById(R.id.btnDrawReplacement);
+        btnExportCSV = view.findViewById(R.id.btnExportCSV);
         btnBack = view.findViewById(R.id.btnBack);
 
         rvWaitingList = view.findViewById(R.id.rvWaitingList);
@@ -100,6 +114,7 @@ public class EventManagementFragment extends Fragment {
         btnUpdateEvent.setOnClickListener(v -> openUpdateEvent());
         btnDrawWinner.setOnClickListener(v -> openDrawWinner());
         btnDrawReplacement.setOnClickListener(v -> openDrawReplacement());
+        btnExportCSV.setOnClickListener(v -> exportEntrantListToCSV());
     }
 
     private void loadEventDetails() {
@@ -213,6 +228,8 @@ public class EventManagementFragment extends Fragment {
                         }
                     }
 
+                    currentEntrantList = result; // Save for CSV export
+                    
                     if (result.isEmpty()) {
                         rvWaitingList.setVisibility(View.GONE);
                         tvNoWaitingList.setVisibility(View.VISIBLE);
@@ -226,5 +243,87 @@ public class EventManagementFragment extends Fragment {
                         Toast.makeText(getContext(),
                                 "Failed to load waitlist: " + e.getMessage(),
                                 Toast.LENGTH_SHORT).show());
+    }
+
+    private void exportEntrantListToCSV() {
+        if (currentEntrantList == null || currentEntrantList.isEmpty()) {
+            Toast.makeText(getContext(), "No entrants to export", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            // Create filename with timestamp
+            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+                    .format(new Date());
+            String filename = "entrants_" + eventId + "_" + timestamp + ".csv";
+
+            // Use app-specific directory (no permission needed on Android 10+)
+            File downloadsDir = new File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "");
+            if (!downloadsDir.exists()) {
+                downloadsDir.mkdirs();
+            }
+
+            File csvFile = new File(downloadsDir, filename);
+            FileWriter writer = new FileWriter(csvFile);
+
+            // Write CSV header
+            writer.append("Name,Email\n");
+
+            // Write entrant data
+            for (WaitingListAdapter.EntrantItem entrant : currentEntrantList) {
+                writer.append(escapeCSV(entrant.name != null ? entrant.name : "N/A"));
+                writer.append(",");
+                writer.append(escapeCSV(entrant.email != null ? entrant.email : "N/A"));
+                writer.append("\n");
+            }
+
+            writer.flush();
+            writer.close();
+
+            // Show success message and offer to open/share the file
+            Toast.makeText(getContext(), 
+                "CSV exported: " + csvFile.getAbsolutePath(), 
+                Toast.LENGTH_LONG).show();
+
+            // Open the file with a file manager or share it
+            shareCSVFile(csvFile);
+
+        } catch (IOException e) {
+            Toast.makeText(getContext(), 
+                "Failed to export CSV: " + e.getMessage(), 
+                Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+    }
+
+    private String escapeCSV(String value) {
+        if (value == null) return "";
+        // Escape quotes and wrap in quotes if contains comma or quote
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
+    }
+
+    private void shareCSVFile(File file) {
+        try {
+            Uri fileUri = FileProvider.getUriForFile(
+                requireContext(),
+                requireContext().getPackageName() + ".fileprovider",
+                file
+            );
+
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/csv");
+            intent.putExtra(Intent.EXTRA_STREAM, fileUri);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            
+            startActivity(Intent.createChooser(intent, "Share CSV file"));
+        } catch (Exception e) {
+            android.util.Log.e("CSV Export", "Error sharing file", e);
+            Toast.makeText(getContext(), 
+                "File saved but couldn't open share dialog", 
+                Toast.LENGTH_SHORT).show();
+        }
     }
 }

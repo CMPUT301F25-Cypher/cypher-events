@@ -23,6 +23,11 @@ import androidx.fragment.app.Fragment;
 import com.example.cypher_events.R;
 import com.example.cypher_events.util.ImageProcessor;
 import com.google.android.material.textfield.TextInputEditText;
+import android.location.Address;
+import android.location.Geocoder;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -244,6 +249,74 @@ public class CreateEventFragment extends Fragment {
         event.put("Event_isActive", true);
         event.put("Event_isLotteryEnabled", true);
 
+        // Geocode location first, then save event
+        Toast.makeText(getContext(), "Getting location coordinates...", Toast.LENGTH_SHORT).show();
+        geocodeLocationAndSave(loc, eventId, event);
+    }
+
+    private String safe(String s) {
+        return s == null ? "" : s;
+    }
+
+    private String safeText(EditText et) {
+        return et.getText() != null ? et.getText().toString().trim() : "";
+    }
+
+    private void geocodeLocationAndSave(String location, String eventId, Map<String, Object> event) {
+        new Thread(() -> {
+            double lat = 0.0;
+            double lng = 0.0;
+            boolean geocodingSuccess = false;
+            
+            if (location != null && !location.isEmpty()) {
+                try {
+                    Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
+                    
+                    // Check if Geocoder is available
+                    if (!Geocoder.isPresent()) {
+                        android.util.Log.e("Geocoding", "Geocoder not available on this device");
+                    } else {
+                        List<Address> addresses = geocoder.getFromLocationName(location, 1);
+                        
+                        if (addresses != null && !addresses.isEmpty()) {
+                            Address address = addresses.get(0);
+                            lat = address.getLatitude();
+                            lng = address.getLongitude();
+                            geocodingSuccess = true;
+                            android.util.Log.d("Geocoding", "Got coordinates: " + lat + ", " + lng);
+                        } else {
+                            android.util.Log.w("Geocoding", "No addresses found for: " + location);
+                        }
+                    }
+                } catch (IOException e) {
+                    android.util.Log.e("Geocoding", "Geocoding failed: " + e.getMessage(), e);
+                } catch (Exception e) {
+                    android.util.Log.e("Geocoding", "Unexpected error: " + e.getMessage(), e);
+                }
+            }
+            
+            // Add coordinates to event
+            final double finalLat = lat;
+            final double finalLng = lng;
+            final boolean finalSuccess = geocodingSuccess;
+            
+            requireActivity().runOnUiThread(() -> {
+                event.put("Event_lat", finalLat);
+                event.put("Event_lng", finalLng);
+                
+                if (!finalSuccess) {
+                    Toast.makeText(getContext(), 
+                        "Note: Could not find location coordinates", 
+                        Toast.LENGTH_SHORT).show();
+                }
+                
+                // Now save the event with coordinates
+                saveEventToFirestore(eventId, event);
+            });
+        }).start();
+    }
+    
+    private void saveEventToFirestore(String eventId, Map<String, Object> event) {
         WriteBatch batch = db.batch();
 
         batch.set(db.collection("Events").document(eventId), event);
@@ -259,28 +332,11 @@ public class CreateEventFragment extends Fragment {
 
         batch.commit()
                 .addOnSuccessListener(r -> {
-
                     Toast.makeText(getContext(), "Event created!", Toast.LENGTH_SHORT).show();
                     getParentFragmentManager().popBackStack();
-
-                    /**Fragment f = EventCreatedFragment.newInstance(eventId);
-
-                    // ALWAYS LEAVE NAV BAR VISIBLE
-                    getParentFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.homeContentContainer, f)
-                            .addToBackStack(null)
-                            .commit();*/
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-    }
-
-    private String safe(String s) {
-        return s == null ? "" : s;
-    }
-
-    private String safeText(EditText et) {
-        return et.getText() != null ? et.getText().toString().trim() : "";
+                        Toast.makeText(getContext(), "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
     }
 }

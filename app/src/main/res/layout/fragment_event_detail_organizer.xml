@@ -187,6 +187,16 @@
                 android:background="@drawable/rounded_button_minimal"
                 android:layout_marginBottom="16dp" />
 
+            <Button
+                android:id="@+id/btnExportCSV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Export Entrant List (CSV)"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/rounded_button_minimal"
+                android:layout_marginBottom="16dp" />
+
         </LinearLayout>
 
     </LinearLayout>

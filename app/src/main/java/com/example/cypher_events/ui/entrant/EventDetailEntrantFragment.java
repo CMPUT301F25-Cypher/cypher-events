@@ -22,6 +22,12 @@ import com.example.cypher_events.R;
 import com.example.cypher_events.util.ImageProcessor; //helper for base64 to bitmap
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,13 +36,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class EventDetailEntrantFragment extends Fragment {
+public class EventDetailEntrantFragment extends Fragment implements OnMapReadyCallback {
 
     private static final String ARG_EVENT_ID = "EventId";
 
     private FirebaseFirestore db;
     private String eventId;
     private String deviceId;
+    private GoogleMap googleMap;
+    private double eventLat = 0;
+    private double eventLng = 0;
 
     private TextView tvEventTitle;
     private TextView tvEventDescription;
@@ -105,6 +114,74 @@ public class EventDetailEntrantFragment extends Fragment {
 
         loadEventDetails();
         setupButtons();
+        setupMap();
+    }
+
+    private void setupMap() {
+        try {
+            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
+                    .findFragmentById(R.id.mapContainer);
+            
+            if (mapFragment == null) {
+                mapFragment = SupportMapFragment.newInstance();
+                getChildFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mapContainer, mapFragment)
+                        .commit();
+            }
+            
+            mapFragment.getMapAsync(this);
+        } catch (Exception e) {
+            android.util.Log.e("EventDetail", "Error setting up map", e);
+            // Hide map container if there's an error
+            View mapContainer = getView().findViewById(R.id.mapContainer);
+            if (mapContainer != null) {
+                mapContainer.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap map) {
+        googleMap = map;
+        android.util.Log.d("EventDetail", "Map is ready");
+        
+        // If we already have coordinates, show them
+        if (eventLat != 0 && eventLng != 0) {
+            android.util.Log.d("EventDetail", "Showing location: " + eventLat + ", " + eventLng);
+            showLocationOnMap();
+        } else {
+            android.util.Log.d("EventDetail", "No coordinates available yet");
+        }
+    }
+
+    private void showLocationOnMap() {
+        if (googleMap == null) {
+            android.util.Log.d("EventDetail", "Map not ready yet");
+            return;
+        }
+        
+        if (eventLat == 0 && eventLng == 0) {
+            android.util.Log.d("EventDetail", "No valid coordinates");
+            // Hide map if no coordinates
+            View mapContainer = getView().findViewById(R.id.mapContainer);
+            if (mapContainer != null) {
+                mapContainer.setVisibility(View.GONE);
+            }
+            return;
+        }
+
+        try {
+            LatLng location = new LatLng(eventLat, eventLng);
+            googleMap.clear();
+            googleMap.addMarker(new MarkerOptions()
+                    .position(location)
+                    .title("Event Location"));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f));
+            android.util.Log.d("EventDetail", "Map updated successfully");
+        } catch (Exception e) {
+            android.util.Log.e("EventDetail", "Error showing location on map", e);
+        }
     }
 
     private void loadEventDetails() {
@@ -187,6 +264,21 @@ public class EventDetailEntrantFragment extends Fragment {
 
         if (organizerEmail != null) {
             loadOrganizerInfo(organizerEmail);
+        }
+
+        // Load coordinates for map
+        Object latObj = doc.get("Event_lat");
+        Object lngObj = doc.get("Event_lng");
+        
+        android.util.Log.d("EventDetail", "Lat object: " + latObj + ", Lng object: " + lngObj);
+        
+        if (latObj instanceof Number && lngObj instanceof Number) {
+            eventLat = ((Number) latObj).doubleValue();
+            eventLng = ((Number) lngObj).doubleValue();
+            android.util.Log.d("EventDetail", "Loaded coordinates: " + eventLat + ", " + eventLng);
+            showLocationOnMap();
+        } else {
+            android.util.Log.d("EventDetail", "No valid coordinates in Firestore");
         }
 
         checkEntrantStatus();
