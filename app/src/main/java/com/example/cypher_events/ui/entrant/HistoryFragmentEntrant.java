@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cypher_events.R;
@@ -22,6 +21,7 @@ import com.example.cypher_events.ui.SearchableFragment;
 import com.example.cypher_events.ui.organizer.CreateEventFragment;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -45,6 +45,7 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
     private EventAdapter eventAdapter;
     private FirebaseFirestore db;
     private String deviceId;
+
 
 
     @Override
@@ -103,16 +104,20 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
 
     @Override
     public void onAddClicked() {
-        // Open CreateEventFragment inside HomeContainerFragment
-        getParentFragmentManager()
-                .beginTransaction()
-                .replace(R.id.homeContentContainer, new CreateEventFragment())
-                .addToBackStack(null)
-                .commit();
+        // Open CreateEventFragment inside HomeContainerFragment (child manager)
+        Fragment parent = getParentFragment(); // HomeContainerFragment
+        if (parent != null) {
+            parent.getChildFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.homeContentContainer, new CreateEventFragment())
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
-    
-    public void onScanQRClicked() {
 
+    @Override
+    public void onScanQRClicked() {
+        // Fullscreen scan still goes on the activity manager
         ScanQRFragment scanQRFragment = new ScanQRFragment();
 
         requireActivity()
@@ -123,6 +128,7 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
                 .addToBackStack(null)
                 .commit();
     }
+
 
 
     @Nullable
@@ -155,28 +161,25 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
                 toast("Error loading view");
                 return;
             }
-            
-            recyclerView = view.findViewById(R.id.recyclerHistory);
+
             recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
             recyclerView.setHasFixedSize(true);
             eventAdapter = new EventAdapter(this::openEventDetail);
             recyclerView.setAdapter(eventAdapter);
 
-
-
-
-                ImageButton backButton = view.findViewById(R.id.btnBack);
+            ImageButton backButton = view.findViewById(R.id.btnBack);
             if (backButton != null) {
-
-                Fragment parent = getParentFragment();
-
-                backButton.setOnClickListener(v ->
-                        requireActivity().getSupportFragmentManager()
-                                .beginTransaction()
-                                .setReorderingAllowed(true)
-                                .replace(R.id.container, new EntrantDashboardFragment())
-                                .commit()
-                );
+                backButton.setOnClickListener(v -> {
+                    // Switch bottom nav back to Browse tab
+                    Fragment parent = getParentFragment(); // HomeContainerFragment
+                    if (parent != null && parent.getView() != null) {
+                        BottomNavigationView nav =
+                                parent.getView().findViewById(R.id.bottomNav);
+                        if (nav != null) {
+                            nav.setSelectedItemId(R.id.nav_browse);
+                        }
+                    }
+                });
             }
 
             loadEntrantHistory();
@@ -185,6 +188,8 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
             e.printStackTrace();
         }
     }
+
+
 
     private void loadEntrantHistory() {
         if (db == null || deviceId == null || deviceId.isEmpty()) {
@@ -201,40 +206,14 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
                             return;
                         }
 
-                        List<String> joinedIds = new ArrayList<>();
-                        Object joinedObj = entrantDoc.get("Entrant_joinedEventIDs");
-                        if (joinedObj instanceof List) {
-                            joinedIds = (List<String>) joinedObj;
-                        } else if (joinedObj instanceof java.util.Map) {
-                            joinedIds.addAll(((java.util.Map<String, Object>) joinedObj).keySet());
-                        }
-
-                        List<String> acceptedIds = new ArrayList<>();
-                        Object acceptedObj = entrantDoc.get("Entrant_acceptedEventIDs");
-                        if (acceptedObj instanceof List) {
-                            acceptedIds = (List<String>) acceptedObj;
-                        } else if (acceptedObj instanceof java.util.Map) {
-                            acceptedIds.addAll(((java.util.Map<String, Object>) acceptedObj).keySet());
-                        }
-
-                        List<String> declinedIds = new ArrayList<>();
-                        Object declinedObj = entrantDoc.get("Entrant_declinedEventIDs");
-                        if (declinedObj instanceof List) {
-                            declinedIds = (List<String>) declinedObj;
-                        } else if (declinedObj instanceof java.util.Map) {
-                            declinedIds.addAll(((java.util.Map<String, Object>) declinedObj).keySet());
-                        }
+                        List<String> joinedIds = extractIdList(entrantDoc.get("Entrant_joinedEventIDs"));
+                        List<String> acceptedIds = extractIdList(entrantDoc.get("Entrant_acceptedEventIDs"));
+                        List<String> declinedIds = extractIdList(entrantDoc.get("Entrant_declinedEventIDs"));
 
                         Set<String> allEventIdsSet = new HashSet<>();
-                        if (joinedIds != null) {
-                            allEventIdsSet.addAll(joinedIds);
-                        }
-                        if (acceptedIds != null) {
-                            allEventIdsSet.addAll(acceptedIds);
-                        }
-                        if (declinedIds != null) {
-                            allEventIdsSet.addAll(declinedIds);
-                        }
+                        allEventIdsSet.addAll(joinedIds);
+                        allEventIdsSet.addAll(acceptedIds);
+                        allEventIdsSet.addAll(declinedIds);
 
                         if (allEventIdsSet.isEmpty()) {
                             toast("No events yet. Join some events to see them here!");
@@ -254,6 +233,18 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
                 });
     }
 
+    private List<String> extractIdList(Object obj) {
+        List<String> list = new ArrayList<>();
+        if (obj instanceof List) {
+            //noinspection unchecked
+            list.addAll((List<String>) obj);
+        } else if (obj instanceof java.util.Map) {
+            //noinspection unchecked
+            list.addAll(((java.util.Map<String, Object>) obj).keySet());
+        }
+        return list;
+    }
+
     // Fetch events matching the IDs in history
     private void fetchEventsByIds(List<String> ids) {
         if (ids == null || ids.isEmpty()) {
@@ -262,12 +253,10 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
             return;
         }
 
-        // Firestore only allows up to 10 items in whereIn
         List<Event> result = new ArrayList<>();
-
         List<List<String>> batches = new ArrayList<>();
 
-        // Split into groups of 10
+        // Split into groups of 10 (Firestore whereIn limit)
         for (int i = 0; i < ids.size(); i += 10) {
             batches.add(ids.subList(i, Math.min(i + 10, ids.size())));
         }
@@ -301,7 +290,7 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
     }
 
 
-    // Map Firestore document into Event model (same structure as other fragments)
+
     private Event mapEvent(DocumentSnapshot doc) {
         Event e = new Event();
 
@@ -350,7 +339,8 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
         return false;
     }
 
-    // Open event details for a history item
+
+
     private void openEventDetail(String eventId) {
         Bundle b = new Bundle();
         b.putString(ARG_EVENT_ID, eventId);
@@ -358,15 +348,21 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
         EventDetailEntrantFragment f = new EventDetailEntrantFragment();
         f.setArguments(b);
 
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .setReorderingAllowed(true)
-                .replace(R.id.homeContentContainer, f)
-                .addToBackStack(null)
-                .commit();
+        Fragment parent = getParentFragment(); // HomeContainerFragment
+        if (parent != null) {
+            parent.getChildFragmentManager()
+                    .beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.homeContentContainer, f)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
+
+
     private void toast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        if (!isAdded() || getContext() == null) return;
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

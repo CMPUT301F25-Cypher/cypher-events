@@ -21,6 +21,7 @@ import com.example.cypher_events.ui.entrant.EventAdapter;
 import com.example.cypher_events.ui.entrant.ScanQRFragment;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.*;
 
 import java.util.*;
@@ -36,9 +37,6 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
     private FirebaseFirestore db;
     private String deviceId;
     private List<Event> allEvents = new ArrayList<>();
-
-
-    // SEARCH BAR HANDLER
 
     @Override
     public void onSearchQueryChanged(String query) {
@@ -61,8 +59,6 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
         adapter.submit(filtered);
     }
 
-
-    // FILTER DIALOG
 
     @Override
     public void onFilterClicked() {
@@ -89,41 +85,41 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
         }
 
         List<Event> filtered = new ArrayList<>();
-
         for (Event e : allEvents) {
-            String cat = e.getEvent_category().toLowerCase();
-            for (String a : active) {
-                if (cat.equals(a.toLowerCase()))
-                    filtered.add(e);
-            }
+            if (active.contains(e.getEvent_category().toLowerCase()))
+                filtered.add(e);
         }
-
         adapter.submit(filtered);
     }
 
+
     @Override
     public void onAddClicked() {
-        // Organizer pressing the blue add button = Create event screen
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.homeContentContainer, new CreateEventFragment())
-                .addToBackStack(null)
-                .commit();
+        Fragment parent = getParentFragment(); // HomeContainerFragment
+        if (parent != null) {
+            parent.getChildFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.homeContentContainer, new CreateEventFragment())
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
+
+
     @Override
     public void onScanQRClicked() {
-        // Create the fragment you want to navigate to
         ScanQRFragment scanQRFragment = new ScanQRFragment();
 
-        // Use the hosting activity's FragmentManager to replace the current fragment
         requireActivity()
                 .getSupportFragmentManager()
                 .beginTransaction()
                 .setReorderingAllowed(true)
                 .replace(R.id.container, scanQRFragment)
-                .addToBackStack(null)  // so back button returns here
+                .addToBackStack(null)
                 .commit();
     }
+
+
     @Nullable
     @Override
     public View onCreateView(
@@ -157,13 +153,12 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
     }
 
 
-    // LOAD ONLY ORGANIZER'S EVENTS
-
     private void loadMyEvents() {
         db.collection("Organizers").document(deviceId).get()
                 .addOnSuccessListener(doc -> {
                     if (!doc.exists()) {
                         toast("Organizer profile missing.");
+                        adapter.submit(new ArrayList<>());
                         return;
                     }
 
@@ -187,8 +182,6 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
     }
 
 
-    // FETCH EVENTS BY ID (FAST, PRECISE)
-
     private void fetchEventsByIds(List<String> ids) {
         List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
 
@@ -210,6 +203,7 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
                 .addOnFailureListener(e ->
                         toast("Failed to get events: " + e.getMessage()));
     }
+
 
     private Event mapEvent(DocumentSnapshot doc) {
         Event e = new Event();
@@ -233,6 +227,7 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
     private static Integer toInt(Object v) { return v instanceof Number ? ((Number) v).intValue() : 0; }
     private static Boolean toBool(Object v) { return v instanceof Boolean ? (Boolean) v : false; }
 
+
     private void openEventManagementScreen(String eventId) {
         Bundle b = new Bundle();
         b.putString(ARG_EVENT_ID, eventId);
@@ -240,14 +235,20 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
         EventManagementFragment f = new EventManagementFragment();
         f.setArguments(b);
 
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.homeContentContainer, f)
-                .addToBackStack(null)
-                .commit();
+        Fragment parent = getParentFragment(); // ❤️ IMPORTANT
+        if (parent != null) {
+            parent.getChildFragmentManager()
+                    .beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.homeContentContainer, f)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
+
     private void toast(String m) {
-        Toast.makeText(getContext(), m, Toast.LENGTH_SHORT).show();
+        if (!isAdded()) return;
+        Toast.makeText(requireContext(), m, Toast.LENGTH_SHORT).show();
     }
 }
