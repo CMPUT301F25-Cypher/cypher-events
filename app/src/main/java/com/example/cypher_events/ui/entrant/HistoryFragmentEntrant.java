@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cypher_events.R;
 import com.example.cypher_events.domain.model.Event;
 import com.example.cypher_events.ui.SearchableFragment;
+import com.example.cypher_events.ui.organizer.CreateEventFragment;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -102,9 +103,27 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
 
     @Override
     public void onAddClicked() {
-        // Entrant can’t create events, so just toast for now
-        Toast.makeText(getContext(), "Only organizers can create events", Toast.LENGTH_SHORT).show();
+        // Open CreateEventFragment inside HomeContainerFragment
+        getParentFragmentManager()
+                .beginTransaction()
+                .replace(R.id.homeContentContainer, new CreateEventFragment())
+                .addToBackStack(null)
+                .commit();
     }
+    
+    public void onScanQRClicked() {
+
+        ScanQRFragment scanQRFragment = new ScanQRFragment();
+
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.container, scanQRFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
 
     @Nullable
     @Override
@@ -335,7 +354,7 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .setReorderingAllowed(true)
-                .replace(R.id.container, f)
+                .replace(R.id.homeContentContainer, f)
                 .addToBackStack(null)
                 .commit();
     }

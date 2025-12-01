@@ -85,7 +85,6 @@ public class UpdateEventFragment extends Fragment {
 
         //buttons and image view
         btnSaveChanges = view.findViewById(R.id.btnSaveChanges);
-        btnBackUpdate = view.findViewById(R.id.btnBackUpdate);
         btnChangePoster = view.findViewById(R.id.btnChangePoster);
         imgPosterPreviewUpdate = view.findViewById(R.id.imgPosterPreviewUpdate);
 

@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.cypher_events.ProfileFragment;
 import com.example.cypher_events.R;
 import com.example.cypher_events.ui.SearchableFragment;
 import com.example.cypher_events.ui.organizer.MyEventsFragment;
@@ -23,6 +24,8 @@ public class HomeContainerFragment extends Fragment {
     private EditText etSearch;
     private ImageButton btnFilter;
     private ImageButton btnAdd;
+
+    private ImageButton btnScanQR;
     private Fragment currentFragment;
 
     @Nullable
@@ -41,6 +44,8 @@ public class HomeContainerFragment extends Fragment {
         etSearch = view.findViewById(R.id.etSearch);
         btnFilter = view.findViewById(R.id.btnFilter);
         btnAdd = view.findViewById(R.id.btnAdd);
+        btnScanQR = view.findViewById(R.id.btnScanQR);
+
         final BottomNavigationView nav = view.findViewById(R.id.bottomNav);
 
         // Text change -> forward to current Searchable fragment
@@ -69,6 +74,12 @@ public class HomeContainerFragment extends Fragment {
             }
         });
 
+        btnScanQR.setOnClickListener(v -> {
+            if (currentFragment instanceof SearchableFragment) {
+                ((SearchableFragment) currentFragment).onScanQRClicked();
+            }
+        });
+
         nav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_browse) {
@@ -84,13 +95,12 @@ public class HomeContainerFragment extends Fragment {
                 load(new NotificationFragment());
                 return true;
             } else if (id == R.id.nav_profile) {
-                load(new UpdateProfileEntrantFragment());
+                load(new ProfileFragment());
                 return true;
             }
             return false;
         });
 
-        // 🔑 Initial screen: explicitly load Browse tab and then set the nav item.
         if (savedInstanceState == null) {
             load(new EventEntrantFragment());          // ensures search row is shown
             nav.setSelectedItemId(R.id.nav_browse);    // just updates the icon state
@@ -107,7 +117,6 @@ public class HomeContainerFragment extends Fragment {
         searchRow.setVisibility(searchable ? View.VISIBLE : View.GONE);
 
         if (!searchable) {
-            // Optional: clear search when leaving browse tab
             etSearch.setText("");
         }
 

@@ -18,6 +18,7 @@ import com.example.cypher_events.R;
 import com.example.cypher_events.domain.model.Event;
 import com.example.cypher_events.ui.SearchableFragment;
 import com.example.cypher_events.ui.entrant.EventAdapter;
+import com.example.cypher_events.ui.entrant.ScanQRFragment;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.*;
@@ -109,8 +110,20 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
                 .addToBackStack(null)
                 .commit();
     }
+    @Override
+    public void onScanQRClicked() {
+        // Create the fragment you want to navigate to
+        ScanQRFragment scanQRFragment = new ScanQRFragment();
 
-    // ------------------------------------------------------------
+        // Use the hosting activity's FragmentManager to replace the current fragment
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.container, scanQRFragment)
+                .addToBackStack(null)  // so back button returns here
+                .commit();
+    }
     @Nullable
     @Override
     public View onCreateView(
@@ -229,7 +242,7 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
 
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container, f)
+                .replace(R.id.homeContentContainer, f)
                 .addToBackStack(null)
                 .commit();
     }

@@ -48,13 +48,19 @@ public class AdminManageEventsFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_admin_manage_events, container, false);
     }
 
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         db = FirebaseFirestore.getInstance();
 
         ImageButton btnBack = view.findViewById(R.id.btnBack);
         if (btnBack != null) {
-            btnBack.setOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
+            btnBack.setOnClickListener(v ->
+                    requireActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.container, new AdminDashboardFragment())
+                            .commit()
+            );
         }
 
         rvEvents = view.findViewById(R.id.rvEvents);
