@@ -59,10 +59,7 @@ public class EventManagementFragment extends Fragment {
 
     private RecyclerView rvWaitingList;
     private TextView tvNoWaitingList;
-<<<<<<< HEAD
 
-=======
->>>>>>> 199404d85deba37a9304adfd594c09115e09f0c2
     private WaitingListAdapter waitingListAdapter;
 
     private FirebaseFirestore db;
@@ -163,6 +160,14 @@ public class EventManagementFragment extends Fragment {
         String title = doc.getString("Event_title");
         String description = doc.getString("Event_description");
         String posterBase64 = doc.getString("Event_posterBase64");
+
+        String organizerEmail = doc.getString("Event_organizerEmail");
+        String organizerName = doc.getString("Event_organizerName");
+        String OrganizerPhone = doc.getString("Event_organizerPhone");
+
+        tvOrganizerName.setText("Organizer: " + (organizerName != null ? organizerName : "Unknown"));
+        tvOrganizerPhone.setText("Phone: " + (OrganizerPhone != null ? OrganizerPhone : "N/A"));
+        tvOrganizerEmail.setText("Email: " + (organizerEmail != null ? organizerEmail : "N/A"));
 
         tvEventTitle.setText(title != null ? title : "Event");
 
