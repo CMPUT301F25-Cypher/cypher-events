@@ -37,10 +37,26 @@ public class NotificationService {
             try {
                 Boolean enabled = e.isEntrant_notificationsEnabled();
                 if (enabled != null && !enabled) continue;
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+                // if field absent, assume enabled
+            }
+
+            String recipientId = e.getEntrant_id();      // may be null when loaded from Event
+            String recipientEmail = e.getEntrant_email(); // always present from Event.toMap()
 
             String id = UUID.randomUUID().toString();
-            Notification n = new Notification(id, e.getEntrant_id(), organizerId, eventId, title, message, now, false);
+            Notification n = new Notification(
+                    id,
+                    recipientId,
+                    recipientEmail,
+                    organizerId,
+                    eventId,
+                    title,
+                    message,
+                    now,
+                    false
+            );
+
             DocumentReference dr = notificationsCol.document(id);
             dr.set(n.toMap());
             logsCol.document(id).set(n.toMap());

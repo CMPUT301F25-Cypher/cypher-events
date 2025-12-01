@@ -13,7 +13,8 @@ import java.util.UUID;
  * Writes "You won" notifications to Firestore collection "notifications"
  * and also writes a short log record into "notificationLogs".
  *
- * Uses Entrant.getEntrant_id() to target recipients.
+ * Uses Entrant_email as primary routing field (recipientEmail),
+ * and Entrant_id when available (recipientEntrantId).
  */
 public class NotifyWinnerService {
 
@@ -43,10 +44,14 @@ public class NotifyWinnerService {
                 // if field absent, assume enabled
             }
 
+            String recipientId = e.getEntrant_id();       // may be null
+            String recipientEmail = e.getEntrant_email(); // should be non-null
+
             String id = UUID.randomUUID().toString();
             Notification n = new Notification(
                     id,
-                    e.getEntrant_id(),
+                    recipientId,
+                    recipientEmail,
                     organizerId,
                     eventId,
                     "🎉 You Won the Lottery!",

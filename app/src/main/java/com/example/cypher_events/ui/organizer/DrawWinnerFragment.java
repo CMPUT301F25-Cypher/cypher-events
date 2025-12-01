@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.cypher_events.R;
+import com.example.cypher_events.domain.model.Notification;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -22,6 +23,7 @@ import com.google.firebase.firestore.WriteBatch;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 public class DrawWinnerFragment extends Fragment {
 
@@ -105,18 +107,18 @@ public class DrawWinnerFragment extends Fragment {
         if (actualEventId == null || actualEventId.isEmpty()) {
             actualEventId = eventId; // Fallback to document ID
         }
-        
+
         final String searchEventId = actualEventId;
 
         db.collection("Entrants")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     java.util.ArrayList<String> waitlistIds = new java.util.ArrayList<>();
-                    
+
                     android.util.Log.d("DrawWinner", "Looking for eventId (doc): " + eventId);
                     android.util.Log.d("DrawWinner", "Looking for eventId (field): " + searchEventId);
                     android.util.Log.d("DrawWinner", "Total entrants: " + querySnapshot.size());
-                    
+
                     for (DocumentSnapshot entrantDoc : querySnapshot.getDocuments()) {
                         List<String> joinedIds = new java.util.ArrayList<>();
                         Object joinedObj = entrantDoc.get("Entrant_joinedEventIDs");
@@ -161,34 +163,34 @@ public class DrawWinnerFragment extends Fragment {
                         } else if (declinedObj instanceof Map) {
                             declinedIds.addAll(((Map<String, Object>) declinedObj).keySet());
                         }
-                        
+
                         android.util.Log.d("DrawWinner", "Entrant: " + entrantDoc.getId());
                         android.util.Log.d("DrawWinner", "  joinedIds: " + joinedIds);
                         android.util.Log.d("DrawWinner", "  selectedIds: " + selectedIds);
                         android.util.Log.d("DrawWinner", "  acceptedIds: " + acceptedIds);
                         android.util.Log.d("DrawWinner", "  declinedIds: " + declinedIds);
-                        
+
                         boolean hasJoined = !joinedIds.isEmpty() && (joinedIds.contains(eventId) || joinedIds.contains(searchEventId));
                         boolean isSelected = !selectedIds.isEmpty() && (selectedIds.contains(eventId) || selectedIds.contains(searchEventId));
                         boolean hasAccepted = !acceptedIds.isEmpty() && (acceptedIds.contains(eventId) || acceptedIds.contains(searchEventId));
                         boolean hasDeclined = !declinedIds.isEmpty() && (declinedIds.contains(eventId) || declinedIds.contains(searchEventId));
-                        
+
                         android.util.Log.d("DrawWinner", "  hasJoined: " + hasJoined + ", isSelected: " + isSelected + ", hasAccepted: " + hasAccepted + ", hasDeclined: " + hasDeclined);
-                        
+
                         if (hasJoined && !isSelected && !hasAccepted && !hasDeclined) {
                             waitlistIds.add(entrantDoc.getId());
                             android.util.Log.d("DrawWinner", "  -> ADDED TO WAITLIST");
                         }
                     }
-                    
+
                     android.util.Log.d("DrawWinner", "Final waitlist size: " + waitlistIds.size());
-                    
+
                     if (waitlistIds.isEmpty()) {
                         tvWinnerResult.setText("No entrants in waitlist.");
                         Toast.makeText(getContext(), "No entrants available to draw.", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    
+
                     String winnerId = pickRandom(waitlistIds);
                     selectWinner(winnerId);
                 })
@@ -206,14 +208,23 @@ public class DrawWinnerFragment extends Fragment {
     }
 
     private void selectWinner(String winnerId) {
+        if (winnerId == null) {
+            Toast.makeText(getContext(), "No winner could be selected.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Mark this entrant as selected for the event
         db.collection("Entrants").document(winnerId)
                 .update("Entrant_selectedEventIDs", FieldValue.arrayUnion(eventId))
                 .addOnSuccessListener(aVoid -> {
+                    // Fetch the entrant doc so we can show their name/email AND send a notification
                     db.collection("Entrants").document(winnerId).get()
                             .addOnSuccessListener(doc -> {
                                 String name = doc.getString("Entrant_name");
                                 String email = doc.getString("Entrant_email");
-                                
+                                Boolean enabledObj = doc.getBoolean("Entrant_notificationsEnabled");
+                                boolean notificationsEnabled = (enabledObj == null) || enabledObj;
+
                                 String label;
                                 if (name != null && !name.isEmpty()) {
                                     label = "Winner: " + name;
@@ -222,14 +233,45 @@ public class DrawWinnerFragment extends Fragment {
                                 } else {
                                     label = "Winner drawn successfully!";
                                 }
-                                
+
                                 tvWinnerResult.setText(label);
                                 Toast.makeText(getContext(), "Winner drawn successfully!", Toast.LENGTH_SHORT).show();
+
+                                // NEW: send a winner notification to this entrant
+                                sendWinnerNotification(winnerId, email, notificationsEnabled);
                             });
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Failed to select winner: " + e.getMessage(),
                                 Toast.LENGTH_SHORT).show()
                 );
+    }
+
+    /**
+     * NEW: Writes a "You won" notification (and log) into Firestore.
+     * This will auto-create the "notifications" and "notificationLogs" collections.
+     */
+    private void sendWinnerNotification(String winnerId, String winnerEmail, boolean notificationsEnabled) {
+        if (!notificationsEnabled) return;
+        if (winnerEmail == null || winnerEmail.isEmpty()) return;
+
+        String id = UUID.randomUUID().toString();
+        long now = System.currentTimeMillis();
+
+        // senderOrganizerId is left null here; you can set it if you track organizer IDs.
+        Notification n = new Notification(
+                id,
+                winnerId,                     // recipientEntrantId
+                winnerEmail,                  // recipientEmail
+                null,                         // senderOrganizerId (optional)
+                eventId,                      // eventId
+                "🎉 You Won the Lottery!",
+                "Congratulations — you've been selected for the event.",
+                now,
+                false
+        );
+
+        db.collection("notifications").document(id).set(n.toMap());
+        db.collection("notificationLogs").document(id).set(n.toMap());
     }
 }

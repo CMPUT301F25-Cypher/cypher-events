@@ -37,21 +37,31 @@
         android:name="com.example.cypher_events.ui.entrant.EntrantDashboardFragment"
         android:label="Entrant Dashboard">
 
-    <action
-        android:id="@+id/action_entrantDashboard_to_eventEntrant"
-        app:destination="@id/eventEntrant" />
+        <action
+            android:id="@+id/action_entrantDashboard_to_eventEntrant"
+            app:destination="@id/eventEntrant" />
 
-    <action
-        android:id="@+id/action_entrantDashboard_to_historyEntrant"
-        app:destination="@id/historyEntrant" />
+        <action
+            android:id="@+id/action_entrantDashboard_to_historyEntrant"
+            app:destination="@id/historyEntrant" />
 
-    <action
-        android:id="@+id/action_entrantDashboard_to_updateProfileEntrant"
-        app:destination="@id/updateProfileEntrant" />
+        <action
+            android:id="@+id/action_entrantDashboard_to_updateProfileEntrant"
+            app:destination="@id/updateProfileEntrant" />
 
-    <action
-        android:id="@+id/action_entrantDashboard_to_organizerDashboard"
-        app:destination="@id/organizerDashboardFragment" />
+        <action
+            android:id="@+id/action_entrantDashboard_to_organizerDashboard"
+            app:destination="@id/organizerDashboardFragment" />
+
+        <!-- NEW: go to entrant notifications list -->
+        <action
+            android:id="@+id/action_entrantDashboard_to_notificationsEntrant"
+            app:destination="@id/notificationsEntrant" />
+
+        <!-- NEW: go to entrant notification settings -->
+        <action
+            android:id="@+id/action_entrantDashboard_to_notificationSettingsEntrant"
+            app:destination="@id/notificationSettingsEntrant" />
     </fragment>
 
     <fragment
@@ -59,11 +69,11 @@
         android:name="com.example.cypher_events.ui.entrant.EventEntrantFragment"
         android:label="Entrant Events"
         tools:layout="@layout/fragment_event_entrant">
+
         <action
             android:id="@+id/action_eventEntrant_to_eventDetailEntrant"
             app:destination="@id/eventDetailEntrant" />
     </fragment>
-
 
     <fragment
         android:id="@+id/eventDetailEntrant"
@@ -85,6 +95,18 @@
         android:label="Update Profile"
         tools:layout="@layout/fragment_update_profile_entrant" />
 
+    <!-- NEW: Entrant notifications list -->
+    <fragment
+        android:id="@+id/notificationsEntrant"
+        android:name="com.example.cypher_events.ui.entrant.NotificationFragment"
+        android:label="Notifications"
+        tools:layout="@layout/fragment_notification" />
 
+    <!-- NEW: Entrant notification settings -->
+    <fragment
+        android:id="@+id/notificationSettingsEntrant"
+        android:name="com.example.cypher_events.ui.entrant.NotificationSettingsFragment"
+        android:label="Notification Settings"
+        tools:layout="@layout/fragment_notification_settings" />
 
 </navigation>
