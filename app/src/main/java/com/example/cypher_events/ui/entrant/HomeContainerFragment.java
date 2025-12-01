@@ -92,6 +92,8 @@ public class HomeContainerFragment extends Fragment {
                 load(new MyEventsFragment());
                 return true;
             } else if (id == R.id.nav_notifications) {
+                getChildFragmentManager().popBackStack(null, 0);
+
                 load(new NotificationFragment());
                 return true;
             } else if (id == R.id.nav_profile) {

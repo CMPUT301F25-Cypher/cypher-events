@@ -69,7 +69,7 @@ public class CreateEventFragment extends Fragment {
     private Uri selectedImageUri = null;
     private String posterBase64 = "";
 
-    // ========= BOTTOM NAV + TOP BAR CONTROL =========
+    //  BOTTOM NAV + TOP BAR CONTROL
 
     @Override
     public void onResume() {
@@ -88,7 +88,7 @@ public class CreateEventFragment extends Fragment {
         if (bar != null) bar.setVisibility(View.VISIBLE);
     }
 
-    // ========= IMAGE PICKER =========
+    // IMAGE PICKER
 
     private final ActivityResultLauncher<String> imagePickerLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
@@ -141,7 +141,7 @@ public class CreateEventFragment extends Fragment {
 
         btnBack = view.findViewById(R.id.btnBack);
 
-        // ---- FIX: AVOID NULL BUTTON CRASH ----
+        // FIX: AVOID NULL BUTTON CRASH
         if (btnBack != null) {
             btnBack.setOnClickListener(v ->
                     requireActivity().getSupportFragmentManager().popBackStack()
@@ -156,7 +156,7 @@ public class CreateEventFragment extends Fragment {
         loadOrganizerInfo();
     }
 
-    // ========= DATE PICKER =========
+    //  DATE PICKER
 
     private void showDatePicker(boolean isStart) {
         Calendar c = Calendar.getInstance();
@@ -185,7 +185,7 @@ public class CreateEventFragment extends Fragment {
         ).show();
     }
 
-    // ========= LOAD ORGANIZER INFO =========
+    // LOAD ORGANIZER INFO
 
     private void loadOrganizerInfo() {
         db.collection("Organizers").document(deviceId).get()
@@ -210,7 +210,7 @@ public class CreateEventFragment extends Fragment {
                 });
     }
 
-    // ========= CREATE EVENT =========
+    // CREATE EVENT
 
     private void createEvent() {
 

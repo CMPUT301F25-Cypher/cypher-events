@@ -23,16 +23,6 @@
             android:paddingBottom="8dp"
             android:layout_marginBottom="16dp">
 
-            <ImageButton
-                android:id="@+id/btnBack"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@drawable/bg_button_secondary"
-                android:src="@drawable/ic_back_button"
-                android:contentDescription="Back"
-                android:scaleType="centerInside"
-                android:padding="10dp" />
-
             <TextView
                 android:id="@+id/tvEventTitle"
                 android:layout_width="0dp"
