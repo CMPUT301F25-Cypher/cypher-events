@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.cypher_events.ProfileFragment;
 import com.example.cypher_events.R;
@@ -81,31 +82,42 @@ public class HomeContainerFragment extends Fragment {
         });
 
         nav.setOnItemSelectedListener(item -> {
+
+            // Always clear any leftover detail screens
+            getChildFragmentManager().popBackStackImmediate(
+                    null,
+                    FragmentManager.POP_BACK_STACK_INCLUSIVE
+            );
+
             int id = item.getItemId();
+
             if (id == R.id.nav_browse) {
                 load(new EventEntrantFragment());
                 return true;
+
             } else if (id == R.id.nav_joined) {
                 load(new HistoryFragmentEntrant());
                 return true;
+
             } else if (id == R.id.nav_my_events) {
                 load(new MyEventsFragment());
                 return true;
-            } else if (id == R.id.nav_notifications) {
-                getChildFragmentManager().popBackStack(null, 0);
 
+            } else if (id == R.id.nav_notifications) {
                 load(new NotificationFragment());
                 return true;
+
             } else if (id == R.id.nav_profile) {
                 load(new ProfileFragment());
                 return true;
             }
+
             return false;
         });
 
         if (savedInstanceState == null) {
-            load(new EventEntrantFragment());          // ensures search row is shown
-            nav.setSelectedItemId(R.id.nav_browse);    // just updates the icon state
+            load(new EventEntrantFragment());
+            nav.setSelectedItemId(R.id.nav_browse);
         }
     }
 

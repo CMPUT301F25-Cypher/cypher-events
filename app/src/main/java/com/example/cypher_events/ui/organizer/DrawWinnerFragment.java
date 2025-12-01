@@ -47,17 +47,6 @@ public class DrawWinnerFragment extends Fragment {
 
         btnGenerateWinner = view.findViewById(R.id.btnGenerateWinner);
         tvWinnerResult = view.findViewById(R.id.tvWinnerResult);
-        backButton = view.findViewById(R.id.btnBackWinner);
-
-        if (backButton != null) {
-            backButton.setOnClickListener(v ->
-                    requireActivity().getSupportFragmentManager()
-                            .beginTransaction()
-                            .setReorderingAllowed(true)
-                            .replace(R.id.container, new OrganizerDashboardFragment())
-                            .commit()
-            );
-        }
 
         return view;
     }

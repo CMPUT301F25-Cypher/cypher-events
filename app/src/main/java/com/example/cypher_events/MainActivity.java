@@ -8,24 +8,20 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.cypher_events.domain.model.DummyData;
-import com.example.cypher_events.ui.entrant.EntrantDashboardFragment;
+import com.example.cypher_events.ui.auth.SignupFragment;
 import com.example.cypher_events.ui.entrant.HomeContainerFragment;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 public class MainActivity extends AppCompatActivity {
 
-    private static final boolean DEBUG_LOG_ADMIN_ID        = false;
+    private static final boolean DEBUG_LOG_ADMIN_ID         = false;
     private static final boolean DEBUG_FIRESTORE_DUMMY_DATA = false;
-    private static final boolean CREATE_ADMIN              = false;
+    private static final boolean CREATE_ADMIN               = false;
 
-    private static final String ADMIN_KEY       = "041f46c418140a17"; // example admin id
-    private static final String ADMIN_PASSWORD  = "9999";
+    private static final String ADMIN_KEY = "041f46c418140a17";
+    private static final String ADMIN_PASSWORD = "9999";
 
     private FirebaseFirestore db;
     private String deviceId;
@@ -41,77 +37,60 @@ public class MainActivity extends AppCompatActivity {
                 Settings.Secure.ANDROID_ID
         );
 
-        if (DEBUG_FIRESTORE_DUMMY_DATA) {
-            DummyData.seed();
-        }
-        if (CREATE_ADMIN) {
-            DummyData.adminSeed(ADMIN_KEY);
-        }
+        // optional dummy data
+        if (DEBUG_FIRESTORE_DUMMY_DATA) DummyData.seed();
+        if (CREATE_ADMIN) DummyData.adminSeed(ADMIN_KEY);
         logAdminDeviceId();
 
-        checkEntrantOrCreate(deviceId);
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.container, new HomeContainerFragment())
-                    .commit();
-        }
+        // IMPORTANT: do NOT auto-load HomeContainerFragment here
+        // First check if user exists
+        checkEntrantStatus(deviceId);
     }
 
+    /** FIREBASE WRAPPER */
     public Task<DocumentSnapshot> pull_db(String collectionName, String documentId) {
         return db.collection(collectionName).document(documentId).get();
     }
 
-    private void checkEntrantOrCreate(String deviceId) {
-        pull_db("Entrants", deviceId)
+    /** CHECK IF ENTRANT EXISTS OR SHOW SIGNUP SCREEN */
+    private void checkEntrantStatus(String deviceId) {
+        db.collection("Entrants").document(deviceId)
+                .get()
                 .addOnSuccessListener(doc -> {
                     if (doc.exists()) {
-                        Log.d("FIREBASE", "Entrant already exists for device: " + deviceId);
+                        // existing user → go to home
+                        loadHome();
                     } else {
-                        createNewEntrant(deviceId);
+                        // first-time user → open signup screen
+                        loadSignup();
                     }
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(
-                                this,
-                                "Error accessing Firestore: " + e.getMessage(),
-                                Toast.LENGTH_LONG
-                        ).show()
-                );
+                .addOnFailureListener(e -> {
+                    Toast.makeText(
+                            this,
+                            "Firestore error: " + e.getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                });
     }
 
-    private void createNewEntrant(String deviceId) {
-        Map<String, Object> entrantData = new HashMap<>();
-        entrantData.put("Entrant_id", deviceId);
-        entrantData.put("Entrant_name", "New User");
-        entrantData.put("Entrant_email",
-                "new_user_" + deviceId.substring(0, 6) + "@example.com");
-        entrantData.put("Entrant_phone", "N/A");
-
-        // use arrays (lists) for event IDs, not maps
-        entrantData.put("Entrant_joinedEventIDs",   new ArrayList<String>());
-        entrantData.put("Entrant_acceptedEventIDs", new ArrayList<String>());
-        entrantData.put("Entrant_declinedEventIDs", new ArrayList<String>());
-
-        db.collection("Entrants").document(deviceId)
-                .set(entrantData)
-                .addOnSuccessListener(a ->
-                        Toast.makeText(
-                                this,
-                                "New entrant profile created!",
-                                Toast.LENGTH_SHORT
-                        ).show()
-                )
-                .addOnFailureListener(e ->
-                        Toast.makeText(
-                                this,
-                                "Failed to create entrant: " + e.getMessage(),
-                                Toast.LENGTH_LONG
-                        ).show()
-                );
+    /** LOAD SIGNUP FRAGMENT (FIRST TIME USERS) */
+    private void loadSignup() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, new SignupFragment())
+                .commit();
     }
 
+    /** LOAD HOME FRAGMENT (RETURNING USERS) */
+    private void loadHome() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, new HomeContainerFragment())
+                .commit();
+    }
+
+    /** DEBUG: PRINT DEVICE ID IF ENABLED */
     private void logAdminDeviceId() {
         if (!DEBUG_LOG_ADMIN_ID) return;
 
@@ -119,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 getContentResolver(),
                 Settings.Secure.ANDROID_ID
         );
+
         Log.d("ADMIN_DEVICE_ID", "Device ID: " + id);
         Toast.makeText(this, "Device ID: " + id, Toast.LENGTH_LONG).show();
     }
