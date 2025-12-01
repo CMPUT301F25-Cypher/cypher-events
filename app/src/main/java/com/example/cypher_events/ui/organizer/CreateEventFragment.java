@@ -56,6 +56,7 @@ public class CreateEventFragment extends Fragment {
 
     private Button btnSignupStart;
     private Button btnSignupEnd;
+    private Button btnEventDate;
     private Button btnUploadPoster;
     private Button btnSubmit;
 
@@ -64,8 +65,10 @@ public class CreateEventFragment extends Fragment {
 
     private String startDate = "";
     private String endDate = "";
+    private String eventDate = "";
     private long signupStartUtc = 0L;
     private long signupEndUtc = 0L;
+    private long eventDateUtc = 0L;
 
     private Uri selectedImageUri = null;
     private String posterBase64 = "";
@@ -136,6 +139,7 @@ public class CreateEventFragment extends Fragment {
 
         btnSignupStart = view.findViewById(R.id.btnSelectStartDate);
         btnSignupEnd = view.findViewById(R.id.btnSelectEndDate);
+        btnEventDate = view.findViewById(R.id.btnSelectEventDate);
         btnUploadPoster = view.findViewById(R.id.btnUploadPoster);
         btnSubmit = view.findViewById(R.id.btnCreateEventSubmit);
         imgPosterPreview = view.findViewById(R.id.imgPosterPreview);
@@ -149,8 +153,9 @@ public class CreateEventFragment extends Fragment {
             );
         }
 
-        btnSignupStart.setOnClickListener(v -> showDatePicker(true));
-        btnSignupEnd.setOnClickListener(v -> showDatePicker(false));
+        btnSignupStart.setOnClickListener(v -> showDatePicker("signup_start"));
+        btnSignupEnd.setOnClickListener(v -> showDatePicker("signup_end"));
+        btnEventDate.setOnClickListener(v -> showDatePicker("event_date"));
         btnUploadPoster.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
         btnSubmit.setOnClickListener(v -> createEvent());
 
@@ -159,7 +164,7 @@ public class CreateEventFragment extends Fragment {
 
     //  DATE PICKER
 
-    private void showDatePicker(boolean isStart) {
+    private void showDatePicker(String type) {
         Calendar c = Calendar.getInstance();
 
         new DatePickerDialog(
@@ -172,12 +177,22 @@ public class CreateEventFragment extends Fragment {
 
                     long millis = picked.getTimeInMillis();
 
-                    if (isStart) {
-                        startDate = date;
-                        signupStartUtc = millis;
-                    } else {
-                        endDate = date;
-                        signupEndUtc = millis;
+                    switch (type) {
+                        case "signup_start":
+                            startDate = date;
+                            signupStartUtc = millis;
+                            Toast.makeText(getContext(), "Signup Start: " + date, Toast.LENGTH_SHORT).show();
+                            break;
+                        case "signup_end":
+                            endDate = date;
+                            signupEndUtc = millis;
+                            Toast.makeText(getContext(), "Signup End: " + date, Toast.LENGTH_SHORT).show();
+                            break;
+                        case "event_date":
+                            eventDate = date;
+                            eventDateUtc = millis;
+                            Toast.makeText(getContext(), "Event Date: " + date, Toast.LENGTH_SHORT).show();
+                            break;
                     }
                 },
                 c.get(Calendar.YEAR),
@@ -273,6 +288,7 @@ public class CreateEventFragment extends Fragment {
         event.put("Event_endDate", endDate);
         event.put("Event_signupStartUtc", signupStartUtc);
         event.put("Event_signupEndUtc", signupEndUtc);
+        event.put("Event_dateUtc", eventDateUtc);
         event.put("Event_posterBase64", posterBase64);
         event.put("Event_organizerEmail", organizerEmail);
         event.put("Event_organizerName", organizerName);

@@ -164,6 +164,15 @@
                     android:layout_marginTop="12dp"
                     android:background="@drawable/rounded_button_minimal"/>
 
+                <Button
+                    android:id="@+id/btnSelectEventDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Select event date"
+                    android:textAllCaps="false"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/rounded_button_minimal"/>
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

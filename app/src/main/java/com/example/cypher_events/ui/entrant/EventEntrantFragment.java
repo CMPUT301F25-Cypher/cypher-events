@@ -1,12 +1,19 @@
 package com.example.cypher_events.ui.entrant;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +45,9 @@ public class EventEntrantFragment extends Fragment implements SearchableFragment
     private EventAdapter eventAdapter;
 
     private List<Event> allEvents = new ArrayList<>();
+    
+    private long filterStartDate = 0;
+    private long filterEndDate = 0;
 
     @Override
     public void onSearchQueryChanged(String query) {
@@ -62,35 +72,158 @@ public class EventEntrantFragment extends Fragment implements SearchableFragment
 
     @Override
     public void onFilterClicked() {
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Filter by category")
-                .setMultiChoiceItems(CATEGORIES, selectedCats, (dialog, which, isChecked) -> {
-                    selectedCats[which] = isChecked;
-                })
-                .setPositiveButton("Apply", (d, w) -> applyCategoryFilter())
-                .setNegativeButton("Clear", (d, w) -> {
-                    Arrays.fill(selectedCats, false);
-                    eventAdapter.submit(allEvents);
-                })
-                .show();
+        showFilterDialog();
     }
 
-    private void applyCategoryFilter() {
-        List<String> active = new ArrayList<>();
-        for (int i = 0; i < CATEGORIES.length; i++) {
-            if (selectedCats[i]) active.add(CATEGORIES[i].toLowerCase());
+    private void showFilterDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_filter_events, null);
+        
+        // Category checkboxes
+        CheckBox cbFilm = dialogView.findViewById(R.id.cbFilm);
+        CheckBox cbMusic = dialogView.findViewById(R.id.cbMusic);
+        CheckBox cbSports = dialogView.findViewById(R.id.cbSports);
+        CheckBox cbGaming = dialogView.findViewById(R.id.cbGaming);
+        
+        // Set current selections
+        cbFilm.setChecked(selectedCats[0]);
+        cbMusic.setChecked(selectedCats[1]);
+        cbSports.setChecked(selectedCats[2]);
+        cbGaming.setChecked(selectedCats[3]);
+        
+        // Date filter buttons
+        Button btnStartDate = dialogView.findViewById(R.id.btnSelectStartDate);
+        Button btnEndDate = dialogView.findViewById(R.id.btnSelectEndDate);
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+        
+        // Update button text if dates are already selected
+        if (filterStartDate > 0) {
+            btnStartDate.setText("Start: " + dateFormat.format(filterStartDate));
         }
-        if (active.isEmpty()) {
-            eventAdapter.submit(allEvents);
-            return;
+        if (filterEndDate > 0) {
+            btnEndDate.setText("End: " + dateFormat.format(filterEndDate));
         }
+        
+        // Start date picker
+        btnStartDate.setOnClickListener(v -> {
+            Calendar cal = Calendar.getInstance();
+            if (filterStartDate > 0) {
+                cal.setTimeInMillis(filterStartDate);
+            }
+            
+            DatePickerDialog picker = new DatePickerDialog(
+                requireContext(),
+                (view, year, month, dayOfMonth) -> {
+                    Calendar selected = Calendar.getInstance();
+                    selected.set(year, month, dayOfMonth, 0, 0, 0);
+                    selected.set(Calendar.MILLISECOND, 0);
+                    filterStartDate = selected.getTimeInMillis();
+                    btnStartDate.setText("Start: " + dateFormat.format(filterStartDate));
+                },
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)
+            );
+            picker.show();
+        });
+        
+        // End date picker
+        btnEndDate.setOnClickListener(v -> {
+            Calendar cal = Calendar.getInstance();
+            if (filterEndDate > 0) {
+                cal.setTimeInMillis(filterEndDate);
+            }
+            
+            DatePickerDialog picker = new DatePickerDialog(
+                requireContext(),
+                (view, year, month, dayOfMonth) -> {
+                    Calendar selected = Calendar.getInstance();
+                    selected.set(year, month, dayOfMonth, 23, 59, 59);
+                    selected.set(Calendar.MILLISECOND, 999);
+                    filterEndDate = selected.getTimeInMillis();
+                    btnEndDate.setText("End: " + dateFormat.format(filterEndDate));
+                },
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)
+            );
+            picker.show();
+        });
+        
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setTitle("Filter Events")
+                .setView(dialogView)
+                .setPositiveButton("Apply", null)
+                .setNegativeButton("Clear", null)
+                .create();
+        
+        dialog.show();
+        
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            // Update category selections
+            selectedCats[0] = cbFilm.isChecked();
+            selectedCats[1] = cbMusic.isChecked();
+            selectedCats[2] = cbSports.isChecked();
+            selectedCats[3] = cbGaming.isChecked();
+            
+            applyFilters();
+            dialog.dismiss();
+        });
+        
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> {
+            clearFilters();
+            dialog.dismiss();
+        });
+    }
 
+    private void applyFilters() {
         List<Event> filtered = new ArrayList<>();
-        for (Event e : allEvents) {
-            String cat = e.getEvent_category().toLowerCase();
-            if (active.contains(cat)) filtered.add(e);
+        
+        List<String> activeCategories = new ArrayList<>();
+        for (int i = 0; i < CATEGORIES.length; i++) {
+            if (selectedCats[i]) activeCategories.add(CATEGORIES[i].toLowerCase());
         }
+        
+        boolean hasDateFilter = filterStartDate > 0 || filterEndDate > 0;
+        boolean hasCategoryFilter = !activeCategories.isEmpty();
+        
+        for (Event e : allEvents) {
+            boolean matchesCategory = true;
+            boolean matchesDate = true;
+            
+            if (hasCategoryFilter) {
+                String cat = e.getEvent_category().toLowerCase();
+                matchesCategory = activeCategories.contains(cat);
+            }
+            
+            if (hasDateFilter) {
+                long eventDate = e.getEvent_dateUtc();
+                if (eventDate > 0) {
+                    if (filterStartDate > 0 && eventDate < filterStartDate) {
+                        matchesDate = false;
+                    }
+                    if (filterEndDate > 0 && eventDate > filterEndDate) {
+                        matchesDate = false;
+                    }
+                } else {
+                    matchesDate = false;
+                }
+            }
+            
+            if (matchesCategory && matchesDate) {
+                filtered.add(e);
+            }
+        }
+        
         eventAdapter.submit(filtered);
+    }
+
+    private void clearFilters() {
+        Arrays.fill(selectedCats, false);
+        filterStartDate = 0;
+        filterEndDate = 0;
+        eventAdapter.submit(allEvents);
+        toast("Filters cleared");
     }
 
     @Override
@@ -214,10 +347,12 @@ public class EventEntrantFragment extends Fragment implements SearchableFragment
 
         Long start = toLong(doc.get("Event_signupStartUtc"));
         Long end = toLong(doc.get("Event_signupEndUtc"));
+        Long eventDate = toLong(doc.get("Event_dateUtc"));
         Integer cap = toInt(doc.get("Event_capacity"));
 
         e.setEvent_signupStartUtc(start != null ? start : 0L);
         e.setEvent_signupEndUtc(end != null ? end : 0L);
+        e.setEvent_dateUtc(eventDate != null ? eventDate : 0L);
         e.setEvent_capacity(cap != null ? cap : 0);
 
         Boolean isActive = toBool(doc.get("Event_isActive"));
