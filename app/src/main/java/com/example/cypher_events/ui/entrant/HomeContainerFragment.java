@@ -43,6 +43,8 @@ public class HomeContainerFragment extends Fragment {
         etSearch = view.findViewById(R.id.etSearch);
         btnFilter = view.findViewById(R.id.btnFilter);
         btnAdd = view.findViewById(R.id.btnAdd);
+        btnScanQR = view.findViewById(R.id.btnScanQR);
+
         final BottomNavigationView nav = view.findViewById(R.id.bottomNav);
 
         // Text change -> forward to current Searchable fragment
@@ -68,6 +70,12 @@ public class HomeContainerFragment extends Fragment {
         btnAdd.setOnClickListener(v -> {
             if (currentFragment instanceof SearchableFragment) {
                 ((SearchableFragment) currentFragment).onAddClicked();
+            }
+        });
+
+        btnScanQR.setOnClickListener(v -> {
+            if (currentFragment instanceof SearchableFragment) {
+                ((SearchableFragment) currentFragment).onScanQRClicked();
             }
         });
 

@@ -106,6 +106,19 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
         Toast.makeText(getContext(), "Only organizers can create events", Toast.LENGTH_SHORT).show();
     }
 
+    public void onScanQRClicked() {
+
+        ScanQRFragment scanQRFragment = new ScanQRFragment();
+
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.container, scanQRFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
     @Nullable
     @Override
     public View onCreateView(
