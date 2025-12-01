@@ -120,6 +120,12 @@ public class EventDetailEntrantFragment extends Fragment implements OnMapReadyCa
 
     private void setupMap() {
         try {
+            View view = getView();
+            if (view == null) {
+                android.util.Log.e("EventDetail", "View is null, cannot setup map");
+                return;
+            }
+            
             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                     .findFragmentById(R.id.mapContainer);
             
@@ -134,10 +140,18 @@ public class EventDetailEntrantFragment extends Fragment implements OnMapReadyCa
             mapFragment.getMapAsync(this);
         } catch (Exception e) {
             android.util.Log.e("EventDetail", "Error setting up map", e);
+            e.printStackTrace();
             // Hide map container if there's an error
-            View mapContainer = getView().findViewById(R.id.mapContainer);
-            if (mapContainer != null) {
-                mapContainer.setVisibility(View.GONE);
+            try {
+                View view = getView();
+                if (view != null) {
+                    View mapContainer = view.findViewById(R.id.mapContainer);
+                    if (mapContainer != null) {
+                        mapContainer.setVisibility(View.GONE);
+                    }
+                }
+            } catch (Exception ex) {
+                android.util.Log.e("EventDetail", "Error hiding map container", ex);
             }
         }
     }
@@ -165,9 +179,16 @@ public class EventDetailEntrantFragment extends Fragment implements OnMapReadyCa
         if (eventLat == 0 && eventLng == 0) {
             android.util.Log.d("EventDetail", "No valid coordinates");
             // Hide map if no coordinates
-            View mapContainer = getView().findViewById(R.id.mapContainer);
-            if (mapContainer != null) {
-                mapContainer.setVisibility(View.GONE);
+            try {
+                View view = getView();
+                if (view != null) {
+                    View mapContainer = view.findViewById(R.id.mapContainer);
+                    if (mapContainer != null) {
+                        mapContainer.setVisibility(View.GONE);
+                    }
+                }
+            } catch (Exception e) {
+                android.util.Log.e("EventDetail", "Error hiding map", e);
             }
             return;
         }
