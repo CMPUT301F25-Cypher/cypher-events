@@ -1,5 +1,21 @@
 package com.example.cypher_events.ui.entrant;
 
+/**
+ * UpdateProfileEntrantFragment
+ * 
+ * Purpose: Allows entrants to view and update their profile information.
+ * 
+ * Key Features:
+ * - Edit personal information (name, email, phone, address)
+ * - Toggle notification preferences (opt-in/opt-out of event notifications)
+ * - Delete profile permanently
+ * - Data persistence with Firestore
+ * 
+ * Navigation: Accessed from EntrantDashboardFragment profile section
+ * 
+ * Outstanding Issues: None
+ */
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.provider.Settings;

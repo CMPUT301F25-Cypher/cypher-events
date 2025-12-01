@@ -1,5 +1,24 @@
 package com.example.cypher_events.ui.entrant;
 
+/**
+ * EventDetailEntrantFragment
+ * 
+ * Purpose: Display detailed information about a specific event for entrants.
+ * Allows entrants to join events, leave waiting lists, and accept/decline invitations.
+ * 
+ * Key Features:
+ * - View event details (title, description, dates, location, poster)
+ * - Join event waiting list with geolocation validation (if required)
+ * - Leave waiting list before lottery draw
+ * - Accept or decline lottery winner invitations
+ * - Real-time status updates from Firestore
+ * - Location permission handling for geolocation requirements
+ * 
+ * Navigation: Accessed from EventEntrantFragment when user selects an event
+ * 
+ * Outstanding Issues: None
+ */
+
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Bundle;

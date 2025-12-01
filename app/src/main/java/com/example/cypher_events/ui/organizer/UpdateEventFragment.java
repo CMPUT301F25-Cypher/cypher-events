@@ -1,5 +1,23 @@
 package com.example.cypher_events.ui.organizer;
 
+/**
+ * UpdateEventFragment
+ * 
+ * Purpose: Allows organizers to edit and update existing event details.
+ * 
+ * Key Features:
+ * - Edit event information (title, description, location, category)
+ * - Update event dates (signup start/end, actual event date)
+ * - Change event poster image with preview
+ * - Image compression and Base64 encoding
+ * - Back button navigation to previous screen
+ * - Data persistence with Firestore
+ * 
+ * Navigation: Accessed from EventManagementFragment via "Update Event" button
+ * 
+ * Outstanding Issues: None
+ */
+
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;

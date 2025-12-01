@@ -1,5 +1,24 @@
 package com.example.cypher_events.domain.model;
 
+/**
+ * Event
+ * 
+ * Purpose: Domain model representing an event in the system.
+ * 
+ * Key Attributes:
+ * - Basic info: ID, title, description, location, category, status
+ * - Dates: signup start/end dates, actual event date (UTC timestamps)
+ * - Registration: capacity, lottery system flag
+ * - Visual: poster image (Base64 encoded)
+ * - Geolocation: requirements flag, radius, coordinates
+ * - Organizer: email reference
+ * - Participants: lists of entrants (joined, selected, cancelled, accepted, declined)
+ * 
+ * Design Pattern: Data Transfer Object (DTO) with Firestore mapping
+ * 
+ * Outstanding Issues: None
+ */
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

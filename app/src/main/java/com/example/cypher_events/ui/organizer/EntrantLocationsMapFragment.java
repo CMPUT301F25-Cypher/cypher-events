@@ -1,5 +1,23 @@
 package com.example.cypher_events.ui.organizer;
 
+/**
+ * EntrantLocationsMapFragment
+ * 
+ * Purpose: Display geographic locations of all entrants who joined a specific event on a map.
+ * Helps organizers visualize the geographic distribution of their event participants.
+ * 
+ * Key Features:
+ * - Google Maps integration showing entrant locations
+ * - Custom markers for each entrant with name labels
+ * - Camera positioning to show all markers
+ * - Loads entrant data from Firestore
+ * - Filters entrants by event participation
+ * 
+ * Navigation: Accessed from EventManagementFragment via "View Entrant Map" button
+ * 
+ * Outstanding Issues: None
+ */
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;

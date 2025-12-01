@@ -1,5 +1,24 @@
 package com.example.cypher_events.ui.entrant;
 
+/**
+ * EventEntrantFragment
+ * 
+ * Purpose: Browse and discover available events as an entrant.
+ * Implements SearchableFragment interface for search and filter functionality.
+ * 
+ * Key Features:
+ * - Display all available events in a grid layout
+ * - Search events by title, location, or category
+ * - Filter events by category (Film, Music, Sports, Gaming)
+ * - Filter events by date range (based on actual event date)
+ * - Navigate to event details for joining/viewing
+ * - Real-time data loading from Firestore
+ * 
+ * Navigation: Main browse tab in HomeContainerFragment
+ * 
+ * Outstanding Issues: None
+ */
+
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.os.Bundle;

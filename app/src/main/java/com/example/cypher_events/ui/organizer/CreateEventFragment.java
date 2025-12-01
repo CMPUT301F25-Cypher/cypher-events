@@ -1,5 +1,24 @@
 package com.example.cypher_events.ui.organizer;
 
+/**
+ * CreateEventFragment
+ * 
+ * Purpose: Allows organizers to create new events with comprehensive details.
+ * 
+ * Key Features:
+ * - Input event information (title, description, location, category, capacity)
+ * - Select event dates (signup start/end, actual event date)
+ * - Upload and preview event poster image
+ * - Enable lottery system for event registration
+ * - Set geolocation requirements with radius validation
+ * - Google Maps integration for location selection and geocoding
+ * - Image compression and Base64 encoding for Firestore storage
+ * 
+ * Navigation: Accessed from organizer dashboard or MyEventsFragment
+ * 
+ * Outstanding Issues: None
+ */
+
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.net.Uri;
