@@ -150,7 +150,7 @@ public class EventManagementFragment extends Fragment {
         f.setArguments(b);
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.homeContentContainer, f)
+                .replace(R.id.container, f)
                 .addToBackStack(null)
                 .commit();
     }
@@ -162,7 +162,7 @@ public class EventManagementFragment extends Fragment {
         f.setArguments(b);
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.homeContentContainer, f)
+                .replace(R.id.container, f)
                 .addToBackStack(null)
                 .commit();
     }
@@ -174,7 +174,7 @@ public class EventManagementFragment extends Fragment {
         f.setArguments(b);
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.homeContentContainer, f)
+                .replace(R.id.container, f)
                 .addToBackStack(null)
                 .commit();
     }
@@ -186,7 +186,7 @@ public class EventManagementFragment extends Fragment {
         f.setArguments(b);
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.homeContentContainer, f)
+                .replace(R.id.container, f)
                 .addToBackStack(null)
                 .commit();
     }

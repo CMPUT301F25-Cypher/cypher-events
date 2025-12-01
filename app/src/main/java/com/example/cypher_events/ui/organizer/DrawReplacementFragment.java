@@ -47,11 +47,7 @@ public class DrawReplacementFragment extends Fragment {
         ImageButton backButton = view.findViewById(R.id.btnBackReplacement);
         if (backButton != null) {
             backButton.setOnClickListener(v ->
-                    requireActivity().getSupportFragmentManager()
-                            .beginTransaction()
-                            .setReorderingAllowed(true)
-                            .replace(R.id.container, new OrganizerDashboardFragment())
-                            .commit()
+                    requireActivity().getSupportFragmentManager().popBackStack()
             );
         }
 
