@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.cypher_events.ProfileFragment;
 import com.example.cypher_events.R;
 import com.example.cypher_events.ui.SearchableFragment;
 import com.example.cypher_events.ui.organizer.MyEventsFragment;
@@ -84,7 +85,7 @@ public class HomeContainerFragment extends Fragment {
                 load(new NotificationFragment());
                 return true;
             } else if (id == R.id.nav_profile) {
-                load(new UpdateProfileEntrantFragment());
+                load(new ProfileFragment());
                 return true;
             }
             return false;

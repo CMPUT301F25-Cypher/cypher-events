@@ -67,8 +67,11 @@ public class AdminManageProfilesFragment extends Fragment {
 
         ImageButton btnBack = view.findViewById(R.id.btnBack);
         if (btnBack != null) {
-            btnBack.setOnClickListener(
-                    v -> requireActivity().getOnBackPressedDispatcher().onBackPressed()
+            btnBack.setOnClickListener(v ->
+                    requireActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.container, new AdminDashboardFragment())
+                            .commit()
             );
         }
 

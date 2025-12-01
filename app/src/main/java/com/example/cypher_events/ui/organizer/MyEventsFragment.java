@@ -228,7 +228,7 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
 
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container, f)
+                .replace(R.id.homeContentContainer, f)
                 .addToBackStack(null)
                 .commit();
     }
