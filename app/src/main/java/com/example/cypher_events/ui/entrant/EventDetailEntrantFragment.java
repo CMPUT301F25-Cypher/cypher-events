@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -431,8 +432,14 @@ public class EventDetailEntrantFragment extends Fragment implements OnMapReadyCa
     }
 
     private void declineInvitation() {
+        // When declining, add to declined list AND remove from selected list
+        // This keeps them on the waiting list for potential replacement draws
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("Entrant_declinedEventIDs", com.google.firebase.firestore.FieldValue.arrayUnion(eventId));
+        updates.put("Entrant_selectedEventIDs", com.google.firebase.firestore.FieldValue.arrayRemove(eventId));
+        
         db.collection("Entrants").document(deviceId)
-                .update("Entrant_declinedEventIDs", com.google.firebase.firestore.FieldValue.arrayUnion(eventId))
+                .update(updates)
                 .addOnSuccessListener(aVoid -> {
                     toast("Invitation declined");
                     requireActivity().getSupportFragmentManager().popBackStack();

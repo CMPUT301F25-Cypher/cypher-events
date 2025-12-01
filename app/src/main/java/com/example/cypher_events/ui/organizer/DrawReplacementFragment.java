@@ -161,6 +161,8 @@ public class DrawReplacementFragment extends Fragment {
                         boolean hasAccepted = !acceptedIds.isEmpty() && (acceptedIds.contains(eventId) || acceptedIds.contains(searchEventId));
                         boolean hasDeclined = !declinedIds.isEmpty() && (declinedIds.contains(eventId) || declinedIds.contains(searchEventId));
                         
+                        // Eligible for replacement: on waiting list, not selected, not accepted, not declined
+                        // People who declined are excluded from future draws
                         if (hasJoined && !isSelected && !hasAccepted && !hasDeclined) {
                             waitlistIds.add(entrantDoc.getId());
                         }
