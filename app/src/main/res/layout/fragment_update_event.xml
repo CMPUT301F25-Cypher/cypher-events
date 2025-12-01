@@ -22,16 +22,6 @@
             android:paddingTop="8dp"
             android:paddingBottom="8dp">
 
-            <ImageButton
-                android:id="@+id/btnBackUpdate"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="8dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_back_button"
-                android:contentDescription="Back" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

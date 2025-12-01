@@ -90,7 +90,6 @@ public class HomeContainerFragment extends Fragment {
             return false;
         });
 
-        // 🔑 Initial screen: explicitly load Browse tab and then set the nav item.
         if (savedInstanceState == null) {
             load(new EventEntrantFragment());          // ensures search row is shown
             nav.setSelectedItemId(R.id.nav_browse);    // just updates the icon state
@@ -107,7 +106,6 @@ public class HomeContainerFragment extends Fragment {
         searchRow.setVisibility(searchable ? View.VISIBLE : View.GONE);
 
         if (!searchable) {
-            // Optional: clear search when leaving browse tab
             etSearch.setText("");
         }
 
