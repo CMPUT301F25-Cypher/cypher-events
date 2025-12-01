@@ -23,10 +23,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class HomeContainerFragment extends Fragment {
 
     private EditText etSearch;
-    private ImageButton btnFilter;
-    private ImageButton btnAdd;
-    private ImageButton btnScanQR;
-
+    private ImageButton btnFilter, btnAdd, btnScanQR;
     private Fragment currentFragment;
 
     @Nullable
@@ -47,44 +44,41 @@ public class HomeContainerFragment extends Fragment {
         btnAdd = view.findViewById(R.id.btnAdd);
         btnScanQR = view.findViewById(R.id.btnScanQR);
 
-        final BottomNavigationView nav = view.findViewById(R.id.bottomNav);
+        BottomNavigationView nav = view.findViewById(R.id.bottomNav);
 
-
+        // SEARCH BAR LISTENER
         etSearch.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
             @Override public void afterTextChanged(Editable s) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (currentFragment instanceof SearchableFragment) {
-                    ((SearchableFragment) currentFragment)
-                            .onSearchQueryChanged(s.toString());
+                    ((SearchableFragment) currentFragment).onSearchQueryChanged(s.toString());
                 }
             }
         });
 
         btnFilter.setOnClickListener(v -> {
-            if (currentFragment instanceof SearchableFragment) {
+            if (currentFragment instanceof SearchableFragment)
                 ((SearchableFragment) currentFragment).onFilterClicked();
-            }
         });
 
         btnAdd.setOnClickListener(v -> {
-            if (currentFragment instanceof SearchableFragment) {
+            if (currentFragment instanceof SearchableFragment)
                 ((SearchableFragment) currentFragment).onAddClicked();
-            }
         });
 
         btnScanQR.setOnClickListener(v -> {
-            if (currentFragment instanceof SearchableFragment) {
+            if (currentFragment instanceof SearchableFragment)
                 ((SearchableFragment) currentFragment).onScanQRClicked();
-            }
         });
 
 
+        // **MAIN FIX — All navigation stays INSIDE HomeContainer**
         nav.setOnItemSelectedListener(item -> {
 
-            // Clear ONLY the HomeContainer's internal backstack
+            // clear ONLY internal stack
             getChildFragmentManager().popBackStack(
                     null,
                     FragmentManager.POP_BACK_STACK_INCLUSIVE
@@ -116,26 +110,29 @@ public class HomeContainerFragment extends Fragment {
             return false;
         });
 
-
+        // Default screen
         if (savedInstanceState == null) {
-            load(new EventEntrantFragment());
             nav.setSelectedItemId(R.id.nav_browse);
+            load(new EventEntrantFragment());
         }
     }
+
+    public void openNotificationsTab() {
+        BottomNavigationView nav = requireView().findViewById(R.id.bottomNav);
+        nav.setSelectedItemId(R.id.nav_notifications);
+    }
+
 
 
     private void load(Fragment fragment) {
         currentFragment = fragment;
 
-        View root = requireView();
-        View searchRow = root.findViewById(R.id.layoutSearchRow);
+        View searchRow = requireView().findViewById(R.id.layoutSearchRow);
 
         boolean searchable = fragment instanceof SearchableFragment;
         searchRow.setVisibility(searchable ? View.VISIBLE : View.GONE);
 
-        if (!searchable) {
-            etSearch.setText("");
-        }
+        if (!searchable) etSearch.setText("");
 
         getChildFragmentManager()
                 .beginTransaction()

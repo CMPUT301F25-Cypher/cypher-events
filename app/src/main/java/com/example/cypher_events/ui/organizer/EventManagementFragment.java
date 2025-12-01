@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cypher_events.R;
+import com.example.cypher_events.util.ImageProcessor;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.cypher_events.util.ImageProcessor;
@@ -80,6 +81,7 @@ public class EventManagementFragment extends Fragment {
 
     private RecyclerView rvWaitingList;
     private TextView tvNoWaitingList;
+
     private WaitingListAdapter waitingListAdapter;
 
     private FirebaseFirestore db;
@@ -162,53 +164,6 @@ public class EventManagementFragment extends Fragment {
                 .commit();
     }
 
-    private void openUpdateEvent() {
-        Bundle b = new Bundle();
-        b.putString(ARG_EVENT_ID, eventId);
-        UpdateEventFragment f = new UpdateEventFragment();
-        f.setArguments(b);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, f)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void openGenerateQR() {
-        Bundle b = new Bundle();
-        b.putString(ARG_EVENT_ID, eventId);
-        GenerateQRFragment f = new GenerateQRFragment();
-        f.setArguments(b);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, f)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void openDrawWinner() {
-        Bundle b = new Bundle();
-        b.putString(ARG_EVENT_ID, eventId);
-        DrawWinnerFragment f = new DrawWinnerFragment();
-        f.setArguments(b);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, f)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void openDrawReplacement() {
-        Bundle b = new Bundle();
-        b.putString(ARG_EVENT_ID, eventId);
-        DrawReplacementFragment f = new DrawReplacementFragment();
-        f.setArguments(b);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, f)
-                .addToBackStack(null)
-                .commit();
-    }
 
     private void loadEventDetails() {
         db.collection("Events").document(eventId).get()
@@ -228,7 +183,14 @@ public class EventManagementFragment extends Fragment {
         String title = doc.getString("Event_title");
         String description = doc.getString("Event_description");
         String posterBase64 = doc.getString("Event_posterBase64");
+
         String organizerEmail = doc.getString("Event_organizerEmail");
+        String organizerName = doc.getString("Event_organizerName");
+        String OrganizerPhone = doc.getString("Event_organizerPhone");
+
+        tvOrganizerName.setText("Organizer: " + (organizerName != null ? organizerName : "Unknown"));
+        tvOrganizerPhone.setText("Phone: " + (OrganizerPhone != null ? OrganizerPhone : "N/A"));
+        tvOrganizerEmail.setText("Email: " + (organizerEmail != null ? organizerEmail : "N/A"));
 
         tvEventTitle.setText(title != null ? title : "Event");
 
@@ -291,6 +253,54 @@ public class EventManagementFragment extends Fragment {
             tvOrganizerPhone.setText("Phone: N/A");
             tvOrganizerEmail.setText("Email: N/A");
         }
+    }
+
+    private void openDrawWinner() {
+        Bundle b = new Bundle();
+        b.putString(ARG_EVENT_ID, eventId);
+        DrawWinnerFragment f = new DrawWinnerFragment();
+        f.setArguments(b);
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, f)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void openDrawReplacement() {
+        Bundle b = new Bundle();
+        b.putString(ARG_EVENT_ID, eventId);
+        DrawReplacementFragment f = new DrawReplacementFragment();
+        f.setArguments(b);
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, f)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void openGenerateQR() {
+        Bundle b = new Bundle();
+        b.putString(ARG_EVENT_ID, eventId);
+        GenerateQRFragment f = new GenerateQRFragment();
+        f.setArguments(b);
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, f)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void openUpdateEvent() {
+        Bundle b = new Bundle();
+        b.putString(ARG_EVENT_ID, eventId);
+        UpdateEventFragment f = new UpdateEventFragment();
+        f.setArguments(b);
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, f)
+                .addToBackStack(null)
+                .commit();
     }
 
     private void loadWaitingList() {
