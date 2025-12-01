@@ -7,6 +7,7 @@ public class RemoveEventService {
 
     private final EventRepository eventRepository;
 
+
     public RemoveEventService(EventRepository repo) {
         this.eventRepository = repo;
     }

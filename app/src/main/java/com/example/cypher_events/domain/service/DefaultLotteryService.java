@@ -4,9 +4,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
+/**
+ * Default implementation of LotteryService.
+ * Performs a random draw from a list of user IDs using a shuffle-based algorithm.
+ */
 public class DefaultLotteryService implements LotteryService {
 
+    /**
+     * Draw winners from a list of user IDs.
+     * @param uids list of user identifiers to draw from
+     * @param winners number of winners to select
+     * @param seed optional seed for deterministic random selection
+     * @return list of selected winner IDs
+     */
     @Override
     public List<String> draw(List<String> uids, int winners, Long seed) {
 

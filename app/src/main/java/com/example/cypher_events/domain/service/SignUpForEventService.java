@@ -14,6 +14,10 @@ public class SignUpForEventService {
     private final Map<String, Set<String>> eventToUsers = new HashMap<>();
 
 
+    /**
+     * @param deviceId device identifier
+     * @param userId user identifier
+     */
     public void registerDeviceUser(String deviceId, String userId) {
         if (deviceId != null && userId != null) {
             deviceToUser.put(deviceId, userId);
@@ -21,6 +25,11 @@ public class SignUpForEventService {
     }
 
 
+    /**
+     * @param deviceId device identifier
+     * @param eventId event identifier
+     * @return status message indicating result
+     */
     public String signUp(String deviceId, String eventId) {
 
 
@@ -53,6 +62,11 @@ public class SignUpForEventService {
     }
 
 
+    /**
+     * @param eventId event identifier
+     * @param userId user identifier
+     * @return true if user signed up for event, false otherwise
+     */
     public boolean isSignedUp(String eventId, String userId) {
         Set<String> users = eventToUsers.get(eventId);
         return users != null && users.contains(userId);

@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class ViewCanceledAndFinalEnrolledServive {
+    /**
+     * Format entrant list for display.
+     * @param eventList list of entrant maps containing name and email
+     * @return formatted list of entrant display strings
+     */
     public ArrayList<String> enterantArrayView(ArrayList<Map<String, Object>> eventList) {
 
         ArrayList<String> enterantshow = new ArrayList<>();

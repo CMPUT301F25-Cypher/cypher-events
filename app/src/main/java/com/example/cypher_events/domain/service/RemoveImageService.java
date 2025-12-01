@@ -9,12 +9,20 @@ public class RemoveImageService {
 
     private final Map<String, String> imageStore = new HashMap<>();
 
-
+    /**
+     * Add an image to the store.
+     * @param id image identifier
+     * @param url image URL
+     */
     public void addImage(String id, String url) {
         imageStore.put(id, url);
     }
 
-
+    /**
+     * Remove an image from the store.
+     * @param id image identifier
+     * @return Result indicating success or failure
+     */
     public Result<Boolean> removeImage(String id) {
 
 

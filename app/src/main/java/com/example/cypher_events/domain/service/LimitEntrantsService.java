@@ -3,6 +3,10 @@ package com.example.cypher_events.domain.service;
 import com.example.cypher_events.domain.model.Event;
 import com.example.cypher_events.data.repository.EventRepository;
 import com.example.cypher_events.util.Result;
+/**
+ * Service for updating event entrant capacity limits.
+ * Validates that new limits don't conflict with existing waitlist size.
+ */
 
 public class LimitEntrantsService {
 
@@ -11,6 +15,13 @@ public class LimitEntrantsService {
     public LimitEntrantsService(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
+
+    /**
+     * Update the capacity limit for an event.
+     * @param eventId event identifier
+     * @param newLimit new capacity limit to set
+     * @return true if update succeeded, false otherwise
+     */
 
     public boolean updateEventCapacity(String eventId, int newLimit) {
 

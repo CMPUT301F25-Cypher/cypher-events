@@ -2,9 +2,16 @@ package com.example.cypher_events.domain.service;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
-
+/**
+ * Service for deleting profile documents from Firestore collections.
+ */
 public class DeleteProfile {
-
+    /**
+     * Delete a profile document from a specified Firestore collection.
+     * @param key document identifier
+     * @param collectionName name of the Firestore collection
+     * @return status message indicating result
+     */
     // Firestore instance
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 

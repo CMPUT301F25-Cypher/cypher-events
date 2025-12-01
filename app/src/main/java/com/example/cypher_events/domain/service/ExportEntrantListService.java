@@ -6,7 +6,9 @@ import com.example.cypher_events.domain.model.Event;
 import com.example.cypher_events.util.Result;
 
 import java.util.List;
-
+/**
+ * Service for exporting selected entrants from an event.
+ */
 public class ExportEntrantListService {
 
     private final EventRepository eventRepository;
@@ -15,7 +17,11 @@ public class ExportEntrantListService {
         this.eventRepository = repo;
     }
 
-
+    /**
+     * Export the list of selected entrants for a given event.
+     * @param eventId event identifier
+     * @return list of selected entrants, or null if event not found
+     */
     public List<Entrant> exportSelectedEntrants(String eventId) {
 
         if (eventId == null || eventId.trim().isEmpty()) {

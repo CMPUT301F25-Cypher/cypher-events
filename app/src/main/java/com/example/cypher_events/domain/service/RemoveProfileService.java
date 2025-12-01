@@ -12,7 +12,11 @@ public class RemoveProfileService {
         this.entrantRepository = repo;
     }
 
-
+    /**
+     * Remove an entrant profile by email.
+     * @param email entrant email identifier
+     * @return true if removal succeeded, false otherwise
+     */
     public boolean removeProfile(String email) {
 
 
