@@ -7,41 +7,6 @@
     android:background="@color/background"
     android:padding="20dp">
 
-    <!-- Top Bar -->
-    <LinearLayout
-        android:layout_marginTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:layout_marginBottom="16dp">
-
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="@drawable/bg_button_secondary"
-            android:src="@drawable/ic_back_button"
-            android:padding="10dp"
-            android:scaleType="centerInside"
-            android:contentDescription="Back" />
-
-        <TextView
-            android:id="@+id/tvMyEventsTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="My Events"
-            android:textStyle="bold"
-            android:textSize="24sp"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="@color/text_primary"
-            android:letterSpacing="-0.02"
-            android:layout_marginStart="12dp" />
-    </LinearLayout>
-
     <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerMyEvents"

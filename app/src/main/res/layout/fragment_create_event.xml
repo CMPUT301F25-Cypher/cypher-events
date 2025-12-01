@@ -91,6 +91,31 @@
                 android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <LinearLayout
+            android:id="@+id/layoutMapPicker"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_button_secondary"
+            android:padding="12dp"
+            android:layout_marginTop="12dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_location_pin"
+                android:tint="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/tvMapLocationSummary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Pick location on map"
+                android:textColor="@color/text_secondary" />
+        </LinearLayout>
+
         <!-- Category -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"

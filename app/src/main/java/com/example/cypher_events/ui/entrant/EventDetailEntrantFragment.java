@@ -53,6 +53,9 @@ public class EventDetailEntrantFragment extends Fragment {
     private Button btnDecline;
     private LinearLayout layoutAcceptDecline;
 
+
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -156,13 +159,19 @@ public class EventDetailEntrantFragment extends Fragment {
             //convert base64 text back into a bitmap using helper ImageProcessor class
             Bitmap posterBitmap = ImageProcessor.base64ToBitmap(posterBase64);
 
-            if (posterBitmap != null && imgEventPoster != null) {
-                //if decoding worked, show the decoded bitmap in the image view
+            if (posterBitmap != null) {
                 imgEventPoster.setImageBitmap(posterBitmap);
+            } else {
+                imgEventPoster.setImageResource(
+                        EventAdapter.getPlaceholderForId(eventId)
+                );
             }
-            //if posterBitmap is null, just keep the placeholder image
+        } else {
+            // no poster → deterministic placeholder
+            imgEventPoster.setImageResource(
+                    EventAdapter.getPlaceholderForId(eventId)
+            );
         }
-        // if posterBase64 is null/empty,also just keep placeholder image defined in fragment_event_detail_entrant.xml
 
         tvEventTitle.setText(title != null ? title : "Event Details");
         tvEventDescription.setText(description != null ? description : "No description available");
@@ -243,22 +252,36 @@ public class EventDetailEntrantFragment extends Fragment {
                         btnJoinWaitlist.setText("Already Accepted");
                         btnJoinWaitlist.setEnabled(false);
                         layoutAcceptDecline.setVisibility(View.GONE);
+
                     } else if (isSelected) {
                         btnJoinWaitlist.setVisibility(View.GONE);
                         layoutAcceptDecline.setVisibility(View.VISIBLE);
+
                     } else if (hasJoined) {
-                        btnJoinWaitlist.setText("Already on Waitlist");
-                        btnJoinWaitlist.setEnabled(false);
+                        btnJoinWaitlist.setVisibility(View.VISIBLE);
+                        btnJoinWaitlist.setEnabled(true);
+                        btnJoinWaitlist.setText("Leave Waitlist");
                         layoutAcceptDecline.setVisibility(View.GONE);
+
                     } else {
                         btnJoinWaitlist.setVisibility(View.VISIBLE);
+                        btnJoinWaitlist.setEnabled(true);
+                        btnJoinWaitlist.setText("Join Waiting List");
                         layoutAcceptDecline.setVisibility(View.GONE);
                     }
                 });
     }
 
     private void setupButtons() {
-        btnJoinWaitlist.setOnClickListener(v -> joinWaitlist());
+        btnJoinWaitlist.setOnClickListener(v -> {
+            CharSequence text = btnJoinWaitlist.getText();
+            if ("Leave Waitlist".contentEquals(text)) {
+                leaveWaitlist();
+            } else {
+                joinWaitlist();
+            }
+        });
+
         btnAccept.setOnClickListener(v -> acceptInvitation());
         btnDecline.setOnClickListener(v -> declineInvitation());
     }
@@ -292,6 +315,17 @@ public class EventDetailEntrantFragment extends Fragment {
                             })
                             .addOnFailureListener(e -> toast("Failed to join: " + e.getMessage()));
                 });
+    }
+
+    private void leaveWaitlist() {
+        db.collection("Entrants").document(deviceId)
+                .update("Entrant_joinedEventIDs",
+                        com.google.firebase.firestore.FieldValue.arrayRemove(eventId))
+                .addOnSuccessListener(aVoid -> {
+                    toast("Removed from waitlist");
+                    checkEntrantStatus();
+                })
+                .addOnFailureListener(e -> toast("Failed to remove: " + e.getMessage()));
     }
 
     private void acceptInvitation() {

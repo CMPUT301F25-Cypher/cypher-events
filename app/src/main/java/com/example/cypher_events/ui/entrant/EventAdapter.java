@@ -18,7 +18,30 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import android.graphics.Bitmap;
+import com.example.cypher_events.util.ImageProcessor;
+
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
+
+
+    private static final int[] PLACEHOLDERS = new int[] {
+            R.drawable.ic_placeholder_image1,
+            R.drawable.ic_placeholder_image2,
+            R.drawable.ic_placeholder_image3,
+            R.drawable.ic_placeholder_image4,
+            R.drawable.ic_placeholder_image5,
+            R.drawable.ic_placeholder_image6,
+            R.drawable.ic_placeholder_image7,
+    };
+
+    public static int getPlaceholderForId(String eventId) {
+        if (eventId == null || eventId.isEmpty()) {
+            return PLACEHOLDERS[0];
+        }
+        int idx = Math.abs(eventId.hashCode()) % PLACEHOLDERS.length;
+        return PLACEHOLDERS[idx];
+    }
+
 
     public interface OnEventClickListener {
         void onEventClick(String eventId);
@@ -46,12 +69,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         Event event = eventList.get(position);
         if (event == null) return;
 
-        // --- Title ---
+        // Title
         String title = event.getEvent_title();
         if (title == null || title.isEmpty()) title = "Untitled Event";
         holder.tvName.setText(title);
 
-        // --- Location ---
+        //  Location
         String loc = event.getEvent_location();
         if (loc == null || loc.isEmpty()) {
             holder.tvLocation.setText("📍 Unknown location");
@@ -59,18 +82,18 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             holder.tvLocation.setText("📍 " + loc);
         }
 
-        // --- Capacity ---
+        // Capacity
         int cap = event.getEvent_capacity();
         String capText;
         if (cap > 0) {
-            // if you later track remaining spots, you can plug it here
+
             capText = "Capacity: " + cap;
         } else {
             capText = "Capacity: N/A";
         }
         holder.tvCapacity.setText(capText);
 
-        // --- Registration end date ---
+        // Registration end date
         long end = event.getEvent_signupEndUtc();
         String endText;
         if (end > 0) {
@@ -80,10 +103,18 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         }
         holder.tvEnd.setText(endText);
 
-        // --- Image ---
-        // For performance we keep this as a grey placeholder.
-        // (You already show the real image in the detail screen.)
-        // If you later want thumbnails, you can load them here.
+        // Image
+        String b64 = event.getPosterBase64();
+        if (b64 != null && !b64.trim().isEmpty()) {
+            Bitmap bmp = ImageProcessor.base64ToBitmap(b64);
+            if (bmp != null) {
+                holder.imgEvent.setImageBitmap(bmp);
+            } else {
+                holder.imgEvent.setImageResource(R.mipmap.ic_launcher); // fallback
+            }
+        } else {
+            holder.imgEvent.setImageResource(EventAdapter.getPlaceholderForId(event.getEvent_id()));
+        }
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null && event.getEvent_id() != null) {

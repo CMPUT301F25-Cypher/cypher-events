@@ -18,6 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cypher_events.R;
 import com.example.cypher_events.domain.model.Event;
+import com.example.cypher_events.ui.SearchableFragment;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -26,14 +29,80 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class HistoryFragmentEntrant extends Fragment {
+public class HistoryFragmentEntrant extends Fragment implements SearchableFragment {
 
     private static final String ARG_EVENT_ID = "EventId";
+
+    private static final String[] CATEGORIES = {"film", "music", "sports", "gaming"};
+    private final boolean[] selectedCats = new boolean[CATEGORIES.length];
+
+    private List<Event> allEvents = new ArrayList<>();
 
     private RecyclerView recyclerView;
     private EventAdapter eventAdapter;
     private FirebaseFirestore db;
     private String deviceId;
+
+
+    @Override
+    public void onSearchQueryChanged(String query) {
+        if (allEvents == null) return;
+
+        String q = query.trim().toLowerCase();
+        if (q.isEmpty()) {
+            eventAdapter.submit(allEvents);
+            return;
+        }
+
+        List<Event> filtered = new ArrayList<>();
+        for (Event e : allEvents) {
+            if (e.getEvent_title().toLowerCase().contains(q)
+                    || e.getEvent_location().toLowerCase().contains(q)
+                    || e.getEvent_category().toLowerCase().contains(q)) {
+                filtered.add(e);
+            }
+        }
+        eventAdapter.submit(filtered);
+    }
+
+    @Override
+    public void onFilterClicked() {
+        new android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Filter by category")
+                .setMultiChoiceItems(CATEGORIES, selectedCats, (dialog, which, isChecked) -> {
+                    selectedCats[which] = isChecked;
+                })
+                .setPositiveButton("Apply", (d, w) -> applyCategoryFilter())
+                .setNegativeButton("Clear", (d, w) -> {
+                    java.util.Arrays.fill(selectedCats, false);
+                    eventAdapter.submit(allEvents);
+                })
+                .show();
+    }
+
+    private void applyCategoryFilter() {
+        List<String> active = new ArrayList<>();
+        for (int i = 0; i < CATEGORIES.length; i++) {
+            if (selectedCats[i]) active.add(CATEGORIES[i].toLowerCase());
+        }
+        if (active.isEmpty()) {
+            eventAdapter.submit(allEvents);
+            return;
+        }
+
+        List<Event> filtered = new ArrayList<>();
+        for (Event e : allEvents) {
+            String cat = e.getEvent_category().toLowerCase();
+            if (active.contains(cat)) filtered.add(e);
+        }
+        eventAdapter.submit(filtered);
+    }
+
+    @Override
+    public void onAddClicked() {
+        // Entrant can’t create events, so just toast for now
+        Toast.makeText(getContext(), "Only organizers can create events", Toast.LENGTH_SHORT).show();
+    }
 
     @Nullable
     @Override
@@ -160,28 +229,35 @@ public class HistoryFragmentEntrant extends Fragment {
 
     // Fetch events matching the IDs in history
     private void fetchEventsByIds(List<String> eventIds) {
-        db.collection("Events").get()
-                .addOnSuccessListener(querySnapshot -> {
+        if (eventIds == null || eventIds.isEmpty()) {
+            eventAdapter.submit(new ArrayList<>());
+            return;
+        }
+
+        List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+        for (String id : eventIds) {
+            tasks.add(db.collection("Events").document(id).get());
+        }
+
+        Tasks.whenAllSuccess(tasks)
+                .addOnSuccessListener(results -> {
                     List<Event> events = new ArrayList<>();
-
-                    for (DocumentSnapshot doc : querySnapshot) {
-                        String docId = doc.getId();
-                        String eventIdField = doc.getString("Event_id");
-
-                        if (eventIds.contains(docId) || eventIds.contains(eventIdField)) {
+                    for (Object o : results) {
+                        DocumentSnapshot doc = (DocumentSnapshot) o;
+                        if (doc.exists()) {
                             events.add(mapEvent(doc));
                         }
                     }
 
+                    allEvents = events;      // so search/filter use only joined ones
+                    eventAdapter.submit(events);
+
                     if (events.isEmpty()) {
                         toast("No events found for your history.");
                     }
-
-                    eventAdapter.submit(events);
                 })
                 .addOnFailureListener(e ->
-                        toast("Failed to load events: " + e.getMessage())
-                );
+                        toast("Failed to load events: " + e.getMessage()));
     }
 
     // Map Firestore document into Event model (same structure as other fragments)
