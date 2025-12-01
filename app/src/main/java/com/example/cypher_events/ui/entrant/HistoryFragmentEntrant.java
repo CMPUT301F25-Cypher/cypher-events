@@ -110,6 +110,19 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
                 .addToBackStack(null)
                 .commit();
     }
+    
+    public void onScanQRClicked() {
+
+        ScanQRFragment scanQRFragment = new ScanQRFragment();
+
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.container, scanQRFragment)
+                .addToBackStack(null)
+                .commit();
+    }
 
 
     @Nullable

@@ -18,6 +18,7 @@ import com.example.cypher_events.R;
 import com.example.cypher_events.domain.model.Event;
 import com.example.cypher_events.ui.SearchableFragment;
 import com.example.cypher_events.ui.entrant.EventAdapter;
+import com.example.cypher_events.ui.entrant.ScanQRFragment;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.*;
@@ -36,9 +37,9 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
     private String deviceId;
     private List<Event> allEvents = new ArrayList<>();
 
-
+    // ------------------------------------------------------------
     // SEARCH BAR HANDLER
-
+    // ------------------------------------------------------------
     @Override
     public void onSearchQueryChanged(String query) {
         if (allEvents == null) return;
@@ -60,9 +61,9 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
         adapter.submit(filtered);
     }
 
-
+    // ------------------------------------------------------------
     // FILTER DIALOG
-
+    // ------------------------------------------------------------
     @Override
     public void onFilterClicked() {
         new android.app.AlertDialog.Builder(requireContext())
@@ -102,16 +103,27 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
 
     @Override
     public void onAddClicked() {
-        // Open CreateEventFragment inside HomeContainerFragment
-        getParentFragmentManager()
+        // Organizer pressing the blue add button = Create event screen
+        requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.homeContentContainer, new CreateEventFragment())
+                .replace(R.id.container, new CreateEventFragment())
                 .addToBackStack(null)
                 .commit();
     }
+    @Override
+    public void onScanQRClicked() {
+        // Create the fragment you want to navigate to
+        ScanQRFragment scanQRFragment = new ScanQRFragment();
 
-
-
+        // Use the hosting activity's FragmentManager to replace the current fragment
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.container, scanQRFragment)
+                .addToBackStack(null)  // so back button returns here
+                .commit();
+    }
     @Nullable
     @Override
     public View onCreateView(
@@ -144,8 +156,9 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
         loadMyEvents();
     }
 
+    // ------------------------------------------------------------
     // LOAD ONLY ORGANIZER'S EVENTS
-
+    // ------------------------------------------------------------
     private void loadMyEvents() {
         db.collection("Organizers").document(deviceId).get()
                 .addOnSuccessListener(doc -> {
@@ -173,9 +186,9 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
                         toast("Failed to load: " + e.getMessage()));
     }
 
-
+    // ------------------------------------------------------------
     // FETCH EVENTS BY ID (FAST, PRECISE)
-
+    // ------------------------------------------------------------
     private void fetchEventsByIds(List<String> ids) {
         List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
 
@@ -219,6 +232,7 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
     private static Integer toInt(Object v) { return v instanceof Number ? ((Number) v).intValue() : 0; }
     private static Boolean toBool(Object v) { return v instanceof Boolean ? (Boolean) v : false; }
 
+    // ------------------------------------------------------------
     private void openEventManagementScreen(String eventId) {
         Bundle b = new Bundle();
         b.putString(ARG_EVENT_ID, eventId);

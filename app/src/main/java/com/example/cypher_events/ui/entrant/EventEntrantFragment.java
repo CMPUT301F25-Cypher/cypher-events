@@ -103,6 +103,20 @@ public class EventEntrantFragment extends Fragment implements SearchableFragment
                 .commit();
     }
 
+    public void onScanQRClicked() {
+        // Create the fragment you want to navigate to
+        ScanQRFragment scanQRFragment = new ScanQRFragment();
+
+        // Use the hosting activity's FragmentManager to replace the current fragment
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.container, scanQRFragment)
+                .addToBackStack(null)  // so back button returns here
+                .commit();
+    }
+
 
 
 
