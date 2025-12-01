@@ -104,12 +104,6 @@ public class EventManagementFragment extends Fragment {
         loadEventDetails();
         loadWaitingList();
 
-        btnBack.setOnClickListener(v -> requireActivity()
-                .getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, new MyEventsFragment())
-                .commit());
-
         btnGenerateQR.setOnClickListener(v -> openGenerateQR());
         btnUpdateEvent.setOnClickListener(v -> openUpdateEvent());
         btnDrawWinner.setOnClickListener(v -> openDrawWinner());
