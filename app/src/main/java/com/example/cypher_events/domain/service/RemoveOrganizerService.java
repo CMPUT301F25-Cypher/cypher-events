@@ -7,10 +7,18 @@ public class RemoveOrganizerService {
 
     private final EntrantRepository entrantRepository;
 
+    /**
+     * @param repo entrant repository for data operations
+     */
+
     public RemoveOrganizerService(EntrantRepository repo) {
         this.entrantRepository = repo;
     }
 
+    /**
+     * @param organizerEmail email of organizer to remove
+     * @return true if removed successfully, false otherwise
+     */
     public boolean removeOrganizer(String organizerEmail) {
 
         if (organizerEmail == null || organizerEmail.trim().isEmpty()) {
