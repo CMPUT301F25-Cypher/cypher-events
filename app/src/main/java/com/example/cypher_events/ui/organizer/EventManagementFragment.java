@@ -43,6 +43,9 @@ public class EventManagementFragment extends Fragment {
     private TextView tvEventTitle;
     private TextView tvEventDescription;
     private ImageView imgEventPoster;
+    private TextView tvOrganizerName;
+    private TextView tvOrganizerPhone;
+    private TextView tvOrganizerEmail;
 
     private Button btnGenerateQR;
     private Button btnUpdateEvent;
@@ -63,6 +66,7 @@ public class EventManagementFragment extends Fragment {
 
     private FirebaseFirestore db;
     private String eventId;
+    private String deviceId;
 
     @Nullable
     @Override
@@ -78,10 +82,17 @@ public class EventManagementFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         db = FirebaseFirestore.getInstance();
+        deviceId = android.provider.Settings.Secure.getString(
+                requireContext().getContentResolver(),
+                android.provider.Settings.Secure.ANDROID_ID
+        );
 
         tvEventTitle = view.findViewById(R.id.tvEventTitle);
         tvEventDescription = view.findViewById(R.id.tvEventDescription);
         imgEventPoster = view.findViewById(R.id.imgEventPoster);
+        tvOrganizerName = view.findViewById(R.id.tvOrganizerName);
+        tvOrganizerPhone = view.findViewById(R.id.tvOrganizerPhone);
+        tvOrganizerEmail = view.findViewById(R.id.tvOrganizerEmail);
 
         btnGenerateQR = view.findViewById(R.id.btnGenerateQR);
         btnUpdateEvent = view.findViewById(R.id.btnUpdateEvent);
@@ -137,6 +148,7 @@ public class EventManagementFragment extends Fragment {
         String title = doc.getString("Event_title");
         String description = doc.getString("Event_description");
         String posterBase64 = doc.getString("Event_posterBase64");
+        String organizerEmail = doc.getString("Event_organizerEmail");
 
         String organizerEmail = doc.getString("Event_organizerEmail");
         String organizerName = doc.getString("Event_organizerName");
@@ -156,6 +168,56 @@ public class EventManagementFragment extends Fragment {
         if (posterBase64 != null && !posterBase64.isEmpty()) {
             Bitmap bmp = ImageProcessor.base64ToBitmap(posterBase64);
             if (bmp != null) imgEventPoster.setImageBitmap(bmp);
+        }
+
+        // Load organizer information
+        if (organizerEmail != null && !organizerEmail.isEmpty()) {
+            loadOrganizerInfo(organizerEmail);
+        } else {
+            // Fallback: load current user's organizer info
+            loadCurrentOrganizerInfo();
+        }
+    }
+
+    private void loadOrganizerInfo(String email) {
+        db.collection("Organizers")
+                .whereEqualTo("Organizer_email", email)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
+                        displayOrganizerInfo(doc);
+                    } else {
+                        loadCurrentOrganizerInfo();
+                    }
+                })
+                .addOnFailureListener(e -> loadCurrentOrganizerInfo());
+    }
+
+    private void loadCurrentOrganizerInfo() {
+        db.collection("Organizers").document(deviceId).get()
+                .addOnSuccessListener(this::displayOrganizerInfo)
+                .addOnFailureListener(e -> {
+                    tvOrganizerName.setText("Name: Unknown");
+                    tvOrganizerPhone.setText("Phone: N/A");
+                    tvOrganizerEmail.setText("Email: N/A");
+                });
+    }
+
+    private void displayOrganizerInfo(DocumentSnapshot doc) {
+        if (doc.exists()) {
+            String name = doc.getString("Organizer_name");
+            String phone = doc.getString("Organizer_phone");
+            String email = doc.getString("Organizer_email");
+
+            tvOrganizerName.setText("Name: " + (name != null && !name.isEmpty() ? name : "Not set"));
+            tvOrganizerPhone.setText("Phone: " + (phone != null && !phone.isEmpty() ? phone : "Not set"));
+            tvOrganizerEmail.setText("Email: " + (email != null && !email.isEmpty() ? email : "Not set"));
+        } else {
+            tvOrganizerName.setText("Name: Unknown");
+            tvOrganizerPhone.setText("Phone: N/A");
+            tvOrganizerEmail.setText("Email: N/A");
         }
     }
 
