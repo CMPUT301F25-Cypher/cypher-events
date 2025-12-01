@@ -214,6 +214,7 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
     private Event mapEvent(DocumentSnapshot doc) {
         Event e = new Event();
         e.setEvent_id(doc.getId());
+        e.setPosterBase64(doc.getString("Event_posterBase64"));
         e.setEvent_title(s(doc.getString("Event_title")));
         e.setEvent_description(s(doc.getString("Event_description")));
         e.setEvent_location(s(doc.getString("Event_location")));
