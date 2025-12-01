@@ -18,6 +18,9 @@ public class Event {
     // Registration window
     private long event_signupStartUtc;
     private long event_signupEndUtc;
+    
+    // Actual event date
+    private long event_dateUtc;
 
     private String posterBase64;
 
@@ -99,6 +102,9 @@ public class Event {
 
     public long getEvent_signupEndUtc() { return event_signupEndUtc; }
     public void setEvent_signupEndUtc(long endUtc) { this.event_signupEndUtc = endUtc; }
+
+    public long getEvent_dateUtc() { return event_dateUtc; }
+    public void setEvent_dateUtc(long dateUtc) { this.event_dateUtc = dateUtc; }
 
     public int getEvent_capacity() { return event_capacity; }
     public void setEvent_capacity(int capacity) { this.event_capacity = capacity; }
@@ -219,6 +225,7 @@ public class Event {
         map.put("Event_status", event_status);
         map.put("Event_signupStartUtc", event_signupStartUtc);
         map.put("Event_signupEndUtc", event_signupEndUtc);
+        map.put("Event_dateUtc", event_dateUtc);
         map.put("Event_capacity", event_capacity);
         map.put("Event_isLotteryEnabled", event_isLotteryEnabled);
         map.put("Event_isActive", event_isActive);

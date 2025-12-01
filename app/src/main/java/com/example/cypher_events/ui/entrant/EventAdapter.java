@@ -97,11 +97,21 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         long end = event.getEvent_signupEndUtc();
         String endText;
         if (end > 0) {
-            endText = "Ends: " + dateFormat.format(new Date(end));
+            endText = "Signup Ends: " + dateFormat.format(new Date(end));
         } else {
-            endText = "Ends: N/A";
+            endText = "Signup Ends: N/A";
         }
         holder.tvEnd.setText(endText);
+
+        // Event date
+        long eventDate = event.getEvent_dateUtc();
+        String eventDateText;
+        if (eventDate > 0) {
+            eventDateText = "Event: " + dateFormat.format(new Date(eventDate));
+        } else {
+            eventDateText = "Event Date: TBA";
+        }
+        holder.tvEventDate.setText(eventDateText);
 
         // Image
         String b64 = event.getPosterBase64();
@@ -143,6 +153,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         TextView tvLocation;
         TextView tvCapacity;
         TextView tvEnd;
+        TextView tvEventDate;
 
         EventViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -151,6 +162,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             tvLocation = itemView.findViewById(R.id.tvEventLocation);
             tvCapacity = itemView.findViewById(R.id.tvEventCapacity);
             tvEnd = itemView.findViewById(R.id.tvEventEnd);
+            tvEventDate = itemView.findViewById(R.id.tvEventDate);
         }
     }
 }

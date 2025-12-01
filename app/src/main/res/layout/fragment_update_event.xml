@@ -12,17 +12,33 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/titleUpdateEvent"
+        <!-- Header with back button -->
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Update Event"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="#000000"
-            android:fontFamily="sans-serif-medium"
-            android:paddingBottom="12dp"/>
+            android:paddingBottom="12dp">
+
+            <ImageButton
+                android:id="@+id/btnBackUpdate"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back_button"
+                android:contentDescription="Back" />
+
+            <TextView
+                android:id="@+id/titleUpdateEvent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Update Event"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:fontFamily="sans-serif-medium" />
+        </RelativeLayout>
 
         <!-- Event name -->
         <com.google.android.material.textfield.TextInputLayout
@@ -76,6 +92,49 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Event Date Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Event Dates"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000" />
+
+        <!-- Signup Start Date -->
+        <Button
+            android:id="@+id/btnSelectSignupStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Select Signup Start Date"
+            android:textAllCaps="false"
+            android:background="@drawable/bg_button_secondary"
+            android:textColor="#0F0F0F" />
+
+        <!-- Signup End Date -->
+        <Button
+            android:id="@+id/btnSelectSignupEnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Select Signup End Date"
+            android:textAllCaps="false"
+            android:background="@drawable/bg_button_secondary"
+            android:textColor="#0F0F0F" />
+
+        <!-- Event Date -->
+        <Button
+            android:id="@+id/btnSelectEventDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Select Event Date"
+            android:textAllCaps="false"
+            android:background="@drawable/bg_button_secondary"
+            android:textColor="#0F0F0F" />
 
         <!-- Poster preview -->
         <ImageView

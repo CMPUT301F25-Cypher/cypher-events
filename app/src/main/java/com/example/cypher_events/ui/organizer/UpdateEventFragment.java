@@ -23,8 +23,13 @@ import com.example.cypher_events.util.ImageProcessor;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 
 public class UpdateEventFragment extends Fragment {
 
@@ -37,8 +42,15 @@ public class UpdateEventFragment extends Fragment {
 
     private Button btnSaveChanges;
     private Button btnChangePoster;
+    private Button btnSelectSignupStart;
+    private Button btnSelectSignupEnd;
+    private Button btnSelectEventDate;
     private ImageButton btnBackUpdate;
     private ImageView imgPosterPreviewUpdate;
+
+    private long signupStartUtc = 0;
+    private long signupEndUtc = 0;
+    private long eventDateUtc = 0;
 
     private FirebaseFirestore db;
     private String eventId;
@@ -86,6 +98,10 @@ public class UpdateEventFragment extends Fragment {
         //buttons and image view
         btnSaveChanges = view.findViewById(R.id.btnSaveChanges);
         btnChangePoster = view.findViewById(R.id.btnChangePoster);
+        btnSelectSignupStart = view.findViewById(R.id.btnSelectSignupStart);
+        btnSelectSignupEnd = view.findViewById(R.id.btnSelectSignupEnd);
+        btnSelectEventDate = view.findViewById(R.id.btnSelectEventDate);
+        btnBackUpdate = view.findViewById(R.id.btnBackUpdate);
         imgPosterPreviewUpdate = view.findViewById(R.id.imgPosterPreviewUpdate);
 
         //get the event id that was passed into this fragment
@@ -101,15 +117,22 @@ public class UpdateEventFragment extends Fragment {
         //load current event data (including existing poster) from firestore
         loadEventDetails();
 
-        //back button takes the organizer back to their events list
+        //back button takes the organizer back
         if (btnBackUpdate != null) {
             btnBackUpdate.setOnClickListener(v ->
-                    requireActivity().getSupportFragmentManager()
-                            .beginTransaction()
-                            .setReorderingAllowed(true)
-                            .replace(R.id.container, new MyEventsFragment())
-                            .commit()
+                    requireActivity().getSupportFragmentManager().popBackStack()
             );
+        }
+
+        //date selection buttons
+        if (btnSelectSignupStart != null) {
+            btnSelectSignupStart.setOnClickListener(v -> selectDateTime(true, false));
+        }
+        if (btnSelectSignupEnd != null) {
+            btnSelectSignupEnd.setOnClickListener(v -> selectDateTime(false, false));
+        }
+        if (btnSelectEventDate != null) {
+            btnSelectEventDate.setOnClickListener(v -> selectDateTime(false, true));
         }
 
         //save button writes the text fields (and poster base64) back to firestore
@@ -168,10 +191,34 @@ public class UpdateEventFragment extends Fragment {
             }
         }
 
+        //load dates
+        signupStartUtc = getLongValue(doc.get("Event_signupStartUtc"));
+        signupEndUtc = getLongValue(doc.get("Event_signupEndUtc"));
+        eventDateUtc = getLongValue(doc.get("Event_dateUtc"));
+
         etEventName.setText(name != null ? name : "");
         etDescription.setText(desc != null ? desc : "");
         etLocation.setText(loc != null ? loc : "");
         etCategory.setText(cat != null ? cat : "");
+
+        //update button text with existing dates
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.getDefault());
+        if (signupStartUtc > 0) {
+            btnSelectSignupStart.setText("Signup Start: " + dateFormat.format(signupStartUtc));
+        }
+        if (signupEndUtc > 0) {
+            btnSelectSignupEnd.setText("Signup End: " + dateFormat.format(signupEndUtc));
+        }
+        if (eventDateUtc > 0) {
+            btnSelectEventDate.setText("Event Date: " + dateFormat.format(eventDateUtc));
+        }
+    }
+
+    private long getLongValue(Object value) {
+        if (value instanceof Long) return (Long) value;
+        if (value instanceof Double) return ((Double) value).longValue();
+        if (value instanceof Integer) return ((Integer) value).longValue();
+        return 0;
     }
     /**
      * Called when the user picks a new poster image from the system picker.
@@ -228,6 +275,17 @@ public class UpdateEventFragment extends Fragment {
         //if there was no poster and they still did not choose one, this will be ""
         updates.put("Event_posterBase64", posterBase64);
 
+        //update dates if they were set
+        if (signupStartUtc > 0) {
+            updates.put("Event_signupStartUtc", signupStartUtc);
+        }
+        if (signupEndUtc > 0) {
+            updates.put("Event_signupEndUtc", signupEndUtc);
+        }
+        if (eventDateUtc > 0) {
+            updates.put("Event_dateUtc", eventDateUtc);
+        }
+
         db.collection("Events").document(eventId)
                 .update(updates)
                 .addOnSuccessListener(a -> {
@@ -250,6 +308,60 @@ public class UpdateEventFragment extends Fragment {
                                 Toast.LENGTH_SHORT
                         ).show()
                 );
+    }
+
+    private void selectDateTime(boolean isSignupStart, boolean isEventDate) {
+        Calendar cal = Calendar.getInstance();
+        
+        //set calendar to existing date if available
+        if (isSignupStart && signupStartUtc > 0) {
+            cal.setTimeInMillis(signupStartUtc);
+        } else if (!isSignupStart && !isEventDate && signupEndUtc > 0) {
+            cal.setTimeInMillis(signupEndUtc);
+        } else if (isEventDate && eventDateUtc > 0) {
+            cal.setTimeInMillis(eventDateUtc);
+        }
+
+        DatePickerDialog datePicker = new DatePickerDialog(
+            requireContext(),
+            (view, year, month, dayOfMonth) -> {
+                Calendar selected = Calendar.getInstance();
+                selected.set(year, month, dayOfMonth);
+                
+                //now pick time
+                TimePickerDialog timePicker = new TimePickerDialog(
+                    requireContext(),
+                    (timeView, hourOfDay, minute) -> {
+                        selected.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        selected.set(Calendar.MINUTE, minute);
+                        selected.set(Calendar.SECOND, 0);
+                        selected.set(Calendar.MILLISECOND, 0);
+                        
+                        long selectedTime = selected.getTimeInMillis();
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.getDefault());
+                        
+                        if (isSignupStart) {
+                            signupStartUtc = selectedTime;
+                            btnSelectSignupStart.setText("Signup Start: " + dateFormat.format(selectedTime));
+                        } else if (isEventDate) {
+                            eventDateUtc = selectedTime;
+                            btnSelectEventDate.setText("Event Date: " + dateFormat.format(selectedTime));
+                        } else {
+                            signupEndUtc = selectedTime;
+                            btnSelectSignupEnd.setText("Signup End: " + dateFormat.format(selectedTime));
+                        }
+                    },
+                    cal.get(Calendar.HOUR_OF_DAY),
+                    cal.get(Calendar.MINUTE),
+                    false
+                );
+                timePicker.show();
+            },
+            cal.get(Calendar.YEAR),
+            cal.get(Calendar.MONTH),
+            cal.get(Calendar.DAY_OF_MONTH)
+        );
+        datePicker.show();
     }
 }
 

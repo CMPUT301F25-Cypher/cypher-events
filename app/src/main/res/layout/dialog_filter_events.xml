@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Filter by Category"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <CheckBox
+        android:id="@+id/cbFilm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Film" />
+
+    <CheckBox
+        android:id="@+id/cbMusic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Music" />
+
+    <CheckBox
+        android:id="@+id/cbSports"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sports" />
+
+    <CheckBox
+        android:id="@+id/cbGaming"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gaming" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Filter by Event Date Range"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btnSelectStartDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Start Date (Optional)"
+        android:textAllCaps="false"
+        android:background="@drawable/bg_button_secondary"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btnSelectEndDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select End Date (Optional)"
+        android:textAllCaps="false"
+        android:background="@drawable/bg_button_secondary" />
+
+</LinearLayout>
