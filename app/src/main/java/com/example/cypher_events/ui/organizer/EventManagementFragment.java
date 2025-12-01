@@ -18,9 +18,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cypher_events.R;
-import com.example.cypher_events.util.ImageProcessor;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.cypher_events.util.ImageProcessor;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -141,6 +141,54 @@ public class EventManagementFragment extends Fragment {
                 .commit();
     }
 
+    private void openUpdateEvent() {
+        Bundle b = new Bundle();
+        b.putString(ARG_EVENT_ID, eventId);
+        UpdateEventFragment f = new UpdateEventFragment();
+        f.setArguments(b);
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, f)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void openGenerateQR() {
+        Bundle b = new Bundle();
+        b.putString(ARG_EVENT_ID, eventId);
+        GenerateQRFragment f = new GenerateQRFragment();
+        f.setArguments(b);
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, f)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void openDrawWinner() {
+        Bundle b = new Bundle();
+        b.putString(ARG_EVENT_ID, eventId);
+        DrawWinnerFragment f = new DrawWinnerFragment();
+        f.setArguments(b);
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, f)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void openDrawReplacement() {
+        Bundle b = new Bundle();
+        b.putString(ARG_EVENT_ID, eventId);
+        DrawReplacementFragment f = new DrawReplacementFragment();
+        f.setArguments(b);
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, f)
+                .addToBackStack(null)
+                .commit();
+    }
+
     private void loadEventDetails() {
         db.collection("Events").document(eventId).get()
                 .addOnSuccessListener(this::handleEventLoaded)
@@ -222,54 +270,6 @@ public class EventManagementFragment extends Fragment {
             tvOrganizerPhone.setText("Phone: N/A");
             tvOrganizerEmail.setText("Email: N/A");
         }
-    }
-
-    private void openDrawWinner() {
-        Bundle b = new Bundle();
-        b.putString(ARG_EVENT_ID, eventId);
-        DrawWinnerFragment f = new DrawWinnerFragment();
-        f.setArguments(b);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, f)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void openDrawReplacement() {
-        Bundle b = new Bundle();
-        b.putString(ARG_EVENT_ID, eventId);
-        DrawReplacementFragment f = new DrawReplacementFragment();
-        f.setArguments(b);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, f)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void openGenerateQR() {
-        Bundle b = new Bundle();
-        b.putString(ARG_EVENT_ID, eventId);
-        GenerateQRFragment f = new GenerateQRFragment();
-        f.setArguments(b);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, f)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void openUpdateEvent() {
-        Bundle b = new Bundle();
-        b.putString(ARG_EVENT_ID, eventId);
-        UpdateEventFragment f = new UpdateEventFragment();
-        f.setArguments(b);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, f)
-                .addToBackStack(null)
-                .commit();
     }
 
     private void loadWaitingList() {
