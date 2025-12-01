@@ -23,6 +23,7 @@ public class NotificationService {
     private final CollectionReference notificationsCol;
     private final CollectionReference logsCol;
 
+
     public NotificationService() {
         db = FirebaseFirestore.getInstance();
         notificationsCol = db.collection("notifications");
