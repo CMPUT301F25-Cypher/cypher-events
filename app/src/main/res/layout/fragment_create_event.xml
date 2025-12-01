@@ -1,195 +1,216 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:scrollbars="none"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:padding="24dp"
-    tools:context=".ui.organizer.CreateEventFragment">
+    android:padding="16dp"
+    android:background="#F7F7F7">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Top bar: back + title -->
-        <LinearLayout
+        <!-- HEADER -->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp">
+            android:text="Create Event"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#111111"
+            android:paddingVertical="12dp"/>
 
-            <!-- Back Button -->
-
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="wrap_content" />
-
-            <!-- Title Text -->
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Create Event"
-                android:textStyle="bold"
-                android:textSize="24sp"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="#000000" />
-        </LinearLayout>
-
-        <!-- Event Name -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- CARD 1 : BASIC INFO -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Event name"
-            android:layout_marginTop="8dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/inputEventName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Description -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Description"
-            android:layout_marginTop="12dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/inputEventDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:minLines="3" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Location -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Location"
-            android:layout_marginTop="12dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/inputEventLocation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <LinearLayout
-            android:id="@+id/layoutMapPicker"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_button_secondary"
-            android:padding="12dp"
-            android:layout_marginTop="12dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_location_pin"
-                android:tint="@color/text_secondary" />
-
-            <TextView
-                android:id="@+id/tvMapLocationSummary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Pick location on map"
-                android:textColor="@color/text_secondary" />
-        </LinearLayout>
-
-        <!-- Category -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Category"
-            android:layout_marginTop="12dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/inputEventCategory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Signup Start Date -->
-        <Button
-            android:id="@+id/btnSelectStartDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Select signup start date"
-            android:textAllCaps="false"
-            android:background="@drawable/rounded_button_minimal"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="16dp" />
-
-        <!-- Signup End Date -->
-        <Button
-            android:id="@+id/btnSelectEndDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Select signup end date"
-            android:textAllCaps="false"
-            android:background="@drawable/rounded_button_minimal"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="10dp" />
-
-        <!-- Capacity -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Event capacity"
-            android:layout_marginTop="12dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/inputEventCapacity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Upload Poster -->
-        <Button
-            android:id="@+id/btnUploadPoster"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Upload poster"
-            android:textAllCaps="false"
-            android:background="@drawable/rounded_button_minimal"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="16dp" />
-
-        <!-- Poster Preview -->
-        <ImageView
-            android:id="@+id/imgPosterPreview"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
             android:layout_marginTop="12dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="Poster preview"
-            android:background="#F2F2F7"
-            android:src="@drawable/ic_image" />
+            app:cardCornerRadius="18dp"
+            app:cardElevation="3dp">
 
-        <!-- Submit -->
+            <LinearLayout
+                android:padding="18dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Event Name">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/inputEventName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Description"
+                    android:layout_marginTop="16dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/inputEventDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minLines="3"
+                        android:inputType="textMultiLine"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- CARD 2 : LOCATION -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:padding="18dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Event Location">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/inputEventLocation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- CARD 3: CATEGORY + CAPACITY -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:padding="18dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Category">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/inputEventCategory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:hint="Event Capacity">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/inputEventCapacity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- CARD 4: SIGNUP DATES -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:padding="18dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/btnSelectStartDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Select signup start date"
+                    android:textAllCaps="false"
+                    android:background="@drawable/rounded_button_minimal"/>
+
+                <Button
+                    android:id="@+id/btnSelectEndDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Select signup end date"
+                    android:textAllCaps="false"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/rounded_button_minimal"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- CARD 5: POSTER -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:padding="18dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/btnUploadPoster"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Upload poster"
+                    android:textAllCaps="false"
+                    android:background="@drawable/rounded_button_minimal"/>
+
+                <ImageView
+                    android:id="@+id/imgPosterPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="12dp"
+                    android:scaleType="centerCrop"
+                    android:background="#EDEDED"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- SUBMIT BUTTON -->
         <Button
             android:id="@+id/btnCreateEventSubmit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Create event"
+            android:text="Create Event"
             android:textAllCaps="false"
             android:background="@drawable/rounded_button_minimal"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="24dp"
-            android:padding="12dp" />
+            android:padding="16dp"
+            android:layout_marginTop="24dp"/>
 
     </LinearLayout>
-</ScrollView>
 
+</ScrollView>

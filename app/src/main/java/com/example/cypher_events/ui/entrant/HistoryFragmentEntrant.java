@@ -354,7 +354,7 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .setReorderingAllowed(true)
-                .replace(R.id.container, f)
+                .replace(R.id.homeContentContainer, f)
                 .addToBackStack(null)
                 .commit();
     }

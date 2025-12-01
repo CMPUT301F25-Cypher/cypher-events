@@ -69,7 +69,7 @@ public class AdminDashboardFragment extends Fragment {
                         .beginTransaction()
                         .setReorderingAllowed(true)
                         .replace(R.id.container,
-                                new com.example.cypher_events.ui.entrant.EntrantDashboardFragment())
+                                new com.example.cypher_events.ui.entrant.HomeContainerFragment())
                         .addToBackStack(null)
                         .commit()
         );

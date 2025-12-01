@@ -63,9 +63,14 @@ public class AdminManageImagesFragment extends Fragment {
 
         btnDeleteSelected.setOnClickListener(v -> deleteSelected());
 
-        btnBack.setOnClickListener(v ->
-                requireActivity().getSupportFragmentManager().popBackStack()
-        );
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v ->
+                    requireActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.container, new AdminDashboardFragment())
+                            .commit()
+            );
+        }
     }
 
     private void loadImages() {
