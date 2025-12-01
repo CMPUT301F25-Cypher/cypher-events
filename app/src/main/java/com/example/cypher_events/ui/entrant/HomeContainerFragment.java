@@ -25,8 +25,8 @@ public class HomeContainerFragment extends Fragment {
     private EditText etSearch;
     private ImageButton btnFilter;
     private ImageButton btnAdd;
-
     private ImageButton btnScanQR;
+
     private Fragment currentFragment;
 
     @Nullable
@@ -49,7 +49,7 @@ public class HomeContainerFragment extends Fragment {
 
         final BottomNavigationView nav = view.findViewById(R.id.bottomNav);
 
-        // Text change -> forward to current Searchable fragment
+
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void afterTextChanged(Editable s) {}
@@ -81,10 +81,11 @@ public class HomeContainerFragment extends Fragment {
             }
         });
 
+
         nav.setOnItemSelectedListener(item -> {
 
-            // Always clear any leftover detail screens
-            getChildFragmentManager().popBackStackImmediate(
+            // Clear ONLY the HomeContainer's internal backstack
+            getChildFragmentManager().popBackStack(
                     null,
                     FragmentManager.POP_BACK_STACK_INCLUSIVE
             );
@@ -115,11 +116,13 @@ public class HomeContainerFragment extends Fragment {
             return false;
         });
 
+
         if (savedInstanceState == null) {
             load(new EventEntrantFragment());
             nav.setSelectedItemId(R.id.nav_browse);
         }
     }
+
 
     private void load(Fragment fragment) {
         currentFragment = fragment;

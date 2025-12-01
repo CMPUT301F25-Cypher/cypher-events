@@ -7,6 +7,9 @@ public class ReenterOnDeclineWinner {
 
 
     public interface ReentryHandler {
+        /**
+         * @param userId the user ID to re-enter
+         */
         void openReentryScreen(String userId);
     }
 
@@ -16,6 +19,12 @@ public class ReenterOnDeclineWinner {
             String winnerUserId,
             ReentryHandler handler
     ) {
+        /**
+         * @param entrantUserIds list of entrant user IDs
+         * @param winnerUserId the declined winner's user ID
+         * @param handler callback handler for reentry
+         * @return list of user IDs notified for reentry
+         */
 
 
         List<String> notified = new ArrayList<>();

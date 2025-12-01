@@ -15,6 +15,12 @@ public class DrawWinnerService {
         this.eventRepository = repo;
     }
 
+    /**
+     * Draw winner from the event waitlist.
+     * @param eventId event identifier
+     * @return the selected or null if no eligible entrant found
+     */
+
     public Entrant drawWinner(String eventId) {
 
         Result<Event> result = eventRepository.getEventById(eventId);
