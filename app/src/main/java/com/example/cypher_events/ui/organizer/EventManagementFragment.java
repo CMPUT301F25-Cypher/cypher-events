@@ -1,5 +1,26 @@
 package com.example.cypher_events.ui.organizer;
 
+/**
+ * EventManagementFragment
+ * 
+ * Purpose: Displays detailed event information for organizers and provides management tools.
+ * This fragment serves as the central hub for organizers to manage their events.
+ * 
+ * Key Features:
+ * - View event details (title, description, poster, organizer info)
+ * - Display waiting list of entrants who joined the event
+ * - Generate QR codes for event check-in
+ * - Update event details (navigate to UpdateEventFragment)
+ * - Draw lottery winners and replacement winners
+ * - Export entrant list to CSV file
+ * - View entrant locations on a map
+ * 
+ * Navigation: Accessed from MyEventsFragment when organizer selects an event
+ * 
+ * Outstanding Issues:
+ * - ImageProcessor import may show as red in IDE but compiles correctly (indexing issue)
+ */
+
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;

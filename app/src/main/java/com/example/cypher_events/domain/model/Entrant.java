@@ -1,5 +1,22 @@
 package com.example.cypher_events.domain.model;
 
+/**
+ * Entrant
+ * 
+ * Purpose: Domain model representing an event entrant/participant in the system.
+ * 
+ * Key Attributes:
+ * - Identity: ID (device ID), name, email, phone
+ * - Preferences: notification opt-in/opt-out, location permission
+ * - Event participation: joined, accepted, and declined event lists
+ * - Location: latitude/longitude coordinates
+ * - Admin status: flag for admin privileges
+ * 
+ * Design Pattern: Data Transfer Object (DTO) with Firestore mapping
+ * 
+ * Outstanding Issues: None
+ */
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
