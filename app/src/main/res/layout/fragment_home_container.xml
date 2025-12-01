@@ -70,6 +70,15 @@
             android:background="@drawable/bg_button_secondary"
             android:src="@drawable/ic_add"
             android:contentDescription="Create event"/>
+
+        <ImageButton
+            android:id="@+id/btnScanQR"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_button_secondary"
+            android:src="@drawable/ic_qr_scanner"
+            android:contentDescription="Scan QR"/>
     </LinearLayout>
 
     <!-- Child fragments -->
