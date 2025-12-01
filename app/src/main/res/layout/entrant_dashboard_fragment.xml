@@ -144,10 +144,38 @@
                 android:textAllCaps="false"
                 android:fontFamily="sans-serif-medium"
                 android:background="@drawable/bg_button_secondary"
+                android:elevation="0dp"
+                android:layout_marginBottom="12dp" />
+
+            <!-- NEW: Notifications -->
+            <Button
+                android:id="@+id/btnNotifications"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Notifications"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textAllCaps="false"
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/bg_button_secondary"
+                android:elevation="0dp"
+                android:layout_marginBottom="12dp" />
+
+            <!-- NEW: Notification Settings -->
+            <Button
+                android:id="@+id/btnNotificationSettings"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Notification Settings"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textAllCaps="false"
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/bg_button_secondary"
                 android:elevation="0dp" />
+
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-

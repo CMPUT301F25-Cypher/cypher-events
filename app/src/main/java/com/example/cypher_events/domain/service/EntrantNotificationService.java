@@ -1,41 +1,47 @@
 package com.example.cypher_events.domain.service;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import android.util.Log;
 
-import com.example.cypher_events.domain.model.Notification;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * Firestore-based service to listen for notifications for a given entrant.
+ * Uses the "notifications" collection and field "recipientEntrantId".
+ */
 public class EntrantNotificationService {
-    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-    public LiveData<List<Notification>> getNotificationsForEntrant(String entrantId) {
-        MutableLiveData<List<Notification>> liveData = new MutableLiveData<>();
-        database.getReference("notifications").orderByChild("entrantId").equalTo(entrantId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<Notification> notifications = new ArrayList<>();
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    Notification n = child.getValue(Notification.class);
-                    if (n != null) {
-                        notifications.add(n);
-                    }
-                }
-                liveData.setValue(notifications);
-            }
+    private static final String TAG = "EntrantNotificationSvc";
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                liveData.setValue(new ArrayList<>());
-            }
-        });
-        return liveData;
+    private final FirebaseFirestore db;
+
+    public EntrantNotificationService() {
+        db = FirebaseFirestore.getInstance();
+    }
+
+    /**
+     * Start listening for notifications for a given entrantId (deviceId).
+     *
+     * @param entrantId Entrant_id / deviceId (same as Firestore Entrants doc id)
+     * @param listener  Firestore EventListener<QuerySnapshot> that will receive updates
+     * @return ListenerRegistration so you can remove the listener later
+     */
+    public ListenerRegistration listenForEntrantNotifications(String entrantId,
+                                                              EventListener<QuerySnapshot> listener) {
+        if (entrantId == null) {
+            Log.w(TAG, "listenForEntrantNotifications: entrantId is null, aborting");
+            return null;
+        }
+
+        Log.d(TAG, "Listening for notifications where recipientEntrantId = " + entrantId);
+
+        // No orderBy here to avoid composite index headaches; we sort client-side.
+        Query query = db.collection("notifications")
+                .whereEqualTo("recipientEntrantId", entrantId);
+
+        return query.addSnapshotListener(listener);
     }
 }

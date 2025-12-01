@@ -8,7 +8,8 @@ import java.util.Map;
  */
 public class Notification {
     private String notificationId;
-    private String recipientEntrantId;  // Entrant.Entrant_id
+    private String recipientEntrantId;  // Entrant.Entrant_id (may be null if not known)
+    private String recipientEmail;      // Entrant_email (used as primary key for display)
     private String senderOrganizerId;   // Organizer.Organizer_id (nullable)
     private String eventId;             // event id (nullable)
     private String title;
@@ -20,6 +21,7 @@ public class Notification {
 
     public Notification(String notificationId,
                         String recipientEntrantId,
+                        String recipientEmail,
                         String senderOrganizerId,
                         String eventId,
                         String title,
@@ -28,6 +30,7 @@ public class Notification {
                         boolean read) {
         this.notificationId = notificationId;
         this.recipientEntrantId = recipientEntrantId;
+        this.recipientEmail = recipientEmail;
         this.senderOrganizerId = senderOrganizerId;
         this.eventId = eventId;
         this.title = title;
@@ -42,6 +45,9 @@ public class Notification {
 
     public String getRecipientEntrantId() { return recipientEntrantId; }
     public void setRecipientEntrantId(String recipientEntrantId) { this.recipientEntrantId = recipientEntrantId; }
+
+    public String getRecipientEmail() { return recipientEmail; }
+    public void setRecipientEmail(String recipientEmail) { this.recipientEmail = recipientEmail; }
 
     public String getSenderOrganizerId() { return senderOrganizerId; }
     public void setSenderOrganizerId(String senderOrganizerId) { this.senderOrganizerId = senderOrganizerId; }
@@ -65,6 +71,7 @@ public class Notification {
         Map<String,Object> m = new HashMap<>();
         m.put("notificationId", notificationId);
         m.put("recipientEntrantId", recipientEntrantId);
+        m.put("recipientEmail", recipientEmail);
         m.put("senderOrganizerId", senderOrganizerId);
         m.put("eventId", eventId);
         m.put("title", title);

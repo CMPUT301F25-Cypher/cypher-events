@@ -11,6 +11,7 @@ import java.util.UUID;
 
 /**
  * Send "not chosen" notifications (losers of lottery)
+ * Uses Entrant_email as primary routing field.
  */
 public class NotifyNotChosenService {
 
@@ -32,12 +33,18 @@ public class NotifyNotChosenService {
             try {
                 Boolean enabled = e.isEntrant_notificationsEnabled();
                 if (enabled != null && !enabled) continue;
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+                // if field absent, assume enabled
+            }
+
+            String recipientId = e.getEntrant_id();       // may be null
+            String recipientEmail = e.getEntrant_email(); // should be non-null
 
             String id = UUID.randomUUID().toString();
             Notification n = new Notification(
                     id,
-                    e.getEntrant_id(),
+                    recipientId,
+                    recipientEmail,
                     organizerId,
                     eventId,
                     "Lottery Result",

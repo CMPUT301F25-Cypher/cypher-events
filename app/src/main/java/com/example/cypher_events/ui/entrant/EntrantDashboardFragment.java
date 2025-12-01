@@ -14,16 +14,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.cypher_events.R;
-import com.example.cypher_events.ui.entrant.HistoryFragmentEntrant;
-import com.example.cypher_events.ui.entrant.UpdateProfileEntrantFragment;
-import com.example.cypher_events.ui.entrant.EventEntrantFragment;
 import com.example.cypher_events.ui.organizer.OrganizerDashboardFragment;
 import com.example.cypher_events.ui.admin.AdminDashboardFragment;
-
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.DocumentSnapshot;
 import android.provider.Settings;
-
 
 public class EntrantDashboardFragment extends Fragment {
 
@@ -45,17 +39,23 @@ public class EntrantDashboardFragment extends Fragment {
     ) {
         super.onViewCreated(view, savedInstanceState);
 
-        Button btnScanQr        = view.findViewById(R.id.buttonScanQr);
-        Button btnEvents        = view.findViewById(R.id.btnEvents);
-        Button btnShowHistory   = view.findViewById(R.id.btnShowHistory);
-        Button btnUpdateProfile = view.findViewById(R.id.btnUpdateProfile);
-        ImageButton btnOrganizer = view.findViewById(R.id.btnOrganizer);
-        ImageButton btnAdmin = view.findViewById(R.id.btnAdmin);
+        Button btnScanQr              = view.findViewById(R.id.buttonScanQr);
+        Button btnEvents              = view.findViewById(R.id.btnEvents);
+        Button btnShowHistory         = view.findViewById(R.id.btnShowHistory);
+        Button btnUpdateProfile       = view.findViewById(R.id.btnUpdateProfile);
+        Button btnNotifications       = view.findViewById(R.id.btnNotifications);
+        Button btnNotificationSettings = view.findViewById(R.id.btnNotificationSettings);
 
-        String deviceId = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        ImageButton btnOrganizer      = view.findViewById(R.id.btnOrganizer);
+        ImageButton btnAdmin          = view.findViewById(R.id.btnAdmin);
+
+        String deviceId = Settings.Secure.getString(
+                requireContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID
+        );
 
         Toast.makeText(requireContext(), "DeviceID: " + deviceId, Toast.LENGTH_LONG).show();
-        android.util.Log.d("ADMIN_CHECK", "DeviceID = " + deviceId);
+        Log.d("ADMIN_CHECK", "DeviceID = " + deviceId);
 
         FirebaseFirestore.getInstance()
                 .collection("Entrants")
@@ -68,7 +68,6 @@ public class EntrantDashboardFragment extends Fragment {
                     }
 
                     Boolean isAdmin = doc.getBoolean("Entrant_isAdmin");
-
                     Log.d("ADMIN_CHECK", "Entrant_isAdmin = " + isAdmin);
 
                     if (Boolean.TRUE.equals(isAdmin)) {
@@ -83,7 +82,6 @@ public class EntrantDashboardFragment extends Fragment {
                     }
                 })
                 .addOnFailureListener(e -> Log.e("ADMIN_CHECK", "Error loading entrant", e));
-
 
         // QR button: open scan/join event screen
         if (btnScanQr != null) {
@@ -103,6 +101,16 @@ public class EntrantDashboardFragment extends Fragment {
         // Go to update profile screen
         if (btnUpdateProfile != null) {
             btnUpdateProfile.setOnClickListener(v -> open(new UpdateProfileEntrantFragment()));
+        }
+
+        // NEW: Go to notifications list
+        if (btnNotifications != null) {
+            btnNotifications.setOnClickListener(v -> open(new NotificationFragment()));
+        }
+
+        // NEW: Go to notification settings (opt-out)
+        if (btnNotificationSettings != null) {
+            btnNotificationSettings.setOnClickListener(v -> open(new NotificationSettingsFragment()));
         }
 
         // Switch to organizer dashboard
