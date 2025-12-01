@@ -1,26 +1,5 @@
 package com.example.cypher_events.ui.organizer;
 
-/**
- * EventManagementFragment
- * 
- * Purpose: Displays detailed event information for organizers and provides management tools.
- * This fragment serves as the central hub for organizers to manage their events.
- * 
- * Key Features:
- * - View event details (title, description, poster, organizer info)
- * - Display waiting list of entrants who joined the event
- * - Generate QR codes for event check-in
- * - Update event details (navigate to UpdateEventFragment)
- * - Draw lottery winners and replacement winners
- * - Export entrant list to CSV file
- * - View entrant locations on a map
- * 
- * Navigation: Accessed from MyEventsFragment when organizer selects an event
- * 
- * Outstanding Issues:
- * - ImageProcessor import may show as red in IDE but compiles correctly (indexing issue)
- */
-
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -52,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
@@ -77,7 +57,6 @@ public class EventManagementFragment extends Fragment {
     private ImageButton btnBack;
 
     private List<WaitingListAdapter.EntrantItem> currentEntrantList = new ArrayList<>();
-
     private RecyclerView rvWaitingList;
     private TextView tvNoWaitingList;
 
@@ -106,6 +85,23 @@ public class EventManagementFragment extends Fragment {
                 android.provider.Settings.Secure.ANDROID_ID
         );
 
+        initializeViews(view);
+
+        eventId = getArguments() != null ? getArguments().getString(ARG_EVENT_ID) : null;
+
+        if (eventId == null || eventId.trim().isEmpty()) {
+            Toast.makeText(getContext(), "No event selected.", Toast.LENGTH_SHORT).show();
+            requireActivity().getSupportFragmentManager().popBackStack();
+            return;
+        }
+
+        loadEventDetails();
+        loadWaitingList();
+
+        setupClicks();
+    }
+
+    private void initializeViews(View view) {
         tvEventTitle = view.findViewById(R.id.tvEventTitle);
         tvEventDescription = view.findViewById(R.id.tvEventDescription);
         imgEventPoster = view.findViewById(R.id.imgEventPoster);
@@ -121,48 +117,34 @@ public class EventManagementFragment extends Fragment {
         btnViewEntrantMap = view.findViewById(R.id.btnViewEntrantMap);
         btnBack = view.findViewById(R.id.btnBack);
 
-        tvOrganizerName = view.findViewById(R.id.tvOrganizerName);
-        tvOrganizerPhone = view.findViewById(R.id.tvOrganizerPhone);
-        tvOrganizerEmail = view.findViewById(R.id.tvOrganizerEmail);
-
         rvWaitingList = view.findViewById(R.id.rvWaitingList);
         tvNoWaitingList = view.findViewById(R.id.tvNoWaitingList);
 
         waitingListAdapter = new WaitingListAdapter();
         rvWaitingList.setLayoutManager(new LinearLayoutManager(getContext()));
         rvWaitingList.setAdapter(waitingListAdapter);
-
-        eventId = getArguments() != null ? getArguments().getString(ARG_EVENT_ID) : null;
-
-        if (eventId == null || eventId.trim().isEmpty()) {
-            Toast.makeText(getContext(), "No event selected.", Toast.LENGTH_SHORT).show();
-            requireActivity().getSupportFragmentManager().popBackStack();
-            return;
-        }
-
-        loadEventDetails();
-        loadWaitingList();
-
-        btnGenerateQR.setOnClickListener(v -> openGenerateQR());
-        btnUpdateEvent.setOnClickListener(v -> openUpdateEvent());
-        btnDrawWinner.setOnClickListener(v -> openDrawWinner());
-        btnDrawReplacement.setOnClickListener(v -> openDrawReplacement());
-        btnExportCSV.setOnClickListener(v -> exportEntrantListToCSV());
-        btnViewEntrantMap.setOnClickListener(v -> openEntrantLocationsMap());
     }
 
-    private void openEntrantLocationsMap() {
+    private void setupClicks() {
+        btnGenerateQR.setOnClickListener(v -> openFragment(new GenerateQRFragment()));
+        btnUpdateEvent.setOnClickListener(v -> openFragment(new UpdateEventFragment()));
+        btnDrawWinner.setOnClickListener(v -> openFragment(new DrawWinnerFragment()));
+        btnDrawReplacement.setOnClickListener(v -> openFragment(new DrawReplacementFragment()));
+        btnViewEntrantMap.setOnClickListener(v -> openFragment(new EntrantLocationsMapFragment()));
+        btnExportCSV.setOnClickListener(v -> exportEntrantListToCSV());
+    }
+
+    private void openFragment(Fragment f) {
         Bundle b = new Bundle();
         b.putString(ARG_EVENT_ID, eventId);
-        EntrantLocationsMapFragment f = new EntrantLocationsMapFragment();
         f.setArguments(b);
+
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.homeContentContainer, f)
                 .addToBackStack(null)
                 .commit();
     }
-
 
     private void loadEventDetails() {
         db.collection("Events").document(eventId).get()
@@ -179,48 +161,31 @@ public class EventManagementFragment extends Fragment {
             return;
         }
 
-        String title = doc.getString("Event_title");
-        String description = doc.getString("Event_description");
+        tvEventTitle.setText(doc.getString("Event_title"));
+        tvEventDescription.setText(doc.getString("Event_description"));
+
         String posterBase64 = doc.getString("Event_posterBase64");
-
-        String organizerEmail = doc.getString("Event_organizerEmail");
-        String organizerName = doc.getString("Event_organizerName");
-        String OrganizerPhone = doc.getString("Event_organizerPhone");
-
-        tvOrganizerName.setText("Organizer: " + (organizerName != null ? organizerName : "Unknown"));
-        tvOrganizerPhone.setText("Phone: " + (OrganizerPhone != null ? OrganizerPhone : "N/A"));
-        tvOrganizerEmail.setText("Email: " + (organizerEmail != null ? organizerEmail : "N/A"));
-
-        tvEventTitle.setText(title != null ? title : "Event");
-
-        tvEventDescription.setText(
-                description != null && !description.isEmpty()
-                        ? description : "No description available."
-        );
-
         if (posterBase64 != null && !posterBase64.isEmpty()) {
             Bitmap bmp = ImageProcessor.base64ToBitmap(posterBase64);
             if (bmp != null) imgEventPoster.setImageBitmap(bmp);
         }
 
-        // Load organizer information
-        if (organizerEmail != null && !organizerEmail.isEmpty()) {
-            loadOrganizerInfo(organizerEmail);
-        } else {
-            // Fallback: load current user's organizer info
-            loadCurrentOrganizerInfo();
-        }
+        loadOrganizerInfo(doc.getString("Event_organizerEmail"));
     }
 
     private void loadOrganizerInfo(String email) {
+        if (email == null || email.isEmpty()) {
+            loadCurrentOrganizerInfo();
+            return;
+        }
+
         db.collection("Organizers")
                 .whereEqualTo("Organizer_email", email)
                 .limit(1)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
-                        DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
-                        displayOrganizerInfo(doc);
+                        displayOrganizerInfo(querySnapshot.getDocuments().get(0));
                     } else {
                         loadCurrentOrganizerInfo();
                     }
@@ -229,7 +194,8 @@ public class EventManagementFragment extends Fragment {
     }
 
     private void loadCurrentOrganizerInfo() {
-        db.collection("Organizers").document(deviceId).get()
+        db.collection("Organizers").document(deviceId)
+                .get()
                 .addOnSuccessListener(this::displayOrganizerInfo)
                 .addOnFailureListener(e -> {
                     tvOrganizerName.setText("Name: Unknown");
@@ -239,67 +205,11 @@ public class EventManagementFragment extends Fragment {
     }
 
     private void displayOrganizerInfo(DocumentSnapshot doc) {
-        if (doc.exists()) {
-            String name = doc.getString("Organizer_name");
-            String phone = doc.getString("Organizer_phone");
-            String email = doc.getString("Organizer_email");
+        if (!doc.exists()) return;
 
-            tvOrganizerName.setText("Name: " + (name != null && !name.isEmpty() ? name : "Not set"));
-            tvOrganizerPhone.setText("Phone: " + (phone != null && !phone.isEmpty() ? phone : "Not set"));
-            tvOrganizerEmail.setText("Email: " + (email != null && !email.isEmpty() ? email : "Not set"));
-        } else {
-            tvOrganizerName.setText("Name: Unknown");
-            tvOrganizerPhone.setText("Phone: N/A");
-            tvOrganizerEmail.setText("Email: N/A");
-        }
-    }
-
-    private void openDrawWinner() {
-        Bundle b = new Bundle();
-        b.putString(ARG_EVENT_ID, eventId);
-        DrawWinnerFragment f = new DrawWinnerFragment();
-        f.setArguments(b);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.homeContentContainer, f)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void openDrawReplacement() {
-        Bundle b = new Bundle();
-        b.putString(ARG_EVENT_ID, eventId);
-        DrawReplacementFragment f = new DrawReplacementFragment();
-        f.setArguments(b);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.homeContentContainer, f)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void openGenerateQR() {
-        Bundle b = new Bundle();
-        b.putString(ARG_EVENT_ID, eventId);
-        GenerateQRFragment f = new GenerateQRFragment();
-        f.setArguments(b);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.homeContentContainer, f)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void openUpdateEvent() {
-        Bundle b = new Bundle();
-        b.putString(ARG_EVENT_ID, eventId);
-        UpdateEventFragment f = new UpdateEventFragment();
-        f.setArguments(b);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.homeContentContainer, f)
-                .addToBackStack(null)
-                .commit();
+        tvOrganizerName.setText("Name: " + doc.getString("Organizer_name"));
+        tvOrganizerPhone.setText("Phone: " + doc.getString("Organizer_phone"));
+        tvOrganizerEmail.setText("Email: " + doc.getString("Organizer_email"));
     }
 
     private void loadWaitingList() {
@@ -308,21 +218,8 @@ public class EventManagementFragment extends Fragment {
                     List<WaitingListAdapter.EntrantItem> result = new ArrayList<>();
 
                     for (DocumentSnapshot doc : query.getDocuments()) {
-
                         Object raw = doc.get("Entrant_joinedEventIDs");
-                        List<String> joined = new ArrayList<>();
-
-                        if (raw instanceof List<?>) {
-                            for (Object o : (List<?>) raw) {
-                                if (o != null) joined.add(o.toString());
-                            }
-                        } else if (raw instanceof Map<?, ?>) {
-                            Map<?, ?> map = (Map<?, ?>) raw;
-                            for (Object key : map.keySet()) {
-                                Object value = map.get(key);
-                                if (value != null) joined.add(value.toString());
-                            }
-                        }
+                        List<String> joined = convertRawIds(raw);
 
                         if (joined.contains(eventId)) {
                             WaitingListAdapter.EntrantItem item =
@@ -333,7 +230,7 @@ public class EventManagementFragment extends Fragment {
                         }
                     }
 
-                    currentEntrantList = result; // Save for CSV export
+                    currentEntrantList = result;
 
                     if (result.isEmpty()) {
                         rvWaitingList.setVisibility(View.GONE);
@@ -350,6 +247,17 @@ public class EventManagementFragment extends Fragment {
                                 Toast.LENGTH_SHORT).show());
     }
 
+    private List<String> convertRawIds(Object raw) {
+        List<String> result = new ArrayList<>();
+        if (raw instanceof List<?>) {
+            for (Object o : (List<?>) raw) result.add(String.valueOf(o));
+        } else if (raw instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) raw;
+            for (Object key : map.keySet()) result.add(String.valueOf(map.get(key)));
+        }
+        return result;
+    }
+
     private void exportEntrantListToCSV() {
         if (currentEntrantList == null || currentEntrantList.isEmpty()) {
             Toast.makeText(getContext(), "No entrants to export", Toast.LENGTH_SHORT).show();
@@ -357,56 +265,45 @@ public class EventManagementFragment extends Fragment {
         }
 
         try {
-            // Create filename with timestamp
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
                     .format(new Date());
             String filename = "entrants_" + eventId + "_" + timestamp + ".csv";
 
-            // Use app-specific directory (no permission needed on Android 10+)
-            File downloadsDir = new File(requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "");
-            if (!downloadsDir.exists()) {
-                downloadsDir.mkdirs();
-            }
+            File downloadsDir = new File(
+                    requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "");
+            if (!downloadsDir.exists()) downloadsDir.mkdirs();
 
             File csvFile = new File(downloadsDir, filename);
             FileWriter writer = new FileWriter(csvFile);
 
-            // Write CSV header
             writer.append("Name,Email\n");
-
-            // Write entrant data
             for (WaitingListAdapter.EntrantItem entrant : currentEntrantList) {
-                writer.append(escapeCSV(entrant.name != null ? entrant.name : "N/A"));
-                writer.append(",");
-                writer.append(escapeCSV(entrant.email != null ? entrant.email : "N/A"));
-                writer.append("\n");
+                writer.append(escapeCSV(entrant.name))
+                        .append(",")
+                        .append(escapeCSV(entrant.email))
+                        .append("\n");
             }
 
             writer.flush();
             writer.close();
 
-            // Show success message and offer to open/share the file
             Toast.makeText(getContext(),
                     "CSV exported: " + csvFile.getAbsolutePath(),
                     Toast.LENGTH_LONG).show();
 
-            // Open the file with a file manager or share it
             shareCSVFile(csvFile);
 
         } catch (IOException e) {
             Toast.makeText(getContext(),
                     "Failed to export CSV: " + e.getMessage(),
                     Toast.LENGTH_LONG).show();
-            e.printStackTrace();
         }
     }
 
     private String escapeCSV(String value) {
         if (value == null) return "";
-        // Escape quotes and wrap in quotes if contains comma or quote
-        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+        if (value.contains(",") || value.contains("\""))
             return "\"" + value.replace("\"", "\"\"") + "\"";
-        }
         return value;
     }
 
@@ -415,8 +312,7 @@ public class EventManagementFragment extends Fragment {
             Uri fileUri = FileProvider.getUriForFile(
                     requireContext(),
                     requireContext().getPackageName() + ".fileprovider",
-                    file
-            );
+                    file);
 
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/csv");
@@ -425,9 +321,8 @@ public class EventManagementFragment extends Fragment {
 
             startActivity(Intent.createChooser(intent, "Share CSV file"));
         } catch (Exception e) {
-            android.util.Log.e("CSV Export", "Error sharing file", e);
             Toast.makeText(getContext(),
-                    "File saved but couldn't open share dialog",
+                    "File saved but sharing failed",
                     Toast.LENGTH_SHORT).show();
         }
     }
