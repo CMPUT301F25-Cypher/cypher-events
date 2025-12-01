@@ -23,6 +23,8 @@ public class HomeContainerFragment extends Fragment {
     private EditText etSearch;
     private ImageButton btnFilter;
     private ImageButton btnAdd;
+
+    private ImageButton btnScanQR;
     private Fragment currentFragment;
 
     @Nullable
