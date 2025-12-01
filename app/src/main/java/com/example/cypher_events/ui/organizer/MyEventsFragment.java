@@ -36,9 +36,9 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
     private String deviceId;
     private List<Event> allEvents = new ArrayList<>();
 
-    // ------------------------------------------------------------
+
     // SEARCH BAR HANDLER
-    // ------------------------------------------------------------
+
     @Override
     public void onSearchQueryChanged(String query) {
         if (allEvents == null) return;
@@ -60,9 +60,9 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
         adapter.submit(filtered);
     }
 
-    // ------------------------------------------------------------
+
     // FILTER DIALOG
-    // ------------------------------------------------------------
+
     @Override
     public void onFilterClicked() {
         new android.app.AlertDialog.Builder(requireContext())
@@ -102,15 +102,16 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
 
     @Override
     public void onAddClicked() {
-        // Organizer pressing the blue add button = Create event screen
-        requireActivity().getSupportFragmentManager()
+        // Open CreateEventFragment inside HomeContainerFragment
+        getParentFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container, new CreateEventFragment())
+                .replace(R.id.homeContentContainer, new CreateEventFragment())
                 .addToBackStack(null)
                 .commit();
     }
 
-    // ------------------------------------------------------------
+
+
     @Nullable
     @Override
     public View onCreateView(
@@ -143,9 +144,8 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
         loadMyEvents();
     }
 
-    // ------------------------------------------------------------
     // LOAD ONLY ORGANIZER'S EVENTS
-    // ------------------------------------------------------------
+
     private void loadMyEvents() {
         db.collection("Organizers").document(deviceId).get()
                 .addOnSuccessListener(doc -> {
@@ -173,9 +173,9 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
                         toast("Failed to load: " + e.getMessage()));
     }
 
-    // ------------------------------------------------------------
+
     // FETCH EVENTS BY ID (FAST, PRECISE)
-    // ------------------------------------------------------------
+
     private void fetchEventsByIds(List<String> ids) {
         List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
 
@@ -219,7 +219,6 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
     private static Integer toInt(Object v) { return v instanceof Number ? ((Number) v).intValue() : 0; }
     private static Boolean toBool(Object v) { return v instanceof Boolean ? (Boolean) v : false; }
 
-    // ------------------------------------------------------------
     private void openEventManagementScreen(String eventId) {
         Bundle b = new Bundle();
         b.putString(ARG_EVENT_ID, eventId);

@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cypher_events.R;
 import com.example.cypher_events.domain.model.Event;
 import com.example.cypher_events.ui.SearchableFragment;
+import com.example.cypher_events.ui.organizer.CreateEventFragment;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -94,9 +95,14 @@ public class EventEntrantFragment extends Fragment implements SearchableFragment
 
     @Override
     public void onAddClicked() {
-        // For now, maybe only organizers can add:
-        Toast.makeText(getContext(), "Create event (not wired yet)", Toast.LENGTH_SHORT).show();
+        // Open CreateEventFragment inside HomeContainerFragment
+        getParentFragmentManager()
+                .beginTransaction()
+                .replace(R.id.homeContentContainer, new CreateEventFragment())
+                .addToBackStack(null)
+                .commit();
     }
+
 
 
 

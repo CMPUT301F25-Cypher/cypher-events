@@ -66,6 +66,20 @@ public class CreateEventFragment extends Fragment {
     // will hold the compressed base64 poster string that we save to firestore
     private String posterBase64 = "";
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        View bar = requireActivity().findViewById(R.id.layoutSearchRow);
+        if (bar != null) bar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        View bar = requireActivity().findViewById(R.id.layoutSearchRow);
+        if (bar != null) bar.setVisibility(View.VISIBLE);
+    }
+
 
     //opens the system gallery gallery/file picker
     private final ActivityResultLauncher<String> imagePickerLauncher =
