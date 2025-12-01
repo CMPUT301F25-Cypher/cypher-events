@@ -11,59 +11,58 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cypher_events.R;
 import com.example.cypher_events.domain.model.Event;
 import com.example.cypher_events.ui.SearchableFragment;
 import com.example.cypher_events.ui.entrant.EventAdapter;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class MyEventsFragment extends Fragment implements SearchableFragment {
 
     private static final String ARG_EVENT_ID = "EventId";
-
     private static final String[] CATEGORIES = {"film", "music", "sports", "gaming"};
     private final boolean[] selectedCats = new boolean[CATEGORIES.length];
 
-    private List<Event> allEvents = new ArrayList<>();
-
     private RecyclerView recyclerView;
-    private EventAdapter eventAdapter;
+    private EventAdapter adapter;
     private FirebaseFirestore db;
     private String deviceId;
+    private List<Event> allEvents = new ArrayList<>();
 
-    // ───── Search / filter / add from HomeContainer ─────
-
+    // ------------------------------------------------------------
+    // SEARCH BAR HANDLER
+    // ------------------------------------------------------------
     @Override
     public void onSearchQueryChanged(String query) {
-        if (allEvents == null || eventAdapter == null) return;
+        if (allEvents == null) return;
 
-        String q = query.trim().toLowerCase(Locale.ROOT);
+        String q = query.trim().toLowerCase();
         if (q.isEmpty()) {
-            eventAdapter.submit(allEvents);
+            adapter.submit(allEvents);
             return;
         }
 
         List<Event> filtered = new ArrayList<>();
         for (Event e : allEvents) {
-            if (e.getEvent_title().toLowerCase(Locale.ROOT).contains(q)
-                    || e.getEvent_location().toLowerCase(Locale.ROOT).contains(q)
-                    || e.getEvent_category().toLowerCase(Locale.ROOT).contains(q)) {
+            if (e.getEvent_title().toLowerCase().contains(q)
+                    || e.getEvent_location().toLowerCase().contains(q)
+                    || e.getEvent_category().toLowerCase().contains(q)) {
                 filtered.add(e);
             }
         }
-        eventAdapter.submit(filtered);
+        adapter.submit(filtered);
     }
 
+    // ------------------------------------------------------------
+    // FILTER DIALOG
+    // ------------------------------------------------------------
     @Override
     public void onFilterClicked() {
         new android.app.AlertDialog.Builder(requireContext())
@@ -73,44 +72,45 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
                 .setPositiveButton("Apply", (d, w) -> applyCategoryFilter())
                 .setNegativeButton("Clear", (d, w) -> {
                     Arrays.fill(selectedCats, false);
-                    eventAdapter.submit(allEvents);
+                    adapter.submit(allEvents);
                 })
                 .show();
     }
 
     private void applyCategoryFilter() {
-        if (allEvents == null) return;
-
         List<String> active = new ArrayList<>();
-        for (int i = 0; i < CATEGORIES.length; i++) {
-            if (selectedCats[i]) active.add(CATEGORIES[i].toLowerCase(Locale.ROOT));
-        }
+        for (int i = 0; i < CATEGORIES.length; i++)
+            if (selectedCats[i]) active.add(CATEGORIES[i]);
+
         if (active.isEmpty()) {
-            eventAdapter.submit(allEvents);
+            adapter.submit(allEvents);
             return;
         }
 
         List<Event> filtered = new ArrayList<>();
+
         for (Event e : allEvents) {
-            String cat = e.getEvent_category().toLowerCase(Locale.ROOT);
-            if (active.contains(cat)) filtered.add(e);
+            String cat = e.getEvent_category().toLowerCase();
+            for (String a : active) {
+                if (cat.equals(a.toLowerCase()))
+                    filtered.add(e);
+            }
         }
-        eventAdapter.submit(filtered);
+
+        adapter.submit(filtered);
     }
 
     @Override
     public void onAddClicked() {
-        // Anyone can create events – go to CreateEventFragment
+        // Organizer pressing the blue add button = Create event screen
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .setReorderingAllowed(true)
                 .replace(R.id.container, new CreateEventFragment())
                 .addToBackStack(null)
                 .commit();
     }
 
-    // ───── Lifecycle ─────
-
+    // ------------------------------------------------------------
     @Nullable
     @Override
     public View onCreateView(
@@ -132,94 +132,95 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
         db = FirebaseFirestore.getInstance();
         deviceId = Settings.Secure.getString(
                 requireContext().getContentResolver(),
-                Settings.Secure.ANDROID_ID
-        );
+                Settings.Secure.ANDROID_ID);
 
         recyclerView = view.findViewById(R.id.recyclerMyEvents);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
-        eventAdapter = new EventAdapter(this::openEventManagementScreen);
-        recyclerView.setAdapter(eventAdapter);
+        adapter = new EventAdapter(this::openEventManagementScreen);
+        recyclerView.setAdapter(adapter);
 
-        // You said you don’t really need a back button here anymore,
-        // so we can rely on bottom nav instead – no back button wiring.
-
-        loadMyEventsForOrganizer();
+        loadMyEvents();
     }
 
-    // ───── Firestore ─────
-
-    private void loadMyEventsForOrganizer() {
+    // ------------------------------------------------------------
+    // LOAD ONLY ORGANIZER'S EVENTS
+    // ------------------------------------------------------------
+    private void loadMyEvents() {
         db.collection("Organizers").document(deviceId).get()
                 .addOnSuccessListener(doc -> {
                     if (!doc.exists()) {
-                        toast("No organizer profile found.");
-                        eventAdapter.submit(new ArrayList<>());
+                        toast("Organizer profile missing.");
                         return;
                     }
-                    String email = doc.getString("Organizer_email");
-                    if (email == null || email.isEmpty()) {
-                        toast("Organizer email missing.");
-                        eventAdapter.submit(new ArrayList<>());
+
+                    List<String> myIds = new ArrayList<>();
+                    Object obj = doc.get("Organizer_createdEventIDs");
+
+                    if (obj instanceof List)
+                        myIds = (List<String>) obj;
+                    else if (obj instanceof Map)
+                        myIds.addAll(((Map<String, Object>) obj).keySet());
+
+                    if (myIds.isEmpty()) {
+                        adapter.submit(new ArrayList<>());
                         return;
                     }
-                    queryEventsByOrganizerEmail(email);
+
+                    fetchEventsByIds(myIds);
                 })
                 .addOnFailureListener(e ->
-                        toast("Failed to load organizer: " + e.getMessage())
-                );
+                        toast("Failed to load: " + e.getMessage()));
     }
 
-    private void queryEventsByOrganizerEmail(String email) {
-        db.collection("Events")
-                .whereEqualTo("Event_organizerEmail", email)
-                .get()
-                .addOnSuccessListener(this::handleEventsSnapshot)
+    // ------------------------------------------------------------
+    // FETCH EVENTS BY ID (FAST, PRECISE)
+    // ------------------------------------------------------------
+    private void fetchEventsByIds(List<String> ids) {
+        List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+
+        for (String id : ids)
+            tasks.add(db.collection("Events").document(id).get());
+
+        Tasks.whenAllSuccess(tasks)
+                .addOnSuccessListener(results -> {
+                    List<Event> events = new ArrayList<>();
+
+                    for (Object o : results) {
+                        DocumentSnapshot doc = (DocumentSnapshot) o;
+                        if (doc.exists()) events.add(mapEvent(doc));
+                    }
+
+                    allEvents = events;
+                    adapter.submit(events);
+                })
                 .addOnFailureListener(e ->
-                        toast("Failed to load events: " + e.getMessage())
-                );
-    }
-
-    private void handleEventsSnapshot(QuerySnapshot snap) {
-        List<Event> events = new ArrayList<>();
-        for (DocumentSnapshot doc : snap) {
-            events.add(mapEvent(doc));
-        }
-
-        allEvents = events;            // <- this is what search/filter use
-
-        if (events.isEmpty()) {
-            toast("You have not created any events.");
-        }
-
-        eventAdapter.submit(events);
+                        toast("Failed to get events: " + e.getMessage()));
     }
 
     private Event mapEvent(DocumentSnapshot doc) {
         Event e = new Event();
-
-        e.setEvent_id(s(doc.getId()));
+        e.setEvent_id(doc.getId());
         e.setEvent_title(s(doc.getString("Event_title")));
-        e.setPosterBase64(doc.getString("Event_posterBase64")); // <- keep your poster
         e.setEvent_description(s(doc.getString("Event_description")));
         e.setEvent_location(s(doc.getString("Event_location")));
         e.setEvent_category(s(doc.getString("Event_category")));
         e.setEvent_status(s(doc.getString("Event_status")));
-
         e.setEvent_capacity(toInt(doc.get("Event_capacity")));
         e.setEvent_signupStartUtc(toLong(doc.get("Event_signupStartUtc")));
         e.setEvent_signupEndUtc(toLong(doc.get("Event_signupEndUtc")));
-
-        Boolean isActive = toBool(doc.get("Event_isActive"));
-        Boolean isLottery = toBool(doc.get("Event_isLotteryEnabled"));
-
-        e.setEvent_isActive(isActive != null && isActive);
-        e.setEvent_isLotteryEnabled(isLottery != null && isLottery);
-
+        e.setEvent_isActive(toBool(doc.get("Event_isActive")));
+        e.setEvent_isLotteryEnabled(toBool(doc.get("Event_isLotteryEnabled")));
         return e;
     }
 
-    public void openEventManagementScreen(String eventId) {
+    private static String s(String v) { return v == null ? "" : v; }
+    private static Long toLong(Object v) { return v instanceof Number ? ((Number) v).longValue() : 0; }
+    private static Integer toInt(Object v) { return v instanceof Number ? ((Number) v).intValue() : 0; }
+    private static Boolean toBool(Object v) { return v instanceof Boolean ? (Boolean) v : false; }
+
+    // ------------------------------------------------------------
+    private void openEventManagementScreen(String eventId) {
         Bundle b = new Bundle();
         b.putString(ARG_EVENT_ID, eventId);
 
@@ -228,32 +229,9 @@ public class MyEventsFragment extends Fragment implements SearchableFragment {
 
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .setReorderingAllowed(true)
                 .replace(R.id.container, f)
                 .addToBackStack(null)
                 .commit();
-    }
-
-    private static String s(String v) { return v == null ? "" : v; }
-
-    private static Long toLong(Object v) {
-        if (v instanceof Long) return (Long) v;
-        if (v instanceof Double) return ((Double) v).longValue();
-        if (v instanceof Integer) return ((Integer) v).longValue();
-        return 0L;
-    }
-
-    private static Integer toInt(Object v) {
-        if (v instanceof Integer) return (Integer) v;
-        if (v instanceof Long) return ((Long) v).intValue();
-        if (v instanceof Double) return ((Double) v).intValue();
-        return 0;
-    }
-
-    private static Boolean toBool(Object v) {
-        if (v instanceof Boolean) return (Boolean) v;
-        if (v instanceof String) return Boolean.parseBoolean((String) v);
-        return false;
     }
 
     private void toast(String m) {

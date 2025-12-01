@@ -22,7 +22,9 @@ import com.example.cypher_events.ui.SearchableFragment;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -228,37 +230,51 @@ public class HistoryFragmentEntrant extends Fragment implements SearchableFragme
     }
 
     // Fetch events matching the IDs in history
-    private void fetchEventsByIds(List<String> eventIds) {
-        if (eventIds == null || eventIds.isEmpty()) {
-            eventAdapter.submit(new ArrayList<>());
+    private void fetchEventsByIds(List<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            allEvents = new ArrayList<>();
+            eventAdapter.submit(allEvents);
             return;
         }
 
-        List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
-        for (String id : eventIds) {
-            tasks.add(db.collection("Events").document(id).get());
+        // Firestore only allows up to 10 items in whereIn
+        List<Event> result = new ArrayList<>();
+
+        List<List<String>> batches = new ArrayList<>();
+
+        // Split into groups of 10
+        for (int i = 0; i < ids.size(); i += 10) {
+            batches.add(ids.subList(i, Math.min(i + 10, ids.size())));
+        }
+
+        List<Task<QuerySnapshot>> tasks = new ArrayList<>();
+        for (List<String> batch : batches) {
+            Task<QuerySnapshot> t = db.collection("Events")
+                    .whereIn(FieldPath.documentId(), batch)
+                    .get();
+            tasks.add(t);
         }
 
         Tasks.whenAllSuccess(tasks)
                 .addOnSuccessListener(results -> {
-                    List<Event> events = new ArrayList<>();
                     for (Object o : results) {
-                        DocumentSnapshot doc = (DocumentSnapshot) o;
-                        if (doc.exists()) {
-                            events.add(mapEvent(doc));
+                        QuerySnapshot snap = (QuerySnapshot) o;
+                        for (DocumentSnapshot doc : snap.getDocuments()) {
+                            result.add(mapEvent(doc));
                         }
                     }
 
-                    allEvents = events;      // so search/filter use only joined ones
-                    eventAdapter.submit(events);
+                    allEvents = result;
+                    eventAdapter.submit(result);
 
-                    if (events.isEmpty()) {
-                        toast("No events found for your history.");
+                    if (result.isEmpty()) {
+                        toast("No events found in your history.");
                     }
                 })
                 .addOnFailureListener(e ->
                         toast("Failed to load events: " + e.getMessage()));
     }
+
 
     // Map Firestore document into Event model (same structure as other fragments)
     private Event mapEvent(DocumentSnapshot doc) {
