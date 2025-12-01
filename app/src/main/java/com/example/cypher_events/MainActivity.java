@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.example.cypher_events.domain.model.DummyData;
 import com.example.cypher_events.ui.entrant.EntrantDashboardFragment;
+import com.example.cypher_events.ui.entrant.HomeContainerFragment;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.container, new EntrantDashboardFragment())
+                    .replace(R.id.container, new HomeContainerFragment())
                     .commit();
         }
     }

@@ -19,6 +19,8 @@ public class Event {
     private long event_signupStartUtc;
     private long event_signupEndUtc;
 
+    private String posterBase64;
+
     // This will act as BOTH event capacity and the maximum number
     // of entrants allowed on the waiting list for US 02.03.01.
     private int event_capacity;
@@ -39,6 +41,9 @@ public class Event {
 
     private boolean event_isLotteryEnabled;
     private boolean event_isActive;
+
+    private double lat;
+    private double lng;
 
     // Constructors
     public Event() {}
@@ -63,6 +68,15 @@ public class Event {
 
     // GETTERS / SETTERS
     public String getEvent_id() { return event_id; }
+
+    public String getPosterBase64() {
+        return posterBase64;
+    }
+
+    public void setPosterBase64(String posterBase64) {
+        this.posterBase64 = posterBase64;
+    }
+
     public void setEvent_id(String id) { this.event_id = id; }
 
     public String getEvent_title() { return event_title; }

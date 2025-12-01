@@ -1,5 +1,6 @@
 package com.example.cypher_events.ui.entrant;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,24 +11,94 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cypher_events.R;
 import com.example.cypher_events.domain.model.Event;
+import com.example.cypher_events.ui.SearchableFragment;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class EventEntrantFragment extends Fragment {
+public class EventEntrantFragment extends Fragment implements SearchableFragment {
 
     private static final String ARG_EVENT_ID = "EventId";
 
+    private final String[] CATEGORIES = {"film", "music", "sports", "gaming"};
+    private final boolean[] selectedCats = new boolean[CATEGORIES.length];
+
     private RecyclerView recyclerView;
     private EventAdapter eventAdapter;
+
+    private List<Event> allEvents = new ArrayList<>();
+
+    @Override
+    public void onSearchQueryChanged(String query) {
+        if (allEvents == null) return;
+
+        String q = query.trim().toLowerCase();
+        if (q.isEmpty()) {
+            eventAdapter.submit(allEvents);
+            return;
+        }
+
+        List<Event> filtered = new ArrayList<>();
+        for (Event e : allEvents) {
+            if (e.getEvent_title().toLowerCase().contains(q)
+                    || e.getEvent_location().toLowerCase().contains(q)
+                    || e.getEvent_category().toLowerCase().contains(q)) {
+                filtered.add(e);
+            }
+        }
+        eventAdapter.submit(filtered);
+    }
+
+    @Override
+    public void onFilterClicked() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Filter by category")
+                .setMultiChoiceItems(CATEGORIES, selectedCats, (dialog, which, isChecked) -> {
+                    selectedCats[which] = isChecked;
+                })
+                .setPositiveButton("Apply", (d, w) -> applyCategoryFilter())
+                .setNegativeButton("Clear", (d, w) -> {
+                    Arrays.fill(selectedCats, false);
+                    eventAdapter.submit(allEvents);
+                })
+                .show();
+    }
+
+    private void applyCategoryFilter() {
+        List<String> active = new ArrayList<>();
+        for (int i = 0; i < CATEGORIES.length; i++) {
+            if (selectedCats[i]) active.add(CATEGORIES[i].toLowerCase());
+        }
+        if (active.isEmpty()) {
+            eventAdapter.submit(allEvents);
+            return;
+        }
+
+        List<Event> filtered = new ArrayList<>();
+        for (Event e : allEvents) {
+            String cat = e.getEvent_category().toLowerCase();
+            if (active.contains(cat)) filtered.add(e);
+        }
+        eventAdapter.submit(filtered);
+    }
+
+    @Override
+    public void onAddClicked() {
+        // For now, maybe only organizers can add:
+        Toast.makeText(getContext(), "Create event (not wired yet)", Toast.LENGTH_SHORT).show();
+    }
+
+
 
     @Nullable
     @Override
@@ -49,7 +120,8 @@ public class EventEntrantFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerEvents);
         ImageButton backButton = view.findViewById(R.id.btnBack);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        recyclerView.setHasFixedSize(true);
         eventAdapter = new EventAdapter(this::openEventDetail);
         recyclerView.setAdapter(eventAdapter);
 
@@ -74,7 +146,7 @@ public class EventEntrantFragment extends Fragment {
                 .addOnSuccessListener(snap -> {
                     if (snap == null || snap.isEmpty()) {
                         // Fallback to lowercase collection name if needed
-                        db.collection("events").get()
+                        db.collection("events").orderBy("Event_signupStartUtc").get()
                                 .addOnSuccessListener(this::consumeSnapshot)
                                 .addOnFailureListener(e -> toast("Failed: " + e.getMessage()));
                     } else {
@@ -97,11 +169,13 @@ public class EventEntrantFragment extends Fragment {
             events.add(mapEvent(doc));
         }
 
-        eventAdapter.submit(events);
-
         if (events.isEmpty()) {
             toast("No events available online.");
         }
+
+        allEvents = events;
+        eventAdapter.submit(events);
+
     }
 
     // Manual map from Firestore fields to Event model
@@ -112,6 +186,7 @@ public class EventEntrantFragment extends Fragment {
         e.setEvent_id(doc.getId());
 
         e.setEvent_title(s(doc.getString("Event_title")));
+        e.setPosterBase64(doc.getString("Event_posterBase64"));
         e.setEvent_description(s(doc.getString("Event_description")));
         e.setEvent_location(s(doc.getString("Event_location")));
         e.setEvent_category(s(doc.getString("Event_category")));
@@ -166,13 +241,17 @@ public class EventEntrantFragment extends Fragment {
         EventDetailEntrantFragment f = new EventDetailEntrantFragment();
         f.setArguments(b);
 
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .setReorderingAllowed(true)
-                .replace(R.id.container, f)
-                .addToBackStack(null)
-                .commit();
+        Fragment parent = getParentFragment(); // this is HomeContainerFragment
+        if (parent != null) {
+            parent.getChildFragmentManager()
+                    .beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.homeContentContainer, f)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
+
 
     private void toast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
