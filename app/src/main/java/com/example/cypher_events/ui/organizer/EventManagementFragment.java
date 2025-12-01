@@ -52,8 +52,9 @@ public class EventManagementFragment extends Fragment {
     private Button btnDrawWinner;
     private Button btnDrawReplacement;
     private Button btnExportCSV;
+    private Button btnViewEntrantMap;
     private ImageButton btnBack;
-    
+
     private List<WaitingListAdapter.EntrantItem> currentEntrantList = new ArrayList<>();
 
     private RecyclerView rvWaitingList;
@@ -96,6 +97,7 @@ public class EventManagementFragment extends Fragment {
         btnDrawWinner = view.findViewById(R.id.btnDrawWinner);
         btnDrawReplacement = view.findViewById(R.id.btnDrawReplacement);
         btnExportCSV = view.findViewById(R.id.btnExportCSV);
+        btnViewEntrantMap = view.findViewById(R.id.btnViewEntrantMap);
         btnBack = view.findViewById(R.id.btnBack);
 
         tvOrganizerName = view.findViewById(R.id.tvOrganizerName);
@@ -125,6 +127,19 @@ public class EventManagementFragment extends Fragment {
         btnDrawWinner.setOnClickListener(v -> openDrawWinner());
         btnDrawReplacement.setOnClickListener(v -> openDrawReplacement());
         btnExportCSV.setOnClickListener(v -> exportEntrantListToCSV());
+        btnViewEntrantMap.setOnClickListener(v -> openEntrantLocationsMap());
+    }
+
+    private void openEntrantLocationsMap() {
+        Bundle b = new Bundle();
+        b.putString(ARG_EVENT_ID, eventId);
+        EntrantLocationsMapFragment f = new EntrantLocationsMapFragment();
+        f.setArguments(b);
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, f)
+                .addToBackStack(null)
+                .commit();
     }
 
     private void loadEventDetails() {
@@ -297,7 +312,7 @@ public class EventManagementFragment extends Fragment {
                     }
 
                     currentEntrantList = result; // Save for CSV export
-                    
+
                     if (result.isEmpty()) {
                         rvWaitingList.setVisibility(View.GONE);
                         tvNoWaitingList.setVisibility(View.VISIBLE);
@@ -349,17 +364,17 @@ public class EventManagementFragment extends Fragment {
             writer.close();
 
             // Show success message and offer to open/share the file
-            Toast.makeText(getContext(), 
-                "CSV exported: " + csvFile.getAbsolutePath(), 
-                Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(),
+                    "CSV exported: " + csvFile.getAbsolutePath(),
+                    Toast.LENGTH_LONG).show();
 
             // Open the file with a file manager or share it
             shareCSVFile(csvFile);
 
         } catch (IOException e) {
-            Toast.makeText(getContext(), 
-                "Failed to export CSV: " + e.getMessage(), 
-                Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(),
+                    "Failed to export CSV: " + e.getMessage(),
+                    Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
@@ -376,22 +391,22 @@ public class EventManagementFragment extends Fragment {
     private void shareCSVFile(File file) {
         try {
             Uri fileUri = FileProvider.getUriForFile(
-                requireContext(),
-                requireContext().getPackageName() + ".fileprovider",
-                file
+                    requireContext(),
+                    requireContext().getPackageName() + ".fileprovider",
+                    file
             );
 
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/csv");
             intent.putExtra(Intent.EXTRA_STREAM, fileUri);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            
+
             startActivity(Intent.createChooser(intent, "Share CSV file"));
         } catch (Exception e) {
             android.util.Log.e("CSV Export", "Error sharing file", e);
-            Toast.makeText(getContext(), 
-                "File saved but couldn't open share dialog", 
-                Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),
+                    "File saved but couldn't open share dialog",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 }
